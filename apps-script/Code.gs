@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 2 (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 3 (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -81,6 +81,7 @@ function handle_(p) {
     switch (p.a) {
       case 'login': return out_(stLogin_(s, p));
       case 'chpw': return out_(stChpw_(s, p));
+      case 'register': { const lock = LockService.getScriptLock(); lock.waitLock(20000); try { return out_(stRegister_(s, p)); } finally { lock.releaseLock(); } }
       case 'log': return out_(log_(s, p));
       case 'tlogin': { const t = teacher_(s, p); return out_(t ? { ok: true, u: t.u, n: t.n, admin: t.admin } : { ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' }); }
     }
@@ -103,6 +104,16 @@ function stLogin_(s, p) {
   if (!f || !stPwOk_(f.r, p.p || '')) return { ok: false, err: 'Sai mã lớp, mã học sinh hoặc mật khẩu' };
   const lop = rows_(s.lop).find(r => norm_(r[0]) === norm_(p.c));
   return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3] };
+}
+function stRegister_(s, p) {
+  const c = norm_(p.c), code = cleanCode_(p.s), name = String(p.n || '').trim().slice(0, 60), pw = String(p.p || '');
+  if (!rows_(s.lop).some(r => norm_(r[0]) === c)) return { ok: false, err: 'Mã lớp không tồn tại. Hỏi lại giáo viên mã lớp.' };
+  if (code.length < 2) return { ok: false, err: 'Mã học sinh cần ít nhất 2 ký tự (chữ không dấu, số, - hoặc _)' };
+  if (!name) return { ok: false, err: 'Nhập họ tên' };
+  if (pw.length < 4) return { ok: false, err: 'Mật khẩu cần ít nhất 4 ký tự' };
+  if (findSt_(s, c, code)) return { ok: false, err: 'Mã học sinh ' + code + ' đã có trong lớp. Chọn mã khác hoặc đăng nhập.' };
+  s.hs.appendRow([c, code, name, hash_(pw), new Date()]);
+  return stLogin_(s, { c, s: code, p: pw });
 }
 function stChpw_(s, p) {
   const f = findSt_(s, p.c, p.s);
