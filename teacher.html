@@ -152,7 +152,8 @@ if(!CRED||!TRACK_URL){location.replace("./?gv=1")}
 let D=null,CLS=null,TAB="stats",VIEW="st",METRIC="min",SORT={k:"min",d:-1},PANE="class";
 try{CLS=localStorage.getItem("tvT:cls")}catch(e){}
 const COL={c:0,s:1,n:2,bai:3,f:4,seen:5,li:6,q:7,qc:8,lq:9,lqc:10,min:11,kn:12,last:13};
-async function api(o){const r=await fetch(TRACK_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({u:CRED.u,p:CRED.p},o))});const j=await r.json();
+async function api(o){o=Object.assign({u:CRED.u,p:CRED.p},o);const q=new URLSearchParams();for(const[k,v]of Object.entries(o)){if(v===false||v==null)continue;q.set(k,v===true?"1":String(v))}
+  const r=await fetch(TRACK_URL+"?"+q.toString(),{method:"GET",redirect:"follow",cache:"no-store"});const j=await r.json();
   if(j.auth){logout();throw new Error("auth")}return j}
 function logout(){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}location.replace("./?gv=1")}
 $("#out").onclick=logout;

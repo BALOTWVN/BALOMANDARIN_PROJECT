@@ -873,7 +873,8 @@ addEventListener("pagehide",()=>trkFlush(true));
 /* mark "Đã nhớ" changes so known counts get sent */
 {const sk=saveKnown;saveKnown=function(){const r=sk.apply(this,arguments);try{const l=curLesson();if(tracking()&&l)(TRK[l]=TRK[l]||{}),store.set("trk",TRK)}catch(e){}return r}}
 function whoDraw(){const b=$("#whoBtn");b.hidden=!tracking();if(!STU)return;$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
-async function api(o){const r=await fetch(TRACK_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)});return r.json()}
+async function api(o){const q=new URLSearchParams();for(const[k,v]of Object.entries(o)){if(v===false||v==null)continue;q.set(k,v===true?"1":String(v))}
+  const r=await fetch(TRACK_URL+"?"+q.toString(),{method:"GET",redirect:"follow",cache:"no-store"});return r.json()}
 function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>{try{$("#lgC").focus()}catch(e){}},80)}
 function role(r){$("#roleTabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.r===r));$("#fSt").hidden=r!=="st";$("#fGv").hidden=r!=="gv"}
 async function busy(btn,txt,fn){const t=btn.textContent;btn.disabled=true;btn.textContent=txt;try{await fn()}finally{btn.disabled=false;btn.textContent=t}}
