@@ -113,6 +113,10 @@ tr:last-child td{border-bottom:0}
 .modal .card{width:min(460px,100%);display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow:auto}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:10px 18px;border-radius:12px;font-weight:600;z-index:70;box-shadow:var(--shadow)}
 .loading{display:grid;place-items:center;min-height:50vh;color:var(--muted)}
+#busyBar{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:80;background:var(--sheet);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:999px;padding:8px 16px 8px 12px;display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600}
+#busyBar i{width:16px;height:16px;border-radius:50%;border:3px solid var(--acc-soft);border-top-color:var(--acc);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.busy{cursor:progress}
 @media print{body{background:#fff}header,.side,.tabs,.noprint{display:none!important}.layout{display:block}.card{box-shadow:none;border:0}}
 </style>
 </head>
@@ -142,6 +146,7 @@ tr:last-child td{border-bottom:0}
   </div>
 </div>
 <div id="modalRoot"></div>
+<div id="busyBar" hidden><i></i><span>Đang làm việc với máy chủ…</span></div>
 <script>
 const TRACK_URL="https://script.google.com/macros/s/AKfycbyRqPnotsCmWmIq41fskY-MyqUliFWeventBwIQw7Ps0JJavWCKRxj-T0aTnV6gdRE4TA/exec";
 const $=s=>document.querySelector(s);
@@ -152,7 +157,11 @@ if(!CRED||!TRACK_URL){location.replace("./?gv=1")}
 let D=null,CLS=null,TAB="stats",VIEW="st",METRIC="min",SORT={k:"min",d:-1},PANE="class";
 try{CLS=localStorage.getItem("tvT:cls")}catch(e){}
 const COL={c:0,s:1,n:2,bai:3,f:4,seen:5,li:6,q:7,qc:8,lq:9,lqc:10,min:11,kn:12,last:13};
-async function api(o){o=Object.assign({u:CRED.u,p:CRED.p},o);const q=new URLSearchParams();for(const[k,v]of Object.entries(o)){if(v===false||v==null)continue;q.set(k,v===true?"1":String(v))}
+let PEND=0;function busyUI(on){PEND+=on?1:-1;document.body.classList.toggle("busy",PEND>0);$("#busyBar").hidden=PEND<=0}
+async function api(o){const btn=document.activeElement&&document.activeElement.tagName==="BUTTON"?document.activeElement:null;if(btn){if(btn.disabled)throw new Error("dup");btn.disabled=true;btn.dataset.t=btn.textContent;if(o.a!=="data")btn.textContent="Đang xử lý…"}
+  busyUI(true);try{return await apiRaw(o)}catch(e){if(e.message!=="auth"){toast("Không kết nối được máy chủ, thử lại sau vài giây.")}throw e}finally{busyUI(false);if(btn){btn.disabled=false;if(btn.dataset.t)btn.textContent=btn.dataset.t}}}
+addEventListener("unhandledrejection",e=>{e.preventDefault()});
+async function apiRaw(o){o=Object.assign({u:CRED.u,p:CRED.p},o);const q=new URLSearchParams();for(const[k,v]of Object.entries(o)){if(v===false||v==null)continue;q.set(k,v===true?"1":String(v))}
   const r=await fetch(TRACK_URL+"?"+q.toString(),{method:"GET",redirect:"follow",cache:"no-store"});const j=await r.json();
   if(j.auth){logout();throw new Error("auth")}return j}
 function logout(){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}location.replace("./?gv=1")}
