@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 5 (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 6 (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -101,12 +101,12 @@ function handle_(p) {
       case 'register': { const lock = LockService.getScriptLock(); lock.waitLock(20000); try { return out_(stRegister_(s, p)); } finally { lock.releaseLock(); } }
       case 'log': return out_(log_(s, p));
       case 'setcfg': {
-        if (p.tok && p.tok === tok_(p.c, p.s)) return out_(setCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s), p.cfg));
+        if (p.tok && p.tok === tok_(p.c, p.s)) return out_(setCfg_(s, (p.kind === 'kn' ? 'KN:' : 'HS:') + norm_(p.c) + ':' + norm_(p.s), p.cfg));
         const tt = teacher_(s, p); if (tt) return out_(setCfg_(s, 'GV:' + tt.u, p.cfg));
         return out_({ ok: false, err: 'Không có quyền' });
       }
       case 'getcfg': {
-        if (p.tok && p.tok === tok_(p.c, p.s)) return out_({ ok: true, cfg: getCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s)) });
+        if (p.tok && p.tok === tok_(p.c, p.s)) return out_({ ok: true, cfg: getCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s)), kn: getCfg_(s, 'KN:' + norm_(p.c) + ':' + norm_(p.s)) });
         const tt = teacher_(s, p); return out_(tt ? { ok: true, cfg: getCfg_(s, 'GV:' + tt.u) } : { ok: false });
       }
       case 'tlogin': { const t = teacher_(s, p); return out_(t ? { ok: true, u: t.u, n: t.n, admin: t.admin } : { ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' }); }
@@ -133,7 +133,7 @@ function stLogin_(s, p) {
   const f = findSt_(s, p.c, p.s);
   if (!f || !stPwOk_(f.r, p.p || '')) return { ok: false, err: 'Sai mã lớp, mã học sinh hoặc mật khẩu' };
   const lop = rows_(s.lop).find(r => norm_(r[0]) === norm_(p.c));
-  return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3], cfg: getCfg_(s, 'HS:' + norm_(f.r[0]) + ':' + norm_(f.r[1])) };
+  return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3], cfg: getCfg_(s, 'HS:' + norm_(f.r[0]) + ':' + norm_(f.r[1])), kn: getCfg_(s, 'KN:' + norm_(f.r[0]) + ':' + norm_(f.r[1])) };
 }
 function stRegister_(s, p) {
   const c = norm_(p.c), code = cleanCode_(p.s), name = String(p.n || '').trim().slice(0, 60), pw = String(p.p || '');
