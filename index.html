@@ -849,7 +849,7 @@ applyCfg();
   g.addEventListener("pointerup",end);g.addEventListener("pointercancel",end)})();
 
 /* ---------- class tracking (only when TRACK_URL is set) ---------- */
-const TRACK_URL="";
+const TRACK_URL="https://script.google.com/macros/s/AKfycbyRqPnotsCmWmIq41fskY-MyqUliFWeventBwIQw7Ps0JJavWCKRxj-T0aTnV6gdRE4TA/exec";
 let STU=store.get("stu",null),TRK=store.get("trk",{}),SEEN=store.get("seen",{}),lastAct=Date.now();
 const tracking=()=>!!(TRACK_URL&&STU);
 function curLesson(){if(S.sec!=="vocab")return S.rl;if(S.lesson!=="all")return S.lesson;if(S.mode==="cards"&&deck&&deck[pos])return deck[pos].l;return 0}
