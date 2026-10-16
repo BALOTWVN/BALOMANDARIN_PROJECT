@@ -159,10 +159,10 @@ try{CLS=localStorage.getItem("tvT:cls")}catch(e){}
 const COL={c:0,s:1,n:2,bai:3,f:4,seen:5,li:6,q:7,qc:8,lq:9,lqc:10,min:11,kn:12,last:13};
 let PEND=0;function busyUI(on){PEND+=on?1:-1;document.body.classList.toggle("busy",PEND>0);$("#busyBar").hidden=PEND<=0}
 async function api(o){const btn=document.activeElement&&document.activeElement.tagName==="BUTTON"?document.activeElement:null;if(btn){if(btn.disabled)throw new Error("dup");btn.disabled=true;btn.dataset.t=btn.textContent;if(o.a!=="data")btn.textContent="Đang xử lý…"}
-  busyUI(true);try{return await apiRaw(o)}catch(e){if(e.message!=="auth"){toast("Không kết nối được máy chủ, thử lại sau vài giây.")}throw e}finally{busyUI(false);if(btn){btn.disabled=false;if(btn.dataset.t)btn.textContent=btn.dataset.t}}}
+  busyUI(true);try{return await apiRaw(o)}catch(e){if(e.message!=="auth"&&e.message!=="dup"){toast(e.message.startsWith("srv:")?"Máy chủ báo lỗi: "+e.message.slice(4):"Không kết nối được máy chủ, thử lại sau vài giây.")}throw e}finally{busyUI(false);if(btn){btn.disabled=false;if(btn.dataset.t)btn.textContent=btn.dataset.t}}}
 addEventListener("unhandledrejection",e=>{e.preventDefault()});
 async function apiRaw(o){o=Object.assign({u:CRED.u,p:CRED.p},o);const q=new URLSearchParams();for(const[k,v]of Object.entries(o)){if(v===false||v==null)continue;q.set(k,v===true?"1":String(v))}
-  const r=await fetch(TRACK_URL+"?"+q.toString(),{method:"GET",redirect:"follow",cache:"no-store"});const j=await r.json();
+  const r=await fetch(TRACK_URL+"?"+q.toString(),{method:"GET",redirect:"follow",cache:"no-store"});const txt=await r.text();let j;try{j=JSON.parse(txt)}catch(e){const m=/<title>([^<]*)<\/title>|class="errorMessage"[^>]*>([^<]*)/i.exec(txt);throw new Error("srv:"+((m&&(m[2]||m[1]))||txt.replace(/<[^>]+>/g," ").trim()).slice(0,160))}
   if(j.auth){logout();throw new Error("auth")}return j}
 function logout(){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}location.replace("./?gv=1")}
 $("#out").onclick=logout;
