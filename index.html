@@ -864,8 +864,9 @@ function trkPayload(){const d={};for(const l of Object.keys(TRK)){const x=Object
   return Object.keys(d).length?JSON.stringify({a:"log",c:STU.c,s:STU.s,tok:STU.tok,d}):null}
 let flushing=false;
 function trkFlush(final){if(!tracking()||flushing)return;const body=trkPayload();if(!body)return;const sent=TRK;TRK={};store.set("trk",TRK);
-  if(final){try{fetch(TRACK_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body})}catch(e){}return}
-  flushing=true;fetch(TRACK_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body})
+  const lu=TRACK_URL+"?j="+encodeURIComponent(body);
+  if(final){try{fetch(lu,{method:"GET",mode:"no-cors",keepalive:true})}catch(e){}return}
+  flushing=true;fetch(lu,{method:"GET",mode:"no-cors"})
    .catch(()=>{for(const l in sent){TRK[l]=TRK[l]||{};for(const k in sent[l])TRK[l][k]=(TRK[l][k]||0)+sent[l][k]}store.set("trk",TRK)}).finally(()=>{flushing=false})}
 setInterval(()=>trkFlush(false),30000);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")trkFlush(true)});
@@ -873,18 +874,17 @@ addEventListener("pagehide",()=>trkFlush(true));
 /* mark "Đã nhớ" changes so known counts get sent */
 {const sk=saveKnown;saveKnown=function(){const r=sk.apply(this,arguments);try{const l=curLesson();if(tracking()&&l)(TRK[l]=TRK[l]||{}),store.set("trk",TRK)}catch(e){}return r}}
 function whoDraw(){const b=$("#whoBtn");b.hidden=!tracking();if(!STU)return;$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
-async function api(o){const q=new URLSearchParams();for(const[k,v]of Object.entries(o)){if(v===false||v==null)continue;q.set(k,v===true?"1":String(v))}
-  const r=await fetch(TRACK_URL+"?"+q.toString(),{method:"GET",redirect:"follow",cache:"no-store"});return r.json()}
+async function api(o){const r=await fetch(TRACK_URL+"?j="+encodeURIComponent(JSON.stringify(o)),{method:"GET",redirect:"follow",cache:"no-store"});return r.json()}
 function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>{try{$("#lgC").focus()}catch(e){}},80)}
 function role(r){$("#roleTabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.r===r));$("#fSt").hidden=r!=="st";$("#fGv").hidden=r!=="gv"}
 async function busy(btn,txt,fn){const t=btn.textContent;btn.disabled=true;btn.textContent=txt;try{await fn()}finally{btn.disabled=false;btn.textContent=t}}
 async function doLogin(){const c=$("#lgC").value.trim(),s2=$("#lgS").value.trim(),pw=$("#lgP").value;if(!c||!s2){$("#lgErr").textContent="Nhập đủ mã lớp và mã học sinh.";return}
   await busy($("#lgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"login",c,s:s2,p:pw||s2});
-    if(r.ok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Đăng nhập không thành công."}
+    if(r.ok&&r.tok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới — báo giáo viên."}
   catch(e){$("#lgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 async function doTLogin(){const u=$("#tgU").value.trim(),pw=$("#tgP").value;if(!u||!pw){$("#tgErr").textContent="Nhập tên đăng nhập và mật khẩu.";return}
   await busy($("#tgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"tlogin",u,p:pw});
-    if(r.ok){const cr=JSON.stringify({u,p:pw,n:r.n});try{sessionStorage.setItem("tvT:cred",cr);if($("#tgR").checked)localStorage.setItem("tvT:cred",cr)}catch(e){}location.href="teacher.html"}else $("#tgErr").textContent=r.err||"Sai tên đăng nhập hoặc mật khẩu"}
+    if(r.ok&&r.u){const cr=JSON.stringify({u,p:pw,n:r.n});try{sessionStorage.setItem("tvT:cred",cr);if($("#tgR").checked)localStorage.setItem("tvT:cred",cr)}catch(e){}location.href="teacher.html"}else $("#tgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2)."}
   catch(e){$("#tgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 function openWho(first){$("#whoTitle").textContent=STU.n||STU.s;$("#whoInfo").textContent=`Lớp ${STU.c}${STU.cn?" · "+STU.cn:""} · Mã ${STU.s}`;
   $("#pwHint").textContent=first?"Bạn đang dùng mật khẩu mặc định (là mã học sinh). Hãy đặt mật khẩu riêng để bạn khác không vào được tài khoản của bạn.":"";$("#cpMsg").textContent="";$("#cpOld").value=first?STU.s:"";$("#cpNew").value="";$("#whoScrim").hidden=false}

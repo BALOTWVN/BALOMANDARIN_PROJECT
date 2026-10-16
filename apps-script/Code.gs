@@ -9,6 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
+ * Phiên bản mã: 2 (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -64,6 +65,7 @@ function delRows_(sh, pred) { const v = sh.getDataRange().getValues(); for (let 
 /* ---------- entry points ---------- */
 function doGet(e) {
   const p = (e && e.parameter) || {};
+  if (p.j) { try { return handle_(JSON.parse(p.j)); } catch (err) { return out_({ ok: false, err: String(err) }); } }
   if (p.a) return handle_(p);
   return out_({ ok: true, msg: 'Máy chủ BALO Mandarin đang chạy.' });
 }
@@ -72,8 +74,10 @@ function doPost(e) {
   catch (err) { return out_({ ok: false, err: String(err) }); }
 }
 function handle_(p) {
-  const s = sheets_();
+  if (p.lop != null && p.c == null) p.c = p.lop; // 'c' là tham số Google giữ riêng
+  let s;
   try {
+    s = sheets_();
     switch (p.a) {
       case 'login': return out_(stLogin_(s, p));
       case 'chpw': return out_(stChpw_(s, p));
