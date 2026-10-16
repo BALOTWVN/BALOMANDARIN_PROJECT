@@ -1,122 +1,235 @@
 /**
- * Học 當代中文 1 — máy chủ thống kê (Google Apps Script, gắn với 1 file Google Sheets)
+ * BALO Mandarin · 當代中文課程 1 — máy chủ tài khoản & thống kê
+ * (Google Apps Script gắn với 1 file Google Sheets của giáo viên)
  *
- * 1) Đổi MẬT KHẨU giáo viên ở dòng dưới.
- * 2) Chạy hàm `caiDat` một lần (bấm ▶ Chạy) để tạo các trang tính và cấp quyền.
- * 3) Triển khai → Triển khai mới → Loại: Ứng dụng web
- *      - Thực thi dưới dạng: Tôi
- *      - Người có quyền truy cập: Bất kỳ ai
- *    → Sao chép "URL ứng dụng web" gửi cho Claude.
+ * CÀI ĐẶT (một lần):
+ * 1) Đổi tên đăng nhập / mật khẩu QUẢN TRỊ ở 2 dòng bên dưới.
+ * 2) Chọn hàm `caiDat` → bấm ▶ Chạy → cấp quyền.
+ * 3) Triển khai → Triển khai mới → Ứng dụng web
+ *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
+ *    → sao chép "URL ứng dụng web".
+ * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
  */
-const MAT_KHAU = 'doimatkhau';   // ← ĐỔI MẬT KHẨU GIÁO VIÊN Ở ĐÂY
+const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
+const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
 
-const SH_HS = 'HocSinh', SH_LOG = 'NhatKy', SH_TK = 'ThongKe';
-const H_HS = ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Ngày tạo'];
-const H_LOG = ['Thời gian', 'Mã lớp', 'Mã học sinh', 'Bài', 'Lật thẻ', 'Lần nghe', 'Câu trắc nghiệm', 'Trắc nghiệm đúng',
-  'Câu luyện nghe', 'Luyện nghe đúng', 'Giây học'];
-const H_TK = ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Bài', 'Lật thẻ', 'Thẻ đã xem', 'Lần nghe', 'Câu trắc nghiệm',
-  'Trắc nghiệm đúng', 'Câu luyện nghe', 'Luyện nghe đúng', 'Phút học', 'Từ đã nhớ', 'Lần cuối'];
+const SH = {
+  gv: ['GiaoVien', ['Tên đăng nhập', 'Họ tên', 'Mật khẩu (mã hóa)', 'Quản trị', 'Ngày tạo']],
+  lop: ['Lop', ['Mã lớp', 'Tên lớp', 'Giáo viên', 'Ngày tạo']],
+  hs: ['HocSinh', ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Mật khẩu (mã hóa)', 'Ngày tạo']],
+  log: ['NhatKy', ['Thời gian', 'Mã lớp', 'Mã học sinh', 'Bài', 'Lật thẻ', 'Lần nghe', 'Câu trắc nghiệm', 'Trắc nghiệm đúng',
+    'Câu luyện nghe', 'Luyện nghe đúng', 'Giây học']],
+  tk: ['ThongKe', ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Bài', 'Lật thẻ', 'Thẻ đã xem', 'Lần nghe', 'Câu trắc nghiệm',
+    'Trắc nghiệm đúng', 'Câu luyện nghe', 'Luyện nghe đúng', 'Phút học', 'Từ đã nhớ', 'Lần cuối']]
+};
+const NTK = SH.tk[1].length;
 
-function caiDat() { sheets_(); }
+function caiDat() {
+  const s = sheets_();
+  secret_();
+  if (!rows_(s.gv).some(r => norm_(r[0]) === norm_(ADMIN_USER)))
+    s.gv.appendRow([norm_(ADMIN_USER), 'Quản trị', hash_(ADMIN_PASS), 'x', new Date()]);
+}
 
+/* ---------- helpers ---------- */
 function sheets_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const mk = (name, head) => {
+  const ss = SpreadsheetApp.getActiveSpreadsheet(), o = {};
+  Object.keys(SH).forEach(k => {
+    const [name, head] = SH[k];
     let sh = ss.getSheetByName(name);
-    if (!sh) { sh = ss.insertSheet(name); }
+    if (!sh) sh = ss.insertSheet(name);
     if (sh.getLastRow() === 0) {
       sh.appendRow(head); sh.setFrozenRows(1);
       sh.getRange(1, 1, 1, head.length).setFontWeight('bold').setBackground('#E8EFEC');
     }
-    return sh;
-  };
-  const r = { hs: mk(SH_HS, H_HS), log: mk(SH_LOG, H_LOG), tk: mk(SH_TK, H_TK) };
-  const s1 = ss.getSheetByName('Sheet1') || ss.getSheetByName('Trang tính1');
-  if (s1 && s1.getLastRow() === 0 && ss.getSheets().length > 3) ss.deleteSheet(s1);
-  return r;
+    o[k] = sh;
+  });
+  ['Sheet1', 'Trang tính1', 'Trang tính 1'].forEach(n => { const x = ss.getSheetByName(n); if (x && x.getLastRow() === 0 && ss.getSheets().length > 5) ss.deleteSheet(x); });
+  return o;
 }
-
 const norm_ = v => String(v == null ? '' : v).trim().toUpperCase();
 const out_ = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
-
-function roster_(sh) {
-  const v = sh.hs.getDataRange().getValues().slice(1);
-  return v.filter(r => r[0] !== '' && r[1] !== '').map(r => ({ c: norm_(r[0]), s: norm_(r[1]), n: String(r[2] || '') }));
+const rows_ = sh => sh.getDataRange().getValues().slice(1);
+function secret_() {
+  const p = PropertiesService.getScriptProperties();
+  let s = p.getProperty('SECRET');
+  if (!s) { s = Utilities.getUuid() + Utilities.getUuid(); p.setProperty('SECRET', s); }
+  return s;
 }
+const hex_ = b => b.map(x => ('0' + (x & 255).toString(16)).slice(-2)).join('');
+function hash_(pw) { return hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, secret_() + '|' + String(pw))); }
+function tok_(c, s) { return hex_(Utilities.computeHmacSha256Signature(norm_(c) + '|' + norm_(s), secret_())).slice(0, 32); }
+function delRows_(sh, pred) { const v = sh.getDataRange().getValues(); for (let i = v.length - 1; i >= 1; i--) if (pred(v[i])) sh.deleteRow(i + 1); }
 
+/* ---------- entry points ---------- */
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  const sh = sheets_();
-  try {
-    if (p.a === 'login') {
-      const st = roster_(sh).find(r => r.c === norm_(p.c) && r.s === norm_(p.s));
-      return out_(st ? { ok: true, c: st.c, s: st.s, n: st.n } : { ok: false, err: 'Sai mã lớp hoặc mã học sinh' });
-    }
-    if (p.a === 'stats' || p.a === 'add' || p.a === 'del') {
-      if (String(p.pw || '') !== MAT_KHAU) return out_({ ok: false, err: 'Sai mật khẩu' });
-      if (p.a === 'add') return out_(addStudents_(sh, p));
-      if (p.a === 'del') return out_(delStudent_(sh, p));
-      const tk = sh.tk.getDataRange().getValues().slice(1).map(r => r.slice(0, H_TK.length).map(x => x instanceof Date ? x.toISOString() : x));
-      return out_({ ok: true, roster: roster_(sh), rows: tk, head: H_TK });
-    }
-    if (p.a === 'log' && p.d) return out_(log_(sh, JSON.parse(p.d)));
-    return out_({ ok: true, msg: 'Máy chủ thống kê Học 當代中文 1 đang chạy.' });
-  } catch (err) { return out_({ ok: false, err: String(err) }); }
+  if (p.a) return handle_(p);
+  return out_({ ok: true, msg: 'Máy chủ BALO Mandarin đang chạy.' });
 }
-
 function doPost(e) {
-  const sh = sheets_();
+  try { return handle_(JSON.parse(e.postData.contents)); }
+  catch (err) { return out_({ ok: false, err: String(err) }); }
+}
+function handle_(p) {
+  const s = sheets_();
   try {
-    const d = JSON.parse(e.postData.contents);
-    if (d.a === 'log') return out_(log_(sh, d));
-    return out_({ ok: false, err: 'unknown' });
+    switch (p.a) {
+      case 'login': return out_(stLogin_(s, p));
+      case 'chpw': return out_(stChpw_(s, p));
+      case 'log': return out_(log_(s, p));
+      case 'tlogin': { const t = teacher_(s, p); return out_(t ? { ok: true, u: t.u, n: t.n, admin: t.admin } : { ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' }); }
+    }
+    const t = teacher_(s, p);
+    if (!t) return out_({ ok: false, err: 'Phiên đăng nhập giáo viên không hợp lệ', auth: true });
+    const lock = LockService.getScriptLock(); lock.waitLock(20000);
+    try { return out_(teacherAct_(s, t, p)); } finally { lock.releaseLock(); }
   } catch (err) { return out_({ ok: false, err: String(err) }); }
 }
 
-/* p.list = "LOP|MAHS|Ho ten\n..." */
-function addStudents_(sh, p) {
-  const have = new Set(roster_(sh).map(r => r.c + '|' + r.s));
-  const rows = [];
-  String(p.list || '').split(/\n/).forEach(line => {
-    const [c, s, n] = line.split('|').map(x => (x || '').trim());
-    if (!c || !s) return;
-    const k = norm_(c) + '|' + norm_(s);
-    if (have.has(k)) return; have.add(k);
-    rows.push([norm_(c), norm_(s), n || '', new Date()]);
-  });
-  if (rows.length) sh.hs.getRange(sh.hs.getLastRow() + 1, 1, rows.length, 4).setValues(rows);
-  return { ok: true, added: rows.length, roster: roster_(sh) };
+/* ---------- students ---------- */
+function findSt_(s, c, st) {
+  const v = s.hs.getDataRange().getValues();
+  for (let i = 1; i < v.length; i++) if (norm_(v[i][0]) === norm_(c) && norm_(v[i][1]) === norm_(st)) return { i: i + 1, r: v[i] };
+  return null;
+}
+function stPwOk_(row, pw) { return row[3] ? row[3] === hash_(pw) : norm_(pw) === norm_(row[1]); } // chưa đặt mật khẩu → mật khẩu = mã học sinh
+function stLogin_(s, p) {
+  const f = findSt_(s, p.c, p.s);
+  if (!f || !stPwOk_(f.r, p.p || '')) return { ok: false, err: 'Sai mã lớp, mã học sinh hoặc mật khẩu' };
+  const lop = rows_(s.lop).find(r => norm_(r[0]) === norm_(p.c));
+  return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3] };
+}
+function stChpw_(s, p) {
+  const f = findSt_(s, p.c, p.s);
+  if (!f || !stPwOk_(f.r, p.p || '')) return { ok: false, err: 'Mật khẩu hiện tại không đúng' };
+  if (String(p.np || '').length < 4) return { ok: false, err: 'Mật khẩu mới cần ít nhất 4 ký tự' };
+  s.hs.getRange(f.i, 4).setValue(hash_(p.np));
+  return { ok: true };
 }
 
-function delStudent_(sh, p) {
-  const v = sh.hs.getDataRange().getValues();
-  for (let i = v.length - 1; i >= 1; i--) {
-    if (norm_(v[i][0]) === norm_(p.c) && norm_(v[i][1]) === norm_(p.s)) sh.hs.deleteRow(i + 1);
+/* ---------- teachers ---------- */
+function teacher_(s, p) {
+  if (!p.u || !p.p) return null;
+  const r = rows_(s.gv).find(r => norm_(r[0]) === norm_(p.u));
+  if (!r || r[2] !== hash_(p.p)) return null;
+  return { u: norm_(r[0]), n: String(r[1] || r[0]), admin: !!r[3] };
+}
+function myClasses_(s, t) {
+  return rows_(s.lop).filter(r => r[0] !== '' && (t.admin || norm_(r[2]) === t.u))
+    .map(r => ({ c: norm_(r[0]), n: String(r[1] || ''), gv: norm_(r[2]), at: r[3] instanceof Date ? r[3].toISOString() : '' }));
+}
+function own_(s, t, c) { return myClasses_(s, t).some(x => x.c === norm_(c)); }
+const cleanCode_ = c => norm_(c).replace(/[^A-Z0-9_-]/g, '').slice(0, 20);
+
+function teacherAct_(s, t, p) {
+  switch (p.a) {
+    case 'data': {
+      const cls = myClasses_(s, t), set = new Set(cls.map(x => x.c));
+      const roster = rows_(s.hs).filter(r => set.has(norm_(r[0]))).map(r => ({ c: norm_(r[0]), s: norm_(r[1]), n: String(r[2] || ''), pw: !!r[3] }));
+      const rows = rows_(s.tk).filter(r => set.has(norm_(r[0]))).map(r => r.slice(0, NTK).map(x => x instanceof Date ? x.toISOString() : x));
+      const res = { ok: true, me: t, classes: cls, roster, rows, head: SH.tk[1] };
+      if (t.admin) res.teachers = rows_(s.gv).map(r => ({ u: norm_(r[0]), n: String(r[1] || ''), admin: !!r[3] }));
+      return res;
+    }
+    case 'addclass': {
+      const c = cleanCode_(p.c);
+      if (c.length < 2) return { ok: false, err: 'Mã lớp cần ít nhất 2 ký tự (chữ, số, - hoặc _)' };
+      if (rows_(s.lop).some(r => norm_(r[0]) === c)) return { ok: false, err: 'Mã lớp ' + c + ' đã tồn tại' };
+      s.lop.appendRow([c, String(p.n || ''), t.u, new Date()]);
+      return { ok: true, c };
+    }
+    case 'editclass': {
+      if (!own_(s, t, p.c)) return { ok: false, err: 'Không có quyền với lớp này' };
+      const v = s.lop.getDataRange().getValues();
+      for (let i = 1; i < v.length; i++) if (norm_(v[i][0]) === norm_(p.c)) {
+        if (p.n != null) s.lop.getRange(i + 1, 2).setValue(String(p.n));
+        if (t.admin && p.gv) s.lop.getRange(i + 1, 3).setValue(norm_(p.gv));
+      }
+      return { ok: true };
+    }
+    case 'delclass': {
+      if (!own_(s, t, p.c)) return { ok: false, err: 'Không có quyền với lớp này' };
+      delRows_(s.lop, r => norm_(r[0]) === norm_(p.c));
+      delRows_(s.hs, r => norm_(r[0]) === norm_(p.c));
+      return { ok: true };
+    }
+    case 'addst': {
+      if (!own_(s, t, p.c)) return { ok: false, err: 'Không có quyền với lớp này' };
+      const c = norm_(p.c), have = new Set(rows_(s.hs).filter(r => norm_(r[0]) === c).map(r => norm_(r[1])));
+      const add = [], skip = [];
+      String(p.list || '').split(/\n/).forEach(line => {
+        const parts = line.split('|').map(x => (x || '').trim());
+        const code = cleanCode_(parts[0]); if (!code) return;
+        if (have.has(code)) { skip.push(code); return; }
+        have.add(code);
+        add.push([c, code, parts[1] || '', parts[2] ? hash_(parts[2]) : '', new Date()]);
+      });
+      if (add.length) s.hs.getRange(s.hs.getLastRow() + 1, 1, add.length, 5).setValues(add);
+      return { ok: true, added: add.length, skipped: skip };
+    }
+    case 'editst': {
+      if (!own_(s, t, p.c)) return { ok: false, err: 'Không có quyền với lớp này' };
+      const f = findSt_(s, p.c, p.s); if (!f) return { ok: false, err: 'Không tìm thấy học sinh' };
+      if (p.n != null) s.hs.getRange(f.i, 3).setValue(String(p.n));
+      if (p.reset) s.hs.getRange(f.i, 4).setValue(p.np ? hash_(p.np) : '');
+      return { ok: true };
+    }
+    case 'delst': {
+      if (!own_(s, t, p.c)) return { ok: false, err: 'Không có quyền với lớp này' };
+      delRows_(s.hs, r => norm_(r[0]) === norm_(p.c) && norm_(r[1]) === norm_(p.s));
+      return { ok: true };
+    }
+    case 'tchpw': {
+      if (String(p.np || '').length < 6) return { ok: false, err: 'Mật khẩu mới cần ít nhất 6 ký tự' };
+      const v = s.gv.getDataRange().getValues();
+      for (let i = 1; i < v.length; i++) if (norm_(v[i][0]) === t.u) s.gv.getRange(i + 1, 3).setValue(hash_(p.np));
+      return { ok: true };
+    }
+    case 'addteacher': {
+      if (!t.admin) return { ok: false, err: 'Chỉ quản trị mới tạo được tài khoản giáo viên' };
+      const u = cleanCode_(p.nu);
+      if (u.length < 3) return { ok: false, err: 'Tên đăng nhập cần ít nhất 3 ký tự' };
+      if (String(p.np || '').length < 6) return { ok: false, err: 'Mật khẩu cần ít nhất 6 ký tự' };
+      if (rows_(s.gv).some(r => norm_(r[0]) === u)) return { ok: false, err: 'Tên đăng nhập đã tồn tại' };
+      s.gv.appendRow([u, String(p.nn || u), hash_(p.np), p.nadmin ? 'x' : '', new Date()]);
+      return { ok: true };
+    }
+    case 'delteacher': {
+      if (!t.admin) return { ok: false, err: 'Chỉ quản trị mới xóa được' };
+      if (norm_(p.du) === t.u) return { ok: false, err: 'Không thể tự xóa tài khoản đang dùng' };
+      delRows_(s.gv, r => norm_(r[0]) === norm_(p.du));
+      return { ok: true };
+    }
+    case 'resetteacher': {
+      if (!t.admin) return { ok: false, err: 'Chỉ quản trị mới đặt lại được' };
+      if (String(p.np || '').length < 6) return { ok: false, err: 'Mật khẩu cần ít nhất 6 ký tự' };
+      const v = s.gv.getDataRange().getValues();
+      for (let i = 1; i < v.length; i++) if (norm_(v[i][0]) === norm_(p.du)) s.gv.getRange(i + 1, 3).setValue(hash_(p.np));
+      return { ok: true };
+    }
   }
-  return { ok: true, roster: roster_(sh) };
+  return { ok: false, err: 'Yêu cầu không hợp lệ' };
 }
 
-/* d = {a:'log', c, s, d:{ "<bai>": {f,seen,li,q,qc,lq,lqc,t,kn} } } */
-function log_(sh, d) {
-  const st = roster_(sh).find(r => r.c === norm_(d.c) && r.s === norm_(d.s));
-  if (!st) return { ok: false, err: 'Mã không hợp lệ' };
+/* ---------- usage log: {a:'log', c, s, tok, d:{ "<bai>": {f,seen,li,q,qc,lq,lqc,t,kn} }} ---------- */
+function log_(s, d) {
+  if (!d.tok || d.tok !== tok_(d.c, d.s)) return { ok: false, err: 'Phiên học sinh không hợp lệ' };
+  const f = findSt_(s, d.c, d.s); if (!f) return { ok: false, err: 'Không tìm thấy học sinh' };
+  const c = norm_(f.r[0]), st = norm_(f.r[1]), name = String(f.r[2] || '');
   const lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
-    const now = new Date();
-    const data = d.d || {};
-    const logRows = [];
-    const tkR = sh.tk.getDataRange().getValues();
-    const idx = {};
+    const now = new Date(), data = d.d || {}, logRows = [], add = [];
+    const tkR = s.tk.getDataRange().getValues(), idx = {};
     for (let i = 1; i < tkR.length; i++) idx[norm_(tkR[i][0]) + '|' + norm_(tkR[i][1]) + '|' + tkR[i][3]] = i;
-    const add = [];
     Object.keys(data).forEach(bai => {
-      const x = data[bai] || {}; const n = k => Math.max(0, Math.min(100000, Number(x[k]) || 0));
-      const lesson = bai === '0' ? 'Tổng hợp' : 'Bài ' + bai;
-      logRows.push([now, st.c, st.s, lesson, n('f'), n('li'), n('q'), n('qc'), n('lq'), n('lqc'), n('t')]);
-      const key = st.c + '|' + st.s + '|' + lesson;
-      let row = idx[key] != null ? tkR[idx[key]] : null;
-      if (!row) { row = [st.c, st.s, st.n, lesson, 0, 0, 0, 0, 0, 0, 0, 0, 0, now]; add.push(row); idx[key] = -1; }
-      row[2] = st.n;
+      const x = data[bai] || {}, n = k => Math.max(0, Math.min(100000, Number(x[k]) || 0));
+      const lesson = bai === '0' ? 'Tổng hợp' : 'Bài ' + Number(bai);
+      logRows.push([now, c, st, lesson, n('f'), n('li'), n('q'), n('qc'), n('lq'), n('lqc'), n('t')]);
+      const key = c + '|' + st + '|' + lesson;
+      let row = idx[key] != null && idx[key] >= 0 ? tkR[idx[key]] : null;
+      if (!row) { row = [c, st, name, lesson, 0, 0, 0, 0, 0, 0, 0, 0, 0, now]; add.push(row); idx[key] = -1; }
+      row[2] = name;
       row[4] = (+row[4] || 0) + n('f');
       if (x.seen != null) row[5] = Math.max(+row[5] || 0, n('seen'));
       row[6] = (+row[6] || 0) + n('li');
@@ -128,9 +241,9 @@ function log_(sh, d) {
       if (x.kn != null) row[12] = n('kn');
       row[13] = now;
     });
-    if (logRows.length) sh.log.getRange(sh.log.getLastRow() + 1, 1, logRows.length, H_LOG.length).setValues(logRows);
-    if (tkR.length > 1) sh.tk.getRange(2, 1, tkR.length - 1, H_TK.length).setValues(tkR.slice(1).map(r => r.slice(0, H_TK.length)));
-    if (add.length) sh.tk.getRange(sh.tk.getLastRow() + 1, 1, add.length, H_TK.length).setValues(add);
+    if (logRows.length) s.log.getRange(s.log.getLastRow() + 1, 1, logRows.length, logRows[0].length).setValues(logRows);
+    if (tkR.length > 1) s.tk.getRange(2, 1, tkR.length - 1, NTK).setValues(tkR.slice(1).map(r => r.slice(0, NTK)));
+    if (add.length) s.tk.getRange(s.tk.getLastRow() + 1, 1, add.length, NTK).setValues(add);
     return { ok: true };
   } finally { lock.releaseLock(); }
 }

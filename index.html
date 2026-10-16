@@ -305,6 +305,22 @@ body.pp-bottom .padgrip{display:flex}
 .fld input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .navbtn.who .g{font-size:15px;width:34px;height:34px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;margin:0 auto 4px}
 #whoName{display:block;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
+.authwall[hidden],.authform[hidden]{display:none!important}
+.authcard .btn.wide{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+:root[data-theme="dark"] .authcard .btn.wide{color:#0b1412}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .authcard .btn.wide{color:#0b1412}}
+.authwall{position:fixed;inset:0;z-index:60;background:radial-gradient(1200px 600px at 20% -10%,var(--acc-soft),transparent),var(--paper);display:grid;place-items:center;overflow:auto;padding:max(24px,env(safe-area-inset-top)) 16px 24px}
+.authcard{width:min(440px,100%);background:var(--sheet);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.authcard h2{margin:0;text-align:center;font-size:24px}
+.roletabs{display:grid;grid-template-columns:1fr 1fr;background:var(--paper2);border-radius:14px;padding:4px}
+.roletabs button{border:0;background:none;font:inherit;font-weight:700;color:var(--muted);min-height:44px;border-radius:11px;cursor:pointer}
+.roletabs button[aria-selected="true"]{background:var(--sheet);color:var(--acc);box-shadow:var(--shadow)}
+.authform{display:flex;flex-direction:column;gap:12px}
+.authform .fld input,#whoScrim .fld input{text-transform:none;letter-spacing:normal;font-size:17px}
+#lgC,#lgS{text-transform:uppercase!important;letter-spacing:.06em!important}
+.btn.wide{width:100%;min-height:52px;font-size:16px}
+.lgErr{color:var(--seal);min-height:1.2em;margin:0}
+.rem{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -392,27 +408,43 @@ body.pp-bottom .padgrip{display:flex}
 </aside>
 
 
-<div class="scrim" id="loginScrim" hidden>
-  <div class="sheet login" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
+<div class="authwall" id="loginScrim" hidden>
+  <div class="authcard" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
     <div class="lg-stamp">當代<br>中文</div>
-    <h2 id="lgTitle" style="justify-content:center">Vào lớp học</h2>
-    <p class="meta" style="text-align:center;margin:-6px 0 4px">Nhập mã giáo viên đã cấp. Chỉ cần nhập một lần trên mỗi máy.</p>
-    <label class="fld"><span>Mã lớp</span><input id="lgC" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VD: HOA1A"></label>
-    <label class="fld"><span>Mã học sinh</span><input id="lgS" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VD: HS01"></label>
-    <p class="note" id="lgErr" style="color:var(--seal);min-height:1.2em;margin:0"></p>
-    <button class="btn yes" id="lgGo" style="width:100%">Vào học</button>
-    <button class="tbtn" id="lgSkip" style="width:100%;border:0;background:none;color:var(--muted)">Học thử, không ghi thống kê</button>
+    <h2 id="lgTitle">BALO Mandarin</h2>
+    <p class="meta" style="text-align:center;margin:-8px 0 2px">當代中文課程 1 · Thẻ từ · Bài đọc · Ngữ pháp · Luyện viết</p>
+    <div class="roletabs" id="roleTabs" role="tablist"><button data-r="st" aria-selected="true">Học sinh</button><button data-r="gv" aria-selected="false">Giáo viên</button></div>
+    <form id="fSt" class="authform" autocomplete="on" onsubmit="return false">
+      <label class="fld"><span>Mã lớp</span><input id="lgC" name="class" autocomplete="organization" autocapitalize="characters" spellcheck="false" placeholder="VD: HOA1A" required></label>
+      <label class="fld"><span>Mã học sinh</span><input id="lgS" name="username" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="VD: HS01" required></label>
+      <label class="fld"><span>Mật khẩu</span><input id="lgP" name="password" type="password" autocomplete="current-password" placeholder="Lần đầu: nhập lại mã học sinh"></label>
+      <p class="note lgErr" id="lgErr"></p>
+      <button class="btn yes wide" id="lgGo" type="submit">Đăng nhập</button>
+    </form>
+    <form id="fGv" class="authform" autocomplete="on" onsubmit="return false" hidden>
+      <label class="fld"><span>Tên đăng nhập</span><input id="tgU" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label class="fld"><span>Mật khẩu</span><input id="tgP" name="password" type="password" autocomplete="current-password" required></label>
+      <label class="rem"><input type="checkbox" id="tgR"> Ghi nhớ đăng nhập trên máy này</label>
+      <p class="note lgErr" id="tgErr"></p>
+      <button class="btn yes wide" id="tgGo" type="submit">Vào trang quản lý</button>
+    </form>
+    <p class="meta" style="text-align:center;margin:0;font-size:12px">Chưa có mã? Hỏi giáo viên của bạn.</p>
   </div>
 </div>
 <div class="scrim" id="whoScrim" hidden>
   <div class="sheet login" role="dialog" aria-modal="true">
     <h2><span id="whoTitle">Học sinh</span><button class="btn sm" id="whoClose">Đóng</button></h2>
-    <p class="meta" id="whoInfo"></p>
-    <p class="note">Số lần học, nghe, lật thẻ, trắc nghiệm và thời gian học được gửi cho giáo viên.</p>
-    <button class="btn" id="whoOut" style="width:100%">Đăng xuất / đổi học sinh</button>
+    <p class="meta" id="whoInfo" style="margin:-6px 0 0"></p>
+    <p class="note" id="pwHint"></p>
+    <div class="set"><div class="label">Đổi mật khẩu</div>
+      <label class="fld"><span>Mật khẩu hiện tại</span><input type="password" id="cpOld" autocomplete="current-password"></label>
+      <label class="fld"><span>Mật khẩu mới (ít nhất 4 ký tự)</span><input type="password" id="cpNew" autocomplete="new-password"></label>
+      <p class="note lgErr" id="cpMsg"></p>
+      <button class="btn" id="cpGo">Lưu mật khẩu mới</button></div>
+    <p class="note">Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.</p>
+    <button class="btn" id="whoOut" style="width:100%">Đăng xuất</button>
   </div>
 </div>
-
 <div class="scrim" id="scrim" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <h2><span id="setTitle">Tùy chỉnh</span><button class="btn sm" id="closeSet">Xong</button></h2>
@@ -818,7 +850,7 @@ applyCfg();
 
 /* ---------- class tracking (only when TRACK_URL is set) ---------- */
 const TRACK_URL="";
-let STU=store.get("stu",null),TRK=store.get("trk",{}),SEEN=store.get("seen",{}),lastAct=Date.now(),trkOff=store.get("trkOff",false);
+let STU=store.get("stu",null),TRK=store.get("trk",{}),SEEN=store.get("seen",{}),lastAct=Date.now();
 const tracking=()=>!!(TRACK_URL&&STU);
 function curLesson(){if(S.sec!=="vocab")return S.rl;if(S.lesson!=="all")return S.lesson;if(S.mode==="cards"&&deck&&deck[pos])return deck[pos].l;return 0}
 function trkAdd(l,k,n){if(!tracking())return;l=String(l||0);(TRK[l]=TRK[l]||{})[k]=(TRK[l][k]||0)+(n||1);store.set("trk",TRK)}
@@ -829,7 +861,7 @@ document.addEventListener("play",e=>{const a=e.target;if(a===clipAud||!a.src)ret
 setInterval(()=>{if(tracking()&&document.visibilityState==="visible"&&Date.now()-lastAct<90000)trkAdd(curLesson(),"t",5)},5000);
 function trkPayload(){const d={};for(const l of Object.keys(TRK)){const x=Object.assign({},TRK[l]);const ln=+l;
   if(ln>0){x.seen=(SEEN[ln]||[]).length;x.kn=W.filter(w=>w.l===ln&&known.has(w.id)).length}d[l]=x}
-  return Object.keys(d).length?JSON.stringify({a:"log",c:STU.c,s:STU.s,d}):null}
+  return Object.keys(d).length?JSON.stringify({a:"log",c:STU.c,s:STU.s,tok:STU.tok,d}):null}
 let flushing=false;
 function trkFlush(final){if(!tracking()||flushing)return;const body=trkPayload();if(!body)return;const sent=TRK;TRK={};store.set("trk",TRK);
   if(final){try{fetch(TRACK_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body})}catch(e){}return}
@@ -841,19 +873,30 @@ addEventListener("pagehide",()=>trkFlush(true));
 /* mark "Đã nhớ" changes so known counts get sent */
 {const sk=saveKnown;saveKnown=function(){const r=sk.apply(this,arguments);try{const l=curLesson();if(tracking()&&l)(TRK[l]=TRK[l]||{}),store.set("trk",TRK)}catch(e){}return r}}
 function whoDraw(){const b=$("#whoBtn");b.hidden=!tracking();if(!STU)return;$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
-function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>$("#lgC").focus(),50)}
-async function doLogin(){const c=$("#lgC").value.trim(),s2=$("#lgS").value.trim();if(!c||!s2){$("#lgErr").textContent="Nhập đủ mã lớp và mã học sinh.";return}
-  const b=$("#lgGo");b.disabled=true;b.textContent="Đang kiểm tra…";
-  try{const r=await fetch(TRACK_URL+"?a=login&c="+encodeURIComponent(c)+"&s="+encodeURIComponent(s2)).then(r=>r.json());
-    if(r.ok){STU={c:r.c,s:r.s,n:r.n};store.set("stu",STU);store.set("trkOff",false);trkOff=false;$("#loginScrim").hidden=true;whoDraw()}else $("#lgErr").textContent=r.err||"Sai mã lớp hoặc mã học sinh."}
-  catch(e){$("#lgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}
-  b.disabled=false;b.textContent="Vào học"}
-if(TRACK_URL){$("#lgGo").onclick=doLogin;$("#lgS").onkeydown=e=>{if(e.key==="Enter")doLogin()};$("#lgC").onkeydown=e=>{if(e.key==="Enter")$("#lgS").focus()};
-  $("#lgSkip").onclick=()=>{trkOff=true;store.set("trkOff",true);$("#loginScrim").hidden=true};
-  $("#whoBtn").onclick=()=>{$("#whoTitle").textContent=STU.n||STU.s;$("#whoInfo").textContent=`Lớp ${STU.c} · Mã ${STU.s}`;$("#whoScrim").hidden=false};
-  $("#whoClose").onclick=()=>{$("#whoScrim").hidden=true};
+async function api(o){const r=await fetch(TRACK_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)});return r.json()}
+function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>{try{$("#lgC").focus()}catch(e){}},80)}
+function role(r){$("#roleTabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.r===r));$("#fSt").hidden=r!=="st";$("#fGv").hidden=r!=="gv"}
+async function busy(btn,txt,fn){const t=btn.textContent;btn.disabled=true;btn.textContent=txt;try{await fn()}finally{btn.disabled=false;btn.textContent=t}}
+async function doLogin(){const c=$("#lgC").value.trim(),s2=$("#lgS").value.trim(),pw=$("#lgP").value;if(!c||!s2){$("#lgErr").textContent="Nhập đủ mã lớp và mã học sinh.";return}
+  await busy($("#lgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"login",c,s:s2,p:pw||s2});
+    if(r.ok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Đăng nhập không thành công."}
+  catch(e){$("#lgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
+async function doTLogin(){const u=$("#tgU").value.trim(),pw=$("#tgP").value;if(!u||!pw){$("#tgErr").textContent="Nhập tên đăng nhập và mật khẩu.";return}
+  await busy($("#tgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"tlogin",u,p:pw});
+    if(r.ok){const cr=JSON.stringify({u,p:pw,n:r.n});try{sessionStorage.setItem("tvT:cred",cr);if($("#tgR").checked)localStorage.setItem("tvT:cred",cr)}catch(e){}location.href="teacher.html"}else $("#tgErr").textContent=r.err||"Sai tên đăng nhập hoặc mật khẩu"}
+  catch(e){$("#tgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
+function openWho(first){$("#whoTitle").textContent=STU.n||STU.s;$("#whoInfo").textContent=`Lớp ${STU.c}${STU.cn?" · "+STU.cn:""} · Mã ${STU.s}`;
+  $("#pwHint").textContent=first?"Bạn đang dùng mật khẩu mặc định (là mã học sinh). Hãy đặt mật khẩu riêng để bạn khác không vào được tài khoản của bạn.":"";$("#cpMsg").textContent="";$("#cpOld").value=first?STU.s:"";$("#cpNew").value="";$("#whoScrim").hidden=false}
+if(TRACK_URL){
+  $("#roleTabs").onclick=e=>{const b=e.target.closest("button");if(b)role(b.dataset.r)};
+  $("#fSt").onsubmit=e=>{e.preventDefault();doLogin();return false};$("#fGv").onsubmit=e=>{e.preventDefault();doTLogin();return false};
+  $("#whoBtn").onclick=()=>openWho(false);$("#whoClose").onclick=()=>{$("#whoScrim").hidden=true};
+  $("#cpGo").onclick=()=>busy($("#cpGo"),"Đang lưu…",async()=>{const np=$("#cpNew").value;if(np.length<4){$("#cpMsg").textContent="Mật khẩu mới cần ít nhất 4 ký tự.";return}
+    try{const r=await api({a:"chpw",c:STU.c,s:STU.s,p:$("#cpOld").value,np});$("#cpMsg").style.color=r.ok?"var(--good)":"";$("#cpMsg").textContent=r.ok?"Đã đổi mật khẩu.":r.err}catch(e){$("#cpMsg").textContent="Không kết nối được máy chủ."}});
   $("#whoOut").onclick=()=>{trkFlush(true);STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw();showLogin()};
-  whoDraw();if(!STU&&!trkOff)showLogin()}
+  if(STU&&!STU.tok){STU=null;store.set("stu",null)}
+  if(/[?&]gv=1/.test(location.search))role("gv");
+  whoDraw();if(!STU)showLogin()}
 
 /* ---------- voice settings ---------- */
 (()=>{const add=(t,l)=>{t=normT(t);if(t&&!(t in TTSL))TTSL[t]=l};

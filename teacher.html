@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Giáo viên · 當代中文 1</title>
+<title>Quản lý lớp · BALO Mandarin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif+TC:wght@700&display=swap">
@@ -39,169 +39,229 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:var(--fs)/1.5 var(--body);min-height:100vh;
-  padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
+  padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
 [hidden]{display:none!important}
-.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.stamp{width:52px;height:52px;border-radius:12px;background:var(--seal);color:#fff;display:grid;place-items:center;font:700 14px/1.1 var(--han);text-align:center;transform:rotate(-4deg);flex:none}
-h1{font-size:24px;margin:0;line-height:1.2}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+@media (max-width:900px){header h1{flex:1 1 60%}header .sp{display:none}}
+.stamp{width:50px;height:50px;border-radius:12px;background:var(--seal);color:#fff;display:grid;place-items:center;font:700 14px/1.1 var(--han);text-align:center;transform:rotate(-4deg);flex:none}
+h1{font-size:22px;margin:0;line-height:1.2}
 h1 small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+h2{margin:0;font-size:20px}
 .sp{flex:1}
-.btn{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:12px;min-height:44px;padding:0 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:12px;min-height:44px;padding:0 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
-:root[data-theme="dark"] .btn.pri,.dk .btn.pri{color:#0b1412}
+.btn.dng{color:var(--seal);border-color:color-mix(in srgb,var(--seal) 40%,var(--line))}
 .btn:disabled{opacity:.6}
 .btn.sm{min-height:36px;padding:0 12px;font-size:14px}
+.chipme{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px}
+.chipme i{width:30px;height:30px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;font-style:normal;font-weight:800}
 .card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
-.login{max-width:420px;margin:8vh auto 0;display:flex;flex-direction:column;gap:14px}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.side{display:flex;flex-direction:column;gap:10px;position:sticky;top:12px}
+@media (max-width:860px){.side{position:static}}
+.side .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:4px 4px 0}
+.cls{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--sheet);border-radius:14px;padding:12px 14px;cursor:pointer;font:inherit;color:inherit}
+.cls b{font-size:17px;letter-spacing:.04em}
+.cls span{font-size:13px;color:var(--muted)}
+.cls[aria-current="true"]{border-color:var(--acc);background:var(--acc-soft);box-shadow:0 0 0 1px var(--acc) inset}
+.cls.add{border-style:dashed;color:var(--acc);font-weight:700;align-items:center}
+@media (max-width:860px){.clist{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}.clist .cls{flex:none;min-width:150px}}
 .fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
-input,select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:46px}
-textarea{min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:46px;width:100%}
+textarea{min-height:130px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
 .err{color:var(--seal);font-size:14px;min-height:1.2em;margin:0}
+.ok{color:var(--good)}
 .meta{color:var(--muted);font-size:13px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.chead{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.code{font:800 30px/1 var(--body);letter-spacing:.08em;color:var(--acc);background:var(--acc-soft);border-radius:12px;padding:8px 14px}
+.tabs{display:inline-flex;background:var(--paper2);border-radius:14px;padding:4px;flex-wrap:wrap}
+.tabs button,.seg button{border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--muted);padding:0 16px;min-height:40px;border-radius:10px;cursor:pointer}
+.tabs button[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--sheet);color:var(--acc);box-shadow:var(--shadow)}
+.seg{display:inline-flex;background:var(--paper2);border-radius:12px;padding:3px;flex-wrap:wrap}
+.seg button{min-height:36px;padding:0 12px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
 .kpi{background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
-.kpi b{display:block;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
-.kpi span{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.kpi b{display:block;font-size:26px;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.seg{display:inline-flex;background:var(--paper2);border-radius:12px;padding:3px}
-.seg button{border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:0 14px;min-height:38px;border-radius:9px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--sheet);color:var(--acc);box-shadow:var(--shadow)}
 .tbox{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--sheet);-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
 th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th{position:sticky;top:0;background:var(--paper2);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;z-index:1}
-th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit}
+th{position:sticky;top:0;background:var(--paper2);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;user-select:none;z-index:1}
+th.s{cursor:pointer}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0}
 td:first-child{background:var(--sheet);font-weight:600}
+td.l,th.l{text-align:left}
 tr:last-child td{border-bottom:0}
-tbody tr{cursor:pointer}
-tbody tr:hover td{background:var(--acc-soft)}
-.cell{display:block;border-radius:6px;padding:2px 6px;text-align:center}
+.click tbody tr{cursor:pointer}
+.click tbody tr:hover td{background:var(--acc-soft)}
+.cell{display:block;border-radius:6px;padding:2px 6px;text-align:center;min-width:34px}
 .pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--acc-soft);color:var(--acc)}
 .pill.bad{background:var(--seal-soft);color:var(--seal)}
+.pill.mute{background:var(--paper2);color:var(--muted)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
-details.card summary{cursor:pointer;font-weight:700}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:700px){.two{grid-template-columns:1fr}h1{font-size:20px}}
-.x{border:0;background:none;color:var(--seal);font:inherit;font-size:13px;cursor:pointer;padding:4px 8px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+.lnk{border:0;background:none;color:var(--acc);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:6px 8px;border-radius:8px}
+.lnk:hover{background:var(--acc-soft)}
+.lnk.dng{color:var(--seal)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(10,20,16,.45);display:grid;place-items:center;padding:16px}
+.modal .card{width:min(460px,100%);display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow:auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:10px 18px;border-radius:12px;font-weight:600;z-index:70;box-shadow:var(--shadow)}
+.loading{display:grid;place-items:center;min-height:50vh;color:var(--muted)}
+@media print{body{background:#fff}header,.side,.tabs,.noprint{display:none!important}.layout{display:block}.card{box-shadow:none;border:0}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="stamp">當代<br>中文</div>
-    <h1>Trang giáo viên<small>Thống kê học tập · 當代中文課程 1</small></h1>
+    <h1>Quản lý lớp học<small>BALO Mandarin · 當代中文課程 1</small></h1>
     <span class="sp"></span>
-    <a class="btn sm" href="./" style="display:inline-grid;place-items:center;text-decoration:none">Mở trang học</a>
-    <button class="btn sm" id="out" hidden>Đăng xuất</button>
+    <span class="chipme" id="me" hidden><i id="meI">G</i><span id="meN"></span></span>
+    <a class="btn sm" href="./" id="toApp">Mở trang học</a>
+    <button class="btn sm" id="acct">Tài khoản</button>
+    <button class="btn sm" id="out">Đăng xuất</button>
   </header>
-
-  <section class="card login" id="loginBox">
-    <h2 style="margin:0">Đăng nhập giáo viên</h2>
-    <label class="fld">Mật khẩu<input type="password" id="pw" autocomplete="current-password"></label>
-    <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="remember" style="min-height:auto"> Ghi nhớ trên máy này</label>
-    <p class="err" id="err"></p>
-    <button class="btn pri" id="go">Xem thống kê</button>
-    <p class="meta" id="cfgNote"></p>
-  </section>
-
-  <main id="app" hidden style="display:flex;flex-direction:column;gap:18px">
-    <div class="bar">
-      <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Lớp <select id="cls"></select></label>
-      <span class="seg" id="view"><button data-v="st" aria-pressed="true">Theo học sinh</button><button data-v="mx">Bảng theo bài</button></span>
-      <span class="sp"></span>
-      <span class="meta" id="upd"></span>
-      <button class="btn sm" id="reload">Làm mới</button>
-      <button class="btn sm" id="csv">Tải CSV</button>
-    </div>
-    <div class="kpis" id="kpis"></div>
-    <div id="mxBar" class="bar" hidden><span class="meta">Hiển thị:</span>
-      <span class="seg" id="metric"><button data-v="min" aria-pressed="true">Phút học</button><button data-v="f">Lật thẻ</button><button data-v="li">Lần nghe</button><button data-v="q">Trắc nghiệm</button><button data-v="kn">Từ đã nhớ</button></span></div>
-    <div class="tbox" id="tbl"></div>
-    <section class="card" id="detail" hidden></section>
-    <details class="card" id="rosterBox">
-      <summary>Quản lý lớp &amp; học sinh</summary>
-      <div class="two" style="margin-top:14px">
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <label class="fld">Mã lớp<input id="newC" placeholder="VD: HOA1A" style="text-transform:uppercase"></label>
-          <label class="fld">Danh sách học sinh — mỗi dòng: <code>MÃ HS | Họ tên</code><textarea id="newList" placeholder="HS01 | Nguyễn Văn An&#10;HS02 | Trần Thị Bình"></textarea></label>
-          <button class="btn pri" id="add">Thêm học sinh</button>
-          <p class="meta" id="addMsg"></p>
-        </div>
-        <div><div class="meta" style="margin-bottom:6px">Học sinh của lớp đang chọn (bấm ✕ để xóa khỏi danh sách; số liệu cũ vẫn giữ trong file Sheets):</div><div class="tbox" id="roster"></div></div>
+  <div class="loading" id="loading">Đang tải dữ liệu…</div>
+  <div class="layout" id="main" hidden>
+    <aside class="side">
+      <div class="lbl">Lớp của tôi</div>
+      <div class="clist" id="clist"></div>
+      <div id="adminSide" hidden>
+        <div class="lbl" style="margin-top:8px">Quản trị</div>
+        <button class="cls" id="tchBtn"><b style="font-size:15px;letter-spacing:0">Tài khoản giáo viên</b><span id="tchCount"></span></button>
       </div>
-    </details>
-    <p class="meta">Số liệu được lưu trong file Google Sheets của giáo viên (trang <b>ThongKe</b> là bảng tổng hợp, <b>NhatKy</b> là nhật ký chi tiết, <b>HocSinh</b> là danh sách lớp). Học sinh gửi số liệu khoảng 30 giây một lần và khi rời trang.</p>
-  </main>
+      <p class="meta" style="margin:6px 4px 0">Số liệu lưu trong file Google Sheets của bạn trên Drive (trang <b>ThongKe</b>, <b>NhatKy</b>, <b>HocSinh</b>, <b>Lop</b>).</p>
+    </aside>
+    <main id="pane" style="display:flex;flex-direction:column;gap:16px;min-width:0"></main>
+  </div>
 </div>
+<div id="modalRoot"></div>
 <script>
 const TRACK_URL="";
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ls={get(k){try{return localStorage.getItem("tvT:"+k)}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem("tvT:"+k):localStorage.setItem("tvT:"+k,v)}catch(e){}}};
 try{const c=JSON.parse(localStorage.getItem("tv1:cfg")||"{}");if(c.mode&&c.mode!=="auto")document.documentElement.dataset.theme=c.mode;if(c.skin&&c.skin!=="celadon")document.documentElement.dataset.skin=c.skin}catch(e){}
-let PW=ls.get("pw")||sessionStorage.getItem("tvT:pw")||"",DATA=null,CLS="",VIEW="st",METRIC="min",SORT={k:"min",d:-1};
+let CRED=null;try{CRED=JSON.parse(sessionStorage.getItem("tvT:cred")||localStorage.getItem("tvT:cred")||"null")}catch(e){}
+if(!CRED||!TRACK_URL){location.replace("./?gv=1")}
+let D=null,CLS=null,TAB="stats",VIEW="st",METRIC="min",SORT={k:"min",d:-1},PANE="class";
+try{CLS=localStorage.getItem("tvT:cls")}catch(e){}
 const COL={c:0,s:1,n:2,bai:3,f:4,seen:5,li:6,q:7,qc:8,lq:9,lqc:10,min:11,kn:12,last:13};
-if(!TRACK_URL){$("#cfgNote").textContent="Chưa cấu hình địa chỉ máy chủ thống kê (TRACK_URL).";$("#go").disabled=true}
-async function api(params){const u=TRACK_URL+"?"+new URLSearchParams(Object.assign({pw:PW},params));const r=await fetch(u);return r.json()}
-async function login(){PW=$("#pw").value.trim()||PW;if(!PW)return;$("#go").disabled=true;$("#go").textContent="Đang tải…";$("#err").textContent="";
-  try{const r=await api({a:"stats"});if(!r.ok){$("#err").textContent=r.err||"Sai mật khẩu";PW="";return}
-    if($("#remember").checked)ls.set("pw",PW);sessionStorage.setItem("tvT:pw",PW);DATA=r;$("#loginBox").hidden=true;$("#app").hidden=false;$("#out").hidden=false;fillCls();render()}
-  catch(e){$("#err").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}
-  finally{$("#go").disabled=false;$("#go").textContent="Xem thống kê"}}
-$("#go").onclick=login;$("#pw").onkeydown=e=>{if(e.key==="Enter")login()};
-$("#out").onclick=()=>{ls.set("pw",null);sessionStorage.removeItem("tvT:pw");PW="";location.reload()};
-$("#reload").onclick=async()=>{$("#reload").disabled=true;try{const r=await api({a:"stats"});if(r.ok){DATA=r;fillCls();render()}}finally{$("#reload").disabled=false}};
-function classes(){const set=new Set(DATA.roster.map(r=>r.c));DATA.rows.forEach(r=>set.add(String(r[0])));return [...set].filter(Boolean).sort()}
-function fillCls(){const cs=classes();if(!cs.includes(CLS))CLS=ls.get("cls")&&cs.includes(ls.get("cls"))?ls.get("cls"):(cs[0]||"");
-  $("#cls").innerHTML=cs.length?cs.map(c=>`<option ${c===CLS?"selected":""}>${esc(c)}</option>`).join(""):`<option value="">(chưa có lớp)</option>`;
-  $("#upd").textContent="Cập nhật "+new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
-$("#cls").onchange=e=>{CLS=e.target.value;ls.set("cls",CLS);render()};
-const segs=(id,fn)=>$(id).onclick=e=>{const b=e.target.closest("button");if(!b)return;$(id).querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));fn(b.dataset.v)};
-segs("#view",v=>{VIEW=v;render()});segs("#metric",v=>{METRIC=v;render()});
-function students(){const m=new Map();DATA.roster.filter(r=>r.c===CLS).forEach(r=>m.set(r.s,{s:r.s,n:r.n,inRoster:true}));
-  DATA.rows.filter(r=>String(r[0])===CLS).forEach(r=>{const s=String(r[1]);if(!m.has(s))m.set(s,{s,n:r[2],inRoster:false})});
-  const L=[...m.values()];L.forEach(st=>{const rs=DATA.rows.filter(r=>String(r[0])===CLS&&String(r[1])===st.s);st.rows=rs;
-    const sum=k=>rs.reduce((a,r)=>a+(+r[COL[k]]||0),0);Object.assign(st,{f:sum("f"),seen:sum("seen"),li:sum("li"),q:sum("q"),qc:sum("qc"),lq:sum("lq"),lqc:sum("lqc"),min:Math.round(sum("min")*10)/10,kn:sum("kn"),
-      last:rs.reduce((a,r)=>r[13]&&(!a||r[13]>a)?r[13]:a,"")})});return L}
+async function api(o){const r=await fetch(TRACK_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({u:CRED.u,p:CRED.p},o))});const j=await r.json();
+  if(j.auth){logout();throw new Error("auth")}return j}
+function logout(){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}location.replace("./?gv=1")}
+$("#out").onclick=logout;
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+function modal(html,bind){const root=$("#modalRoot");root.innerHTML=`<div class="modal"><div class="card">${html}</div></div>`;const m=root.firstElementChild;
+  m.onclick=e=>{if(e.target===m)close()};const close=()=>{root.innerHTML=""};m.querySelectorAll("[data-close]").forEach(b=>b.onclick=close);bind&&bind(m,close);const f=m.querySelector("input,textarea");if(f)setTimeout(()=>f.focus(),50)}
+async function load(){try{const r=await api({a:"data"});if(!r.ok){$("#loading").textContent=r.err||"Lỗi tải dữ liệu";return}D=r;
+    $("#loading").hidden=true;$("#main").hidden=false;$("#me").hidden=false;$("#meN").textContent=D.me.n+(D.me.admin&&!/quản trị/i.test(D.me.n)?" · Quản trị":"");$("#meI").textContent=(D.me.n||"G").trim().slice(0,1).toUpperCase();
+    if(!D.classes.some(c=>c.c===CLS))CLS=D.classes[0]?D.classes[0].c:null;draw()}
+  catch(e){if(e.message!=="auth")$("#loading").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi tải lại trang."}}
+function draw(){sideDraw();if(PANE==="teachers")return teachersDraw();if(!CLS)return emptyDraw();paneDraw()}
+function sideDraw(){$("#clist").innerHTML=D.classes.map(c=>{const n=D.roster.filter(r=>r.c===c.c).length;return `<button class="cls" data-c="${esc(c.c)}" aria-current="${PANE==="class"&&c.c===CLS}"><b>${esc(c.c)}</b><span>${esc(c.n||"(chưa đặt tên)")} · ${n} HS${D.me.admin&&c.gv!==D.me.u?" · GV "+esc(c.gv):""}</span></button>`}).join("")+`<button class="cls add" id="newCls">＋ Tạo lớp mới</button>`;
+  $("#clist").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{CLS=b.dataset.c;PANE="class";try{localStorage.setItem("tvT:cls",CLS)}catch(e){}draw()});
+  $("#newCls").onclick=newClass;
+  $("#adminSide").hidden=!D.me.admin;if(D.me.admin){$("#tchCount").textContent=(D.teachers||[]).length+" tài khoản";$("#tchBtn").setAttribute("aria-current",PANE==="teachers");$("#tchBtn").onclick=()=>{PANE="teachers";draw()}}}
+function emptyDraw(){$("#pane").innerHTML=`<div class="card empty" style="padding:48px 20px"><h2 style="margin-bottom:8px">Chưa có lớp nào</h2><p>Tạo lớp đầu tiên, đặt mã lớp (ví dụ <b>HOA1A</b>), rồi thêm học sinh.</p><button class="btn pri" id="nc2">＋ Tạo lớp mới</button></div>`;$("#nc2").onclick=newClass}
+function newClass(){modal(`<h2>Tạo lớp mới</h2><label class="fld">Mã lớp (học sinh nhập mã này khi đăng nhập)<input id="mC" placeholder="VD: HOA1A" style="text-transform:uppercase" maxlength="20"></label>
+  <label class="fld">Tên lớp (tùy chọn)<input id="mN" placeholder="VD: Tiếng Trung sơ cấp – sáng T2"></label><p class="err" id="mE"></p>
+  <div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn pri" id="mGo">Tạo lớp</button></div>`,(m,close)=>{
+  m.querySelector("#mGo").onclick=async()=>{const r=await api({a:"addclass",c:m.querySelector("#mC").value,n:m.querySelector("#mN").value});if(!r.ok){m.querySelector("#mE").textContent=r.err;return}close();CLS=r.c;PANE="class";TAB="students";toast("Đã tạo lớp "+r.c);await load()}})}
+function students(){const m=new Map();D.roster.filter(r=>r.c===CLS).forEach(r=>m.set(r.s,{s:r.s,n:r.n,pw:r.pw,inRoster:true}));
+  D.rows.filter(r=>String(r[0])===CLS).forEach(r=>{const s=String(r[1]);if(!m.has(s))m.set(s,{s,n:r[2],inRoster:false})});
+  const L=[...m.values()];L.forEach(st=>{const rs=D.rows.filter(r=>String(r[0])===CLS&&String(r[1])===st.s);st.rows=rs;const sum=k=>rs.reduce((a,r)=>a+(+r[COL[k]]||0),0);
+    Object.assign(st,{f:sum("f"),seen:sum("seen"),li:sum("li"),q:sum("q"),qc:sum("qc"),lq:sum("lq"),lqc:sum("lqc"),min:Math.round(sum("min")*10)/10,kn:sum("kn"),last:rs.reduce((a,r)=>r[13]&&(!a||r[13]>a)?r[13]:a,"")})});return L}
 const pct=(a,b)=>b?Math.round(a/b*100)+"%":"–";
-const when=t=>{if(!t)return"–";const d=new Date(t),diff=(Date.now()-d)/864e5;return diff<1?d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})+" hôm nay":diff<2?"hôm qua":d.toLocaleDateString("vi-VN")};
-function render(){const L=students();$("#mxBar").hidden=VIEW!=="mx";$("#detail").hidden=true;
-  const tot=k=>L.reduce((a,s)=>a+(+s[k]||0),0);const active=L.filter(s=>s.last&&(Date.now()-new Date(s.last))<7*864e5).length;
-  $("#kpis").innerHTML=[["Học sinh",L.length],["Hoạt động 7 ngày",active],["Tổng phút học",Math.round(tot("min"))],["Lượt nghe",tot("li")],["Lật thẻ",tot("f")],["Trắc nghiệm đúng",pct(tot("qc")+tot("lqc"),tot("q")+tot("lq"))]]
-    .map(([a,b])=>`<div class="kpi"><span>${a}</span><b>${b}</b></div>`).join("");
-  rosterDraw();
-  if(!L.length){$("#tbl").innerHTML=`<div class="empty">Lớp này chưa có học sinh. Mở “Quản lý lớp &amp; học sinh” bên dưới để thêm.</div>`;return}
+const when=t=>{if(!t)return"–";const d=new Date(t),diff=(Date.now()-d)/864e5;return diff<1&&d.getDate()===new Date().getDate()?d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})+" hôm nay":diff<2?"hôm qua":d.toLocaleDateString("vi-VN")};
+function paneDraw(){const c=D.classes.find(x=>x.c===CLS);const n=D.roster.filter(r=>r.c===CLS).length;
+  $("#pane").innerHTML=`<div class="card chead"><span class="code">${esc(c.c)}</span><div><h2>${esc(c.n||"Lớp "+c.c)}</h2><div class="meta">${n} học sinh${D.me.admin?" · Giáo viên: "+esc(c.gv):""}</div></div><span class="sp"></span>
+    <span class="tabs noprint" id="tabs"><button data-t="stats">Thống kê</button><button data-t="students">Học sinh</button><button data-t="settings">Cài đặt lớp</button></span></div><div id="tabBody" style="display:flex;flex-direction:column;gap:16px"></div>`;
+  $("#tabs").querySelectorAll("button").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.t===TAB);b.onclick=()=>{TAB=b.dataset.t;paneDraw()}});
+  ({stats:statsDraw,students:rosterDraw,settings:settingsDraw})[TAB]()}
+function statsDraw(){const L=students(),B=$("#tabBody");const tot=k=>L.reduce((a,s)=>a+(+s[k]||0),0);const active=L.filter(s=>s.last&&(Date.now()-new Date(s.last))<7*864e5).length;
+  B.innerHTML=`<div class="kpis">${[["Học sinh",L.length],["Hoạt động 7 ngày",active],["Tổng phút học",Math.round(tot("min"))],["Lượt nghe",tot("li")],["Lật thẻ",tot("f")],["Trắc nghiệm đúng",pct(tot("qc")+tot("lqc"),tot("q")+tot("lq"))]].map(([a,b])=>`<div class="kpi"><span>${a}</span><b>${b}</b></div>`).join("")}</div>
+   <div class="bar noprint"><span class="seg" id="view"><button data-v="st">Theo học sinh</button><button data-v="mx">Bảng theo bài</button></span>
+     <span class="seg" id="metric" ${VIEW==="mx"?"":"hidden"}><button data-v="min">Phút học</button><button data-v="f">Lật thẻ</button><button data-v="li">Lần nghe</button><button data-v="q">Trắc nghiệm</button><button data-v="kn">Từ đã nhớ</button></span>
+     <span class="sp"></span><button class="btn sm" id="rl">Làm mới</button><button class="btn sm" id="csv">Tải CSV</button></div>
+   <div class="tbox click" id="tbl"></div><section class="card" id="detail" hidden></section>`;
+  B.querySelectorAll("#view button").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.v===VIEW);b.onclick=()=>{VIEW=b.dataset.v;statsDraw()}});
+  B.querySelectorAll("#metric button").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.v===METRIC);b.onclick=()=>{METRIC=b.dataset.v;statsDraw()}});
+  $("#rl").onclick=async()=>{await load();toast("Đã cập nhật")};$("#csv").onclick=csv;
+  if(!L.length){$("#tbl").innerHTML=`<div class="empty">Lớp chưa có học sinh. Vào thẻ <b>Học sinh</b> để thêm.</div>`;return}
   if(VIEW==="st"){const cols=[["n","Học sinh"],["min","Phút học"],["f","Lật thẻ"],["seen","Thẻ đã xem"],["li","Lần nghe"],["q","Trắc nghiệm"],["lq","Luyện nghe"],["kn","Từ đã nhớ"],["last","Lần cuối"]];
-    L.sort((a,b)=>{const x=a[SORT.k],y=b[SORT.k];return (typeof x==="string"?String(x).localeCompare(String(y)):(x||0)-(y||0))*SORT.d});
-    $("#tbl").innerHTML=`<table><thead><tr>${cols.map(([k,t])=>`<th data-k="${k}">${t}${SORT.k===k?(SORT.d>0?" ▲":" ▼"):""}</th>`).join("")}</tr></thead><tbody>${L.map(s=>`<tr data-s="${esc(s.s)}">
-      <td>${esc(s.n||s.s)} <span class="meta">${esc(s.s)}</span>${s.inRoster?"":' <span class="pill bad">đã xóa</span>'}</td><td>${s.min}</td><td>${s.f}</td><td>${s.seen}</td><td>${s.li}</td>
+    L.sort((a,b)=>{const x=a[SORT.k],y=b[SORT.k];return (typeof x==="string"||typeof y==="string"?String(x||"").localeCompare(String(y||"")):(x||0)-(y||0))*SORT.d});
+    $("#tbl").innerHTML=`<table><thead><tr>${cols.map(([k,t])=>`<th class="s" data-k="${k}">${t}${SORT.k===k?(SORT.d>0?" ▲":" ▼"):""}</th>`).join("")}</tr></thead><tbody>${L.map(s=>`<tr data-s="${esc(s.s)}">
+      <td>${esc(s.n||s.s)} <span class="meta">${esc(s.s)}</span>${s.inRoster?"":' <span class="pill mute">đã xóa</span>'}</td><td>${s.min}</td><td>${s.f}</td><td>${s.seen}</td><td>${s.li}</td>
       <td>${s.q?`${s.qc}/${s.q} <span class="pill ${s.qc/s.q<.6?"bad":""}">${pct(s.qc,s.q)}</span>`:"–"}</td><td>${s.lq?`${s.lqc}/${s.lq} <span class="pill ${s.lqc/s.lq<.6?"bad":""}">${pct(s.lqc,s.lq)}</span>`:"–"}</td>
       <td>${s.kn}</td><td>${when(s.last)}</td></tr>`).join("")}</tbody></table>`;
-    $("#tbl").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;SORT=SORT.k===k?{k,d:-SORT.d}:{k,d:k==="n"?1:-1};render()})}
-  else{const lessons=["Tổng hợp",...Array.from({length:15},(_,i)=>"Bài "+(i+1))];const val=(r)=>METRIC==="q"?(+r[COL.q]||0)+(+r[COL.lq]||0):(+r[COL[METRIC]]||0);
-    const max=Math.max(1,...L.flatMap(s=>s.rows.map(val)));
-    const show=lessons.filter(l=>l!=="Tổng hợp"||L.some(s=>s.rows.some(r=>r[3]===l)));
-    $("#tbl").innerHTML=`<table><thead><tr><th>Học sinh</th>${show.map(l=>`<th>${l.replace("Bài ","B")}</th>`).join("")}</tr></thead><tbody>${L.map(s=>`<tr data-s="${esc(s.s)}"><td>${esc(s.n||s.s)}</td>${show.map(l=>{const r=s.rows.find(r=>r[3]===l);const v=r?val(r):0;
+    $("#tbl").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;SORT=SORT.k===k?{k,d:-SORT.d}:{k,d:k==="n"?1:-1};statsDraw()})}
+  else{const lessons=["Tổng hợp",...Array.from({length:15},(_,i)=>"Bài "+(i+1))];const val=r=>METRIC==="q"?(+r[COL.q]||0)+(+r[COL.lq]||0):(+r[COL[METRIC]]||0);
+    const max=Math.max(1,...L.flatMap(s=>s.rows.map(val)));const show=lessons.filter(l=>l!=="Tổng hợp"||L.some(s=>s.rows.some(r=>r[3]===l)));
+    $("#tbl").innerHTML=`<table><thead><tr><th>Học sinh</th>${show.map(l=>`<th>${l==="Tổng hợp"?"Tổng hợp":l.replace("Bài ","B")}</th>`).join("")}</tr></thead><tbody>${L.map(s=>`<tr data-s="${esc(s.s)}"><td>${esc(s.n||s.s)}</td>${show.map(l=>{const r=s.rows.find(r=>r[3]===l);const v=r?val(r):0;
       return `<td><span class="cell" style="background:${v?`color-mix(in srgb,var(--acc) ${Math.round(12+v/max*68)}%,transparent)`:"transparent"};color:${v/max>.55?"#fff":"inherit"}">${v?(Math.round(v*10)/10):"·"}</span></td>`}).join("")}</tr>`).join("")}</tbody></table>`}
   $("#tbl").querySelectorAll("tbody tr").forEach(tr=>tr.onclick=()=>detail(L.find(s=>s.s===tr.dataset.s)))}
-function detail(st){const el=$("#detail");el.hidden=false;const rs=[...st.rows].sort((a,b)=>(a[3]==="Tổng hợp"?0:+String(a[3]).replace(/\D/g,""))-(b[3]==="Tổng hợp"?0:+String(b[3]).replace(/\D/g,"")));
-  el.innerHTML=`<div class="bar"><h2 style="margin:0">${esc(st.n||st.s)}</h2><span class="meta">Lớp ${esc(CLS)} · Mã ${esc(st.s)}</span><span class="sp"></span><button class="btn sm" id="dClose">Đóng</button></div>
+function detail(st){const el=$("#detail");el.hidden=false;const k=x=>x[3]==="Tổng hợp"?0:+String(x[3]).replace(/\D/g,"");const rs=[...st.rows].sort((a,b)=>k(a)-k(b));
+  el.innerHTML=`<div class="bar"><h2>${esc(st.n||st.s)}</h2><span class="meta">Lớp ${esc(CLS)} · Mã ${esc(st.s)}</span><span class="sp"></span><button class="btn sm" id="dClose">Đóng</button></div>
    ${rs.length?`<div class="tbox" style="margin-top:12px"><table><thead><tr><th>Bài</th><th>Phút học</th><th>Lật thẻ</th><th>Thẻ đã xem</th><th>Lần nghe</th><th>Trắc nghiệm</th><th>Luyện nghe</th><th>Từ đã nhớ</th><th>Lần cuối</th></tr></thead><tbody>
    ${rs.map(r=>`<tr><td>${esc(r[3])}</td><td>${r[11]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]?`${r[8]}/${r[7]} (${pct(r[8],r[7])})`:"–"}</td><td>${r[9]?`${r[10]}/${r[9]} (${pct(r[10],r[9])})`:"–"}</td><td>${r[12]}</td><td>${when(r[13])}</td></tr>`).join("")}</tbody></table></div>`:`<p class="meta">Học sinh này chưa có số liệu.</p>`}`;
   $("#dClose").onclick=()=>{el.hidden=true};el.scrollIntoView({behavior:"smooth",block:"start"})}
-function rosterDraw(){const rs=DATA.roster.filter(r=>r.c===CLS);$("#newC").value=$("#newC").value||CLS;
-  $("#roster").innerHTML=rs.length?`<table><tbody>${rs.map(r=>`<tr><td>${esc(r.s)}</td><td style="text-align:left">${esc(r.n)}</td><td><button class="x" data-del="${esc(r.s)}" aria-label="Xóa">✕</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Chưa có học sinh.</div>`;
-  $("#roster").querySelectorAll("[data-del]").forEach(b=>b.onclick=async e=>{e.stopPropagation();if(!confirm(`Xóa ${b.dataset.del} khỏi lớp ${CLS}?`))return;const r=await api({a:"del",c:CLS,s:b.dataset.del});if(r.ok){DATA.roster=r.roster;render()}})}
-$("#add").onclick=async()=>{const c=$("#newC").value.trim().toUpperCase();const lines=$("#newList").value.split("\n").map(l=>l.trim()).filter(Boolean);
-  if(!c||!lines.length){$("#addMsg").textContent="Nhập mã lớp và ít nhất một học sinh.";return}
-  const list=lines.map(l=>{const [s,...n]=l.split("|");return `${c}|${(s||"").trim()}|${n.join("|").trim()}`}).join("\n");
-  $("#add").disabled=true;try{const r=await api({a:"add",list});if(r.ok){DATA.roster=r.roster;$("#addMsg").textContent=`Đã thêm ${r.added} học sinh vào lớp ${c}.`;$("#newList").value="";CLS=c;ls.set("cls",c);fillCls();render()}else $("#addMsg").textContent=r.err}
-  catch(e){$("#addMsg").textContent="Không kết nối được máy chủ."}finally{$("#add").disabled=false}};
-$("#csv").onclick=()=>{const head=DATA.head;const rows=DATA.rows.filter(r=>String(r[0])===CLS);const q=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
-  const csv="﻿"+[head,...rows].map(r=>r.map(q).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=`thong-ke-${CLS||"lop"}.csv`;a.click()};
-if(PW&&TRACK_URL){$("#remember").checked=!!ls.get("pw");login()}
+function csv(){const rows=D.rows.filter(r=>String(r[0])===CLS);const q=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  const s="﻿"+[D.head,...rows].map(r=>r.map(q).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([s],{type:"text/csv"}));a.download=`thong-ke-${CLS}.csv`;a.click()}
+function rosterDraw(){const B=$("#tabBody");const rs=D.roster.filter(r=>r.c===CLS).sort((a,b)=>a.s.localeCompare(b.s,"vi",{numeric:true}));
+  const appUrl=new URL("./",location.href).href;
+  B.innerHTML=`<div class="two"><div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <h2 style="font-size:17px">Thêm học sinh</h2>
+      <label class="fld">Mỗi dòng một em: <code>MÃ HS | Họ tên | Mật khẩu</code> (mật khẩu có thể bỏ trống)<textarea id="aL" placeholder="HS01 | Nguyễn Văn An&#10;HS02 | Trần Thị Bình&#10;HS03 | Lê Minh Châu | 2468"></textarea></label>
+      <div class="bar"><button class="btn sm" id="aGen">Tạo nhanh mã HS01, HS02…</button><input id="aN" type="number" min="1" max="80" value="20" style="width:80px;min-height:36px"><span class="meta">em</span></div>
+      <p class="err" id="aM"></p><button class="btn pri" id="aGo">Thêm vào lớp ${esc(CLS)}</button></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:8px"><h2 style="font-size:17px">Cách học sinh đăng nhập</h2>
+      <p style="margin:0">1. Mở <b>${esc(appUrl)}</b><br>2. Chọn <b>Học sinh</b>, nhập <b>Mã lớp: ${esc(CLS)}</b> và mã học sinh của em.<br>3. Mật khẩu lần đầu = <b>mã học sinh</b> (nếu bạn không đặt). Sau khi vào, trang nhắc em đổi mật khẩu riêng.</p>
+      <div class="bar noprint"><button class="btn sm" id="cpy">Sao chép hướng dẫn</button><button class="btn sm" id="prt">In danh sách mã</button></div></div></div>
+   <div class="tbox">${rs.length?`<table><thead><tr><th>Mã HS</th><th class="l">Họ tên</th><th class="l">Mật khẩu</th><th class="noprint"></th></tr></thead><tbody>${rs.map(r=>`<tr><td>${esc(r.s)}</td><td class="l">${esc(r.n)||'<span class="meta">(chưa có tên)</span>'}</td>
+      <td class="l">${r.pw?'<span class="pill">Đã đặt riêng</span>':`<span class="pill mute">Mặc định = ${esc(r.s)}</span>`}</td>
+      <td class="noprint"><div class="acts"><button class="lnk" data-ed="${esc(r.s)}">Sửa tên</button><button class="lnk" data-pw="${esc(r.s)}">Đặt lại mật khẩu</button><button class="lnk dng" data-del="${esc(r.s)}">Xóa</button></div></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Chưa có học sinh trong lớp này.</div>`}</div>`;
+  $("#aGen").onclick=()=>{const n=Math.max(1,Math.min(80,+$("#aN").value||20));const have=new Set(rs.map(r=>r.s));let out=[],i=1;while(out.length<n&&i<500){const c="HS"+String(i).padStart(2,"0");if(!have.has(c))out.push(c+" | ");i++}$("#aL").value=out.join("\n")};
+  $("#aGo").onclick=async()=>{const list=$("#aL").value.trim();if(!list){$("#aM").textContent="Nhập ít nhất một dòng.";return}$("#aGo").disabled=true;
+    try{const r=await api({a:"addst",c:CLS,list});if(!r.ok){$("#aM").textContent=r.err;return}toast(`Đã thêm ${r.added} học sinh`+(r.skipped.length?` · bỏ qua ${r.skipped.length} mã trùng`:""));await load()}finally{const b=$("#aGo");if(b)b.disabled=false}};
+  $("#cpy").onclick=()=>{const t=`Học tiếng Trung — BALO Mandarin\n1) Mở ${appUrl}\n2) Chọn "Học sinh", Mã lớp: ${CLS}, Mã học sinh: (mã của em)\n3) Mật khẩu lần đầu: chính mã học sinh của em, sau đó đổi mật khẩu riêng.`;navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>toast("Đã sao chép"),()=>toast("Không sao chép được"))};
+  $("#prt").onclick=()=>window.print();
+  B.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>{const r=rs.find(x=>x.s===b.dataset.ed);modal(`<h2>Sửa tên · ${esc(r.s)}</h2><label class="fld">Họ tên<input id="mN" value="${esc(r.n)}"></label><p class="err" id="mE"></p><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn pri" id="mGo">Lưu</button></div>`,(m,close)=>{
+    m.querySelector("#mGo").onclick=async()=>{const x=await api({a:"editst",c:CLS,s:r.s,n:m.querySelector("#mN").value});if(!x.ok){m.querySelector("#mE").textContent=x.err;return}close();toast("Đã lưu");await load()}})});
+  B.querySelectorAll("[data-pw]").forEach(b=>b.onclick=()=>{const s=b.dataset.pw;modal(`<h2>Đặt lại mật khẩu · ${esc(s)}</h2><label class="fld">Mật khẩu mới (bỏ trống = về mặc định là mã học sinh <b>${esc(s)}</b>)<input id="mP" type="text" autocomplete="off"></label><p class="err" id="mE"></p><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn pri" id="mGo">Đặt lại</button></div>`,(m,close)=>{
+    m.querySelector("#mGo").onclick=async()=>{const np=m.querySelector("#mP").value.trim();if(np&&np.length<4){m.querySelector("#mE").textContent="Mật khẩu cần ít nhất 4 ký tự";return}const x=await api({a:"editst",c:CLS,s,reset:true,np});if(!x.ok){m.querySelector("#mE").textContent=x.err;return}close();toast("Đã đặt lại mật khẩu");await load()}})});
+  B.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const s=b.dataset.del;modal(`<h2>Xóa ${esc(s)} khỏi lớp ${esc(CLS)}?</h2><p class="meta" style="margin:0">Em này sẽ không đăng nhập được nữa. Số liệu học cũ vẫn giữ trong file Sheets.</p><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn dng" id="mGo">Xóa</button></div>`,(m,close)=>{
+    m.querySelector("#mGo").onclick=async()=>{await api({a:"delst",c:CLS,s});close();toast("Đã xóa");await load()}})})}
+function settingsDraw(){const c=D.classes.find(x=>x.c===CLS);const B=$("#tabBody");
+  B.innerHTML=`<div class="card" style="display:flex;flex-direction:column;gap:12px;max-width:560px"><label class="fld">Mã lớp<input value="${esc(c.c)}" disabled></label>
+    <label class="fld">Tên lớp<input id="sN" value="${esc(c.n)}"></label>
+    ${D.me.admin?`<label class="fld">Giáo viên phụ trách<select id="sG">${(D.teachers||[]).map(t=>`<option value="${esc(t.u)}" ${t.u===c.gv?"selected":""}>${esc(t.n)} (${esc(t.u)})</option>`).join("")}</select></label>`:""}
+    <p class="err" id="sM"></p><div class="bar"><button class="btn pri" id="sGo">Lưu thay đổi</button><span class="sp"></span><button class="btn dng" id="sDel">Xóa lớp</button></div></div>`;
+  $("#sGo").onclick=async()=>{const r=await api({a:"editclass",c:CLS,n:$("#sN").value,gv:D.me.admin?$("#sG").value:""});if(!r.ok){$("#sM").textContent=r.err;return}toast("Đã lưu");await load()};
+  $("#sDel").onclick=()=>modal(`<h2>Xóa lớp ${esc(CLS)}?</h2><p class="meta" style="margin:0">Lớp và danh sách học sinh sẽ bị xóa, học sinh không đăng nhập được nữa. Số liệu học cũ vẫn giữ trong trang <b>ThongKe</b> của file Sheets.</p><label class="fld">Gõ <b>${esc(CLS)}</b> để xác nhận<input id="mC"></label><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn dng" id="mGo">Xóa lớp</button></div>`,(m,close)=>{
+    m.querySelector("#mGo").onclick=async()=>{if(m.querySelector("#mC").value.trim().toUpperCase()!==CLS)return;await api({a:"delclass",c:CLS});close();CLS=null;toast("Đã xóa lớp");await load()}})}
+function teachersDraw(){sideDraw();const T=D.teachers||[];
+  $("#pane").innerHTML=`<div class="card chead"><div><h2>Tài khoản giáo viên</h2><div class="meta">Mỗi giáo viên chỉ thấy và quản lý lớp do mình tạo. Quản trị thấy tất cả.</div></div></div>
+   <div class="two"><div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:17px">Thêm giáo viên</h2>
+     <label class="fld">Tên đăng nhập<input id="tU" autocapitalize="none"></label><label class="fld">Họ tên<input id="tN"></label><label class="fld">Mật khẩu (ít nhất 6 ký tự)<input id="tP" type="text" autocomplete="off"></label>
+     <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="tA" style="width:auto;min-height:auto"> Quyền quản trị</label><p class="err" id="tM"></p><button class="btn pri" id="tGo">Tạo tài khoản</button></div>
+   <div class="tbox"><table><thead><tr><th>Tên đăng nhập</th><th class="l">Họ tên</th><th class="l">Quyền</th><th>Lớp</th><th></th></tr></thead><tbody>${T.map(t=>`<tr><td>${esc(t.u)}</td><td class="l">${esc(t.n)}</td><td class="l">${t.admin?'<span class="pill">Quản trị</span>':'<span class="pill mute">Giáo viên</span>'}</td><td>${D.classes.filter(c=>c.gv===t.u).length}</td>
+     <td><div class="acts"><button class="lnk" data-rp="${esc(t.u)}">Đặt lại mật khẩu</button>${t.u===D.me.u?"":`<button class="lnk dng" data-dt="${esc(t.u)}">Xóa</button>`}</div></td></tr>`).join("")}</tbody></table></div></div>`;
+  $("#tGo").onclick=async()=>{const r=await api({a:"addteacher",nu:$("#tU").value,nn:$("#tN").value,np:$("#tP").value,nadmin:$("#tA").checked});if(!r.ok){$("#tM").textContent=r.err;return}toast("Đã tạo tài khoản");await load()};
+  document.querySelectorAll("[data-rp]").forEach(b=>b.onclick=()=>modal(`<h2>Đặt lại mật khẩu · ${esc(b.dataset.rp)}</h2><label class="fld">Mật khẩu mới (ít nhất 6 ký tự)<input id="mP" type="text" autocomplete="off"></label><p class="err" id="mE"></p><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn pri" id="mGo">Lưu</button></div>`,(m,close)=>{
+    m.querySelector("#mGo").onclick=async()=>{const r=await api({a:"resetteacher",du:b.dataset.rp,np:m.querySelector("#mP").value});if(!r.ok){m.querySelector("#mE").textContent=r.err;return}close();toast("Đã đặt lại");if(b.dataset.rp===D.me.u){CRED.p=m.querySelector("#mP").value}}}));
+  document.querySelectorAll("[data-dt]").forEach(b=>b.onclick=()=>modal(`<h2>Xóa tài khoản ${esc(b.dataset.dt)}?</h2><p class="meta" style="margin:0">Các lớp của giáo viên này vẫn còn; quản trị có thể giao lại trong Cài đặt lớp.</p><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn dng" id="mGo">Xóa</button></div>`,(m,close)=>{
+    m.querySelector("#mGo").onclick=async()=>{await api({a:"delteacher",du:b.dataset.dt});close();toast("Đã xóa");await load()}}))}
+$("#acct").onclick=()=>modal(`<h2>Tài khoản · ${esc(CRED.u)}</h2><label class="fld">Mật khẩu mới (ít nhất 6 ký tự)<input id="mP" type="password" autocomplete="new-password"></label><label class="fld">Nhập lại mật khẩu mới<input id="mP2" type="password" autocomplete="new-password"></label><p class="err" id="mE"></p>
+  <div class="bar"><span class="sp"></span><button class="btn" data-close>Đóng</button><button class="btn pri" id="mGo">Đổi mật khẩu</button></div>`,(m,close)=>{
+  m.querySelector("#mGo").onclick=async()=>{const a=m.querySelector("#mP").value,b=m.querySelector("#mP2").value;if(a!==b){m.querySelector("#mE").textContent="Hai mật khẩu không khớp";return}
+    const r=await api({a:"tchpw",np:a});if(!r.ok){m.querySelector("#mE").textContent=r.err;return}CRED.p=a;const cr=JSON.stringify(CRED);try{sessionStorage.setItem("tvT:cred",cr);if(localStorage.getItem("tvT:cred"))localStorage.setItem("tvT:cred",cr)}catch(e){}close();toast("Đã đổi mật khẩu")}});
+if(CRED&&TRACK_URL)load();
 </script>
 </body>
 </html>
