@@ -490,7 +490,7 @@ body.pp-bottom .padgrip{display:flex}
     <label class="toggle"><span><b>Tô màu thanh điệu pinyin</b><br><span class="meta"><span style="color:var(--t1)">mā 1</span> · <span style="color:var(--t2)">má 2</span> · <span style="color:var(--t3)">mǎ 3</span> · <span style="color:var(--t4)">mà 4</span></span></span><input type="checkbox" id="sTone"></label>
     <div class="set"><div class="label">Vị trí khung luyện viết</div><span class="seg" id="sPadPos"><button data-v="auto">Tự động</button><button data-v="right">Bên phải</button><button data-v="bottom">Bên dưới</button></span></div>
     <div class="set"><div class="label">Kích thước khung luyện viết</div><div class="slider"><span class="meta">Nhỏ</span><input type="range" id="sPadSize" min="32" max="62" step="2"><span class="meta">Lớn</span></div></div>
-    <p class="note">Các tùy chỉnh được lưu trong trình duyệt của thiết bị này.</p>
+    <p class="note" id="cfgNote">Các tùy chỉnh được lưu trong trình duyệt của thiết bị này. Đăng nhập tài khoản học sinh để lưu theo tài khoản và dùng lại trên mọi máy.</p>
   </div>
 </div>
 
@@ -842,7 +842,7 @@ function applyCfg(){const R=document.documentElement;
   R.style.setProperty("--padW",`clamp(340px,${CFG.padSize}vw,760px)`);R.style.setProperty("--padH",`${CFG.padHvh||(innerWidth<=600?62:CFG.padSize)}vh`);
   document.body.classList.toggle("tone",!!CFG.tone);
   const pp=padPosEff();document.body.classList.toggle("pp-right",pp==="right");document.body.classList.toggle("pp-bottom",pp==="bottom");
-  store.set("cfg",CFG);syncSet();if(typeof layout==="function")requestAnimationFrame(()=>layout())}
+  store.set("cfg",CFG);syncSet();if(window.cfgReady&&typeof cfgPush==="function")cfgPush();if(typeof layout==="function")requestAnimationFrame(()=>layout())}
 function syncSet(){const mark=(id,v)=>document.querySelectorAll(`#${id} [data-v]`).forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===String(v)));
   mark("sMode",CFG.mode);mark("sVoice",CFG.voice);mark("sSkin",CFG.skin);mark("sFont",CFG.font);mark("sPadPos",CFG.padPos);
   $("#sFs").value=CFG.fs;$("#sHan").value=CFG.han;$("#sTone").checked=!!CFG.tone;$("#sPadSize").value=CFG.padSize}
@@ -854,7 +854,7 @@ $("#sTone").onchange=e=>{CFG.tone=e.target.checked;applyCfg();rerender()};$("#sP
 $("#openSet").onclick=()=>{$("#scrim").hidden=false;syncSet()};$("#closeSet").onclick=()=>{$("#scrim").hidden=true};
 $("#scrim").onclick=e=>{if(e.target.id==="scrim")$("#scrim").hidden=true};
 addEventListener("resize",()=>{const pp=padPosEff();if(!document.body.classList.contains("pp-"+pp))applyCfg()});
-applyCfg();
+applyCfg();window.cfgReady=true;
 /* drag pad height */
 (()=>{const g=$("#padGrip");let y0=0,h0=0,raf=0;
   g.addEventListener("pointerdown",e=>{e.preventDefault();g.setPointerCapture(e.pointerId);g.classList.add("drag");y0=e.clientY;h0=$("#pad").getBoundingClientRect().height});
@@ -888,6 +888,10 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 addEventListener("pagehide",()=>trkFlush(true));
 /* mark "Đã nhớ" changes so known counts get sent */
 {const sk=saveKnown;saveKnown=function(){const r=sk.apply(this,arguments);try{const l=curLesson();if(tracking()&&l)(TRK[l]=TRK[l]||{}),store.set("trk",TRK)}catch(e){}return r}}
+const CFG_SYNC=["voice","mode","skin","font","fs","han","tone","padPos","padSize"];
+let cfgT=0;function cfgPush(){if(!TRACK_URL||!STU||!STU.tok)return;clearTimeout(cfgT);cfgT=setTimeout(()=>{const o={};CFG_SYNC.forEach(k=>o[k]=CFG[k]);
+  fetch(TRACK_URL+"?j="+encodeURIComponent(JSON.stringify({a:"setcfg",c:STU.c,s:STU.s,tok:STU.tok,cfg:o})),{mode:"no-cors"}).catch(()=>{})},1500)}
+function cfgPull(cfg){if(!cfg||typeof cfg!=="object"){cfgPush();return}window.cfgReady=false;CFG_SYNC.forEach(k=>{if(cfg[k]!==undefined)CFG[k]=cfg[k]});applyCfg();window.cfgReady=true;try{rerender()}catch(e){}}
 function whoDraw(){const b=$("#whoBtn");b.hidden=!TRACK_URL;if(!STU){$("#whoName").textContent="Đăng nhập";$("#whoIni").textContent="登";return}$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
 async function api(o){const r=await fetch(TRACK_URL+"?j="+encodeURIComponent(JSON.stringify(o)),{method:"GET",redirect:"follow",cache:"no-store"});return r.json()}
 function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>{try{$("#lgC").focus()}catch(e){}},80)}
@@ -895,12 +899,12 @@ function role(r){$("#roleTabs").querySelectorAll("button").forEach(b=>b.setAttri
 async function busy(btn,txt,fn){const t=btn.textContent;btn.disabled=true;btn.textContent=txt;try{await fn()}finally{btn.disabled=false;btn.textContent=t}}
 async function doLogin(){const c=$("#lgC").value.trim(),s2=$("#lgS").value.trim(),pw=$("#lgP").value;if(!c||!s2){$("#lgErr").textContent="Nhập đủ mã lớp và mã học sinh.";return}
   await busy($("#lgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"login",c,s:s2,p:pw||s2});
-    if(r.ok&&r.tok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới — báo giáo viên."}
+    if(r.ok&&r.tok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();cfgPull(r.cfg);if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới — báo giáo viên."}
   catch(e){$("#lgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 async function doReg(){const c=$("#rgC").value.trim(),n=$("#rgN").value.trim(),s2=$("#rgS").value.trim(),pw=$("#rgP").value;
   if(!c||!n||!s2){$("#rgErr").textContent="Nhập đủ mã lớp, họ tên và mã học sinh.";return}if(pw.length<4){$("#rgErr").textContent="Mật khẩu cần ít nhất 4 ký tự.";return}if(pw!==$("#rgP2").value){$("#rgErr").textContent="Hai mật khẩu không khớp.";return}
   await busy($("#rgGo"),"Đang tạo tài khoản…",async()=>{try{const r=await api({a:"register",c,s:s2,n,p:pw});
-    if(r.ok&&r.tok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#rgP").value=$("#rgP2").value="";whoDraw();openWho(false);$("#pwHint").textContent="Đã tạo tài khoản! Lần sau đăng nhập bằng mã lớp "+r.c+", mã học sinh "+r.s+" và mật khẩu bạn vừa đặt."}
+    if(r.ok&&r.tok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#rgP").value=$("#rgP2").value="";whoDraw();cfgPull(null);openWho(false);$("#pwHint").textContent="Đã tạo tài khoản! Lần sau đăng nhập bằng mã lớp "+r.c+", mã học sinh "+r.s+" và mật khẩu bạn vừa đặt."}
     else $("#rgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 3)."}
   catch(e){$("#rgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 async function doTLogin(){const u=$("#tgU").value.trim(),pw=$("#tgP").value;if(!u||!pw){$("#tgErr").textContent="Nhập tên đăng nhập và mật khẩu.";return}
@@ -914,12 +918,14 @@ if(TRACK_URL){
   $("#fSt").onsubmit=e=>{e.preventDefault();doLogin();return false};$("#fReg").onsubmit=e=>{e.preventDefault();doReg();return false};
   $("#toReg").onclick=()=>{role("reg");$("#rgC").value=$("#lgC").value;setTimeout(()=>$("#rgC").focus(),50)};$("#toLogin").onclick=()=>role("st");$("#fGv").onsubmit=e=>{e.preventDefault();doTLogin();return false};
   $("#whoBtn").onclick=()=>{if(STU)openWho(false);else showLogin()};
+  {const o2=$("#openSet").onclick;$("#openSet").onclick=()=>{o2();$("#cfgNote").textContent=STU?"Tùy chỉnh được lưu vào tài khoản "+(STU.n||STU.s)+" — đăng nhập ở máy khác sẽ tự áp dụng.":"Các tùy chỉnh được lưu trong trình duyệt của thiết bị này. Đăng nhập tài khoản học sinh để lưu theo tài khoản và dùng lại trên mọi máy."}}
   const closeLogin=()=>{$("#loginScrim").hidden=true};$("#lgClose").onclick=closeLogin;$("#lgSkip").onclick=closeLogin;$("#whoClose").onclick=()=>{$("#whoScrim").hidden=true};
   $("#cpGo").onclick=()=>busy($("#cpGo"),"Đang lưu…",async()=>{const np=$("#cpNew").value;if(np.length<4){$("#cpMsg").textContent="Mật khẩu mới cần ít nhất 4 ký tự.";return}
     try{const r=await api({a:"chpw",c:STU.c,s:STU.s,p:$("#cpOld").value,np});$("#cpMsg").style.color=r.ok?"var(--good)":"";$("#cpMsg").textContent=r.ok?"Đã đổi mật khẩu.":r.err}catch(e){$("#cpMsg").textContent="Không kết nối được máy chủ."}});
   $("#whoOut").onclick=()=>{trkFlush(true);STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw()};
   if(STU&&!STU.tok){STU=null;store.set("stu",null)}
-  whoDraw();if(/[?&]gv=1/.test(location.search)){role("gv");showLogin()}}
+  whoDraw();if(/[?&]gv=1/.test(location.search)){role("gv");showLogin()}
+  if(STU&&STU.tok)api({a:"getcfg",c:STU.c,s:STU.s,tok:STU.tok}).then(r=>{if(r&&r.ok&&r.cfg){const ch=CFG_SYNC.some(k=>r.cfg[k]!==undefined&&r.cfg[k]!==CFG[k]);if(ch)cfgPull(r.cfg)}}).catch(()=>{})}
 
 /* ---------- voice settings ---------- */
 (()=>{const add=(t,l)=>{t=normT(t);if(t&&!(t in TTSL))TTSL[t]=l};

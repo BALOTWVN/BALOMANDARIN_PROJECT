@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 4 (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 5 (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -20,6 +20,7 @@ const SH = {
   hs: ['HocSinh', ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Mật khẩu (mã hóa)', 'Ngày tạo']],
   log: ['NhatKy', ['Thời gian', 'Mã lớp', 'Mã học sinh', 'Bài', 'Lật thẻ', 'Lần nghe', 'Câu trắc nghiệm', 'Trắc nghiệm đúng',
     'Câu luyện nghe', 'Luyện nghe đúng', 'Giây học']],
+  cfg: ['CaiDat', ['Tài khoản', 'Cài đặt giao diện (JSON)', 'Cập nhật']],
   tk: ['ThongKe', ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Bài', 'Lật thẻ', 'Thẻ đã xem', 'Lần nghe', 'Câu trắc nghiệm',
     'Trắc nghiệm đúng', 'Câu luyện nghe', 'Luyện nghe đúng', 'Phút học', 'Từ đã nhớ', 'Lần cuối']]
 };
@@ -99,6 +100,15 @@ function handle_(p) {
       case 'chpw': return out_(stChpw_(s, p));
       case 'register': { const lock = LockService.getScriptLock(); lock.waitLock(20000); try { return out_(stRegister_(s, p)); } finally { lock.releaseLock(); } }
       case 'log': return out_(log_(s, p));
+      case 'setcfg': {
+        if (p.tok && p.tok === tok_(p.c, p.s)) return out_(setCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s), p.cfg));
+        const tt = teacher_(s, p); if (tt) return out_(setCfg_(s, 'GV:' + tt.u, p.cfg));
+        return out_({ ok: false, err: 'Không có quyền' });
+      }
+      case 'getcfg': {
+        if (p.tok && p.tok === tok_(p.c, p.s)) return out_({ ok: true, cfg: getCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s)) });
+        const tt = teacher_(s, p); return out_(tt ? { ok: true, cfg: getCfg_(s, 'GV:' + tt.u) } : { ok: false });
+      }
       case 'tlogin': { const t = teacher_(s, p); return out_(t ? { ok: true, u: t.u, n: t.n, admin: t.admin } : { ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' }); }
     }
     const t = teacher_(s, p);
@@ -123,7 +133,7 @@ function stLogin_(s, p) {
   const f = findSt_(s, p.c, p.s);
   if (!f || !stPwOk_(f.r, p.p || '')) return { ok: false, err: 'Sai mã lớp, mã học sinh hoặc mật khẩu' };
   const lop = rows_(s.lop).find(r => norm_(r[0]) === norm_(p.c));
-  return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3] };
+  return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3], cfg: getCfg_(s, 'HS:' + norm_(f.r[0]) + ':' + norm_(f.r[1])) };
 }
 function stRegister_(s, p) {
   const c = norm_(p.c), code = cleanCode_(p.s), name = String(p.n || '').trim().slice(0, 60), pw = String(p.p || '');
@@ -134,6 +144,19 @@ function stRegister_(s, p) {
   if (findSt_(s, c, code)) return { ok: false, err: 'Mã học sinh ' + code + ' đã có trong lớp. Chọn mã khác hoặc đăng nhập.' };
   s.hs.appendRow([c, code, name, hash_(pw), new Date()]);
   return stLogin_(s, { c, s: code, p: pw });
+}
+/* ---------- per-account UI settings ---------- */
+function getCfg_(s, key) {
+  const r = rows_(s.cfg).find(r => String(r[0]) === key);
+  if (!r) return null;
+  try { return JSON.parse(r[1]); } catch (e) { return null; }
+}
+function setCfg_(s, key, cfg) {
+  const json = JSON.stringify(cfg || {}).slice(0, 4000);
+  const v = s.cfg.getDataRange().getValues();
+  for (let i = 1; i < v.length; i++) if (String(v[i][0]) === key) { s.cfg.getRange(i + 1, 2, 1, 2).setValues([[json, new Date()]]); return { ok: true }; }
+  s.cfg.appendRow([key, json, new Date()]);
+  return { ok: true };
 }
 function stChpw_(s, p) {
   const f = findSt_(s, p.c, p.s);
