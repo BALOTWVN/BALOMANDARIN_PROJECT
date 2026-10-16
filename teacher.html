@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Giáo viên · 當代中文 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif+TC:wght@700&display=swap">
+<style>
+:root{
+  --acc:#2F7A6D; --acc-d:#6CC4B2; --seal:#C2412D; --seal-d:#F08A6E;
+  --paper:#EDF1EE; --paper2:#E3E9E5; --sheet:#FBFCFB; --ink:#18231F; --muted:#5A6863; --line:#D4DCD8;
+  --acc-soft:color-mix(in srgb,var(--acc) 13%,var(--sheet)); --seal-soft:color-mix(in srgb,var(--seal) 12%,var(--sheet));
+  --good:#2E7D4F; --good-soft:#E1F1E6;
+  --t1:#C2412D; --t2:#C78A12; --t3:#2F8A4C; --t4:#2F5FB0; --t5:#7A8580;
+  --han:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fs:16px; --r:18px; --shadow:0 1px 2px rgba(20,35,30,.05),0 6px 18px rgba(20,35,30,.06);
+  --jade:var(--acc); --jade-soft:var(--acc-soft);
+}
+:root[data-skin="sakura"]{--acc:#A23E5E;--acc-d:#EB8FAD;--paper:#F5EDEF;--paper2:#EDE2E5;--sheet:#FFFCFD;--line:#E5D6DB;--ink:#2A1D22;--muted:#6E5C63}
+:root[data-skin="indigo"]{--acc:#2F4C8C;--acc-d:#8FA9E8;--paper:#ECEFF5;--paper2:#E1E6EF;--sheet:#FCFDFF;--line:#D3DAE6;--ink:#161D2B;--muted:#59627A}
+:root[data-skin="bamboo"]{--acc:#55762A;--acc-d:#A8CC72;--paper:#EFF1E6;--paper2:#E5E9D8;--sheet:#FDFEF9;--line:#DADFC9;--ink:#1F2416;--muted:#62695A}
+:root[data-skin="ink"]{--acc:#2B2B2B;--acc-d:#E2DCCF;--seal:#B3261E;--paper:#F2F0EB;--paper2:#E8E5DD;--sheet:#FFFFFF;--line:#DCD8CE;--ink:#151515;--muted:#625E57}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#11161A; --paper2:#0C1013; --sheet:#182026; --ink:#E8EEEC; --muted:#9AA8A4; --line:#2A353C;
+  --acc:var(--acc-d); --seal:var(--seal-d); --good:#7AD39E; --good-soft:#18301F;
+  --t1:#F08A6E; --t2:#E8C25A; --t3:#7AD39E; --t4:#86A9F0; --t5:#8E9A96;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11161A; --paper2:#0C1013; --sheet:#182026; --ink:#E8EEEC; --muted:#9AA8A4; --line:#2A353C;
+  --acc:var(--acc-d); --seal:var(--seal-d); --good:#7AD39E; --good-soft:#18301F;
+  --t1:#F08A6E; --t2:#E8C25A; --t3:#7AD39E; --t4:#86A9F0; --t5:#8E9A96;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25); color-scheme:dark}
+:root[data-hanfont="kai"]{--han:"LXGW WenKai TC","Kaiti TC","STKaiti",serif}
+:root[data-hanfont="sans"]{--han:"Noto Sans TC","PingFang TC","Heiti TC",sans-serif}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:var(--fs)/1.5 var(--body);min-height:100vh;
+  padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.stamp{width:52px;height:52px;border-radius:12px;background:var(--seal);color:#fff;display:grid;place-items:center;font:700 14px/1.1 var(--han);text-align:center;transform:rotate(-4deg);flex:none}
+h1{font-size:24px;margin:0;line-height:1.2}
+h1 small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:12px;min-height:44px;padding:0 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn.pri,.dk .btn.pri{color:#0b1412}
+.btn:disabled{opacity:.6}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.login{max-width:420px;margin:8vh auto 0;display:flex;flex-direction:column;gap:14px}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:46px}
+textarea{min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+.err{color:var(--seal);font-size:14px;min-height:1.2em;margin:0}
+.meta{color:var(--muted);font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.kpi b{display:block;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--paper2);border-radius:12px;padding:3px}
+.seg button{border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:0 14px;min-height:38px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sheet);color:var(--acc);box-shadow:var(--shadow)}
+.tbox{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--sheet);-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{position:sticky;top:0;background:var(--paper2);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;z-index:1}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit}
+td:first-child{background:var(--sheet);font-weight:600}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--acc-soft)}
+.cell{display:block;border-radius:6px;padding:2px 6px;text-align:center}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--acc-soft);color:var(--acc)}
+.pill.bad{background:var(--seal-soft);color:var(--seal)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+details.card summary{cursor:pointer;font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.two{grid-template-columns:1fr}h1{font-size:20px}}
+.x{border:0;background:none;color:var(--seal);font:inherit;font-size:13px;cursor:pointer;padding:4px 8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="stamp">當代<br>中文</div>
+    <h1>Trang giáo viên<small>Thống kê học tập · 當代中文課程 1</small></h1>
+    <span class="sp"></span>
+    <a class="btn sm" href="./" style="display:inline-grid;place-items:center;text-decoration:none">Mở trang học</a>
+    <button class="btn sm" id="out" hidden>Đăng xuất</button>
+  </header>
+
+  <section class="card login" id="loginBox">
+    <h2 style="margin:0">Đăng nhập giáo viên</h2>
+    <label class="fld">Mật khẩu<input type="password" id="pw" autocomplete="current-password"></label>
+    <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="remember" style="min-height:auto"> Ghi nhớ trên máy này</label>
+    <p class="err" id="err"></p>
+    <button class="btn pri" id="go">Xem thống kê</button>
+    <p class="meta" id="cfgNote"></p>
+  </section>
+
+  <main id="app" hidden style="display:flex;flex-direction:column;gap:18px">
+    <div class="bar">
+      <label class="fld" style="flex-direction:row;align-items:center;gap:8px">Lớp <select id="cls"></select></label>
+      <span class="seg" id="view"><button data-v="st" aria-pressed="true">Theo học sinh</button><button data-v="mx">Bảng theo bài</button></span>
+      <span class="sp"></span>
+      <span class="meta" id="upd"></span>
+      <button class="btn sm" id="reload">Làm mới</button>
+      <button class="btn sm" id="csv">Tải CSV</button>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div id="mxBar" class="bar" hidden><span class="meta">Hiển thị:</span>
+      <span class="seg" id="metric"><button data-v="min" aria-pressed="true">Phút học</button><button data-v="f">Lật thẻ</button><button data-v="li">Lần nghe</button><button data-v="q">Trắc nghiệm</button><button data-v="kn">Từ đã nhớ</button></span></div>
+    <div class="tbox" id="tbl"></div>
+    <section class="card" id="detail" hidden></section>
+    <details class="card" id="rosterBox">
+      <summary>Quản lý lớp &amp; học sinh</summary>
+      <div class="two" style="margin-top:14px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label class="fld">Mã lớp<input id="newC" placeholder="VD: HOA1A" style="text-transform:uppercase"></label>
+          <label class="fld">Danh sách học sinh — mỗi dòng: <code>MÃ HS | Họ tên</code><textarea id="newList" placeholder="HS01 | Nguyễn Văn An&#10;HS02 | Trần Thị Bình"></textarea></label>
+          <button class="btn pri" id="add">Thêm học sinh</button>
+          <p class="meta" id="addMsg"></p>
+        </div>
+        <div><div class="meta" style="margin-bottom:6px">Học sinh của lớp đang chọn (bấm ✕ để xóa khỏi danh sách; số liệu cũ vẫn giữ trong file Sheets):</div><div class="tbox" id="roster"></div></div>
+      </div>
+    </details>
+    <p class="meta">Số liệu được lưu trong file Google Sheets của giáo viên (trang <b>ThongKe</b> là bảng tổng hợp, <b>NhatKy</b> là nhật ký chi tiết, <b>HocSinh</b> là danh sách lớp). Học sinh gửi số liệu khoảng 30 giây một lần và khi rời trang.</p>
+  </main>
+</div>
+<script>
+const TRACK_URL="";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ls={get(k){try{return localStorage.getItem("tvT:"+k)}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem("tvT:"+k):localStorage.setItem("tvT:"+k,v)}catch(e){}}};
+try{const c=JSON.parse(localStorage.getItem("tv1:cfg")||"{}");if(c.mode&&c.mode!=="auto")document.documentElement.dataset.theme=c.mode;if(c.skin&&c.skin!=="celadon")document.documentElement.dataset.skin=c.skin}catch(e){}
+let PW=ls.get("pw")||sessionStorage.getItem("tvT:pw")||"",DATA=null,CLS="",VIEW="st",METRIC="min",SORT={k:"min",d:-1};
+const COL={c:0,s:1,n:2,bai:3,f:4,seen:5,li:6,q:7,qc:8,lq:9,lqc:10,min:11,kn:12,last:13};
+if(!TRACK_URL){$("#cfgNote").textContent="Chưa cấu hình địa chỉ máy chủ thống kê (TRACK_URL).";$("#go").disabled=true}
+async function api(params){const u=TRACK_URL+"?"+new URLSearchParams(Object.assign({pw:PW},params));const r=await fetch(u);return r.json()}
+async function login(){PW=$("#pw").value.trim()||PW;if(!PW)return;$("#go").disabled=true;$("#go").textContent="Đang tải…";$("#err").textContent="";
+  try{const r=await api({a:"stats"});if(!r.ok){$("#err").textContent=r.err||"Sai mật khẩu";PW="";return}
+    if($("#remember").checked)ls.set("pw",PW);sessionStorage.setItem("tvT:pw",PW);DATA=r;$("#loginBox").hidden=true;$("#app").hidden=false;$("#out").hidden=false;fillCls();render()}
+  catch(e){$("#err").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}
+  finally{$("#go").disabled=false;$("#go").textContent="Xem thống kê"}}
+$("#go").onclick=login;$("#pw").onkeydown=e=>{if(e.key==="Enter")login()};
+$("#out").onclick=()=>{ls.set("pw",null);sessionStorage.removeItem("tvT:pw");PW="";location.reload()};
+$("#reload").onclick=async()=>{$("#reload").disabled=true;try{const r=await api({a:"stats"});if(r.ok){DATA=r;fillCls();render()}}finally{$("#reload").disabled=false}};
+function classes(){const set=new Set(DATA.roster.map(r=>r.c));DATA.rows.forEach(r=>set.add(String(r[0])));return [...set].filter(Boolean).sort()}
+function fillCls(){const cs=classes();if(!cs.includes(CLS))CLS=ls.get("cls")&&cs.includes(ls.get("cls"))?ls.get("cls"):(cs[0]||"");
+  $("#cls").innerHTML=cs.length?cs.map(c=>`<option ${c===CLS?"selected":""}>${esc(c)}</option>`).join(""):`<option value="">(chưa có lớp)</option>`;
+  $("#upd").textContent="Cập nhật "+new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+$("#cls").onchange=e=>{CLS=e.target.value;ls.set("cls",CLS);render()};
+const segs=(id,fn)=>$(id).onclick=e=>{const b=e.target.closest("button");if(!b)return;$(id).querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));fn(b.dataset.v)};
+segs("#view",v=>{VIEW=v;render()});segs("#metric",v=>{METRIC=v;render()});
+function students(){const m=new Map();DATA.roster.filter(r=>r.c===CLS).forEach(r=>m.set(r.s,{s:r.s,n:r.n,inRoster:true}));
+  DATA.rows.filter(r=>String(r[0])===CLS).forEach(r=>{const s=String(r[1]);if(!m.has(s))m.set(s,{s,n:r[2],inRoster:false})});
+  const L=[...m.values()];L.forEach(st=>{const rs=DATA.rows.filter(r=>String(r[0])===CLS&&String(r[1])===st.s);st.rows=rs;
+    const sum=k=>rs.reduce((a,r)=>a+(+r[COL[k]]||0),0);Object.assign(st,{f:sum("f"),seen:sum("seen"),li:sum("li"),q:sum("q"),qc:sum("qc"),lq:sum("lq"),lqc:sum("lqc"),min:Math.round(sum("min")*10)/10,kn:sum("kn"),
+      last:rs.reduce((a,r)=>r[13]&&(!a||r[13]>a)?r[13]:a,"")})});return L}
+const pct=(a,b)=>b?Math.round(a/b*100)+"%":"–";
+const when=t=>{if(!t)return"–";const d=new Date(t),diff=(Date.now()-d)/864e5;return diff<1?d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})+" hôm nay":diff<2?"hôm qua":d.toLocaleDateString("vi-VN")};
+function render(){const L=students();$("#mxBar").hidden=VIEW!=="mx";$("#detail").hidden=true;
+  const tot=k=>L.reduce((a,s)=>a+(+s[k]||0),0);const active=L.filter(s=>s.last&&(Date.now()-new Date(s.last))<7*864e5).length;
+  $("#kpis").innerHTML=[["Học sinh",L.length],["Hoạt động 7 ngày",active],["Tổng phút học",Math.round(tot("min"))],["Lượt nghe",tot("li")],["Lật thẻ",tot("f")],["Trắc nghiệm đúng",pct(tot("qc")+tot("lqc"),tot("q")+tot("lq"))]]
+    .map(([a,b])=>`<div class="kpi"><span>${a}</span><b>${b}</b></div>`).join("");
+  rosterDraw();
+  if(!L.length){$("#tbl").innerHTML=`<div class="empty">Lớp này chưa có học sinh. Mở “Quản lý lớp &amp; học sinh” bên dưới để thêm.</div>`;return}
+  if(VIEW==="st"){const cols=[["n","Học sinh"],["min","Phút học"],["f","Lật thẻ"],["seen","Thẻ đã xem"],["li","Lần nghe"],["q","Trắc nghiệm"],["lq","Luyện nghe"],["kn","Từ đã nhớ"],["last","Lần cuối"]];
+    L.sort((a,b)=>{const x=a[SORT.k],y=b[SORT.k];return (typeof x==="string"?String(x).localeCompare(String(y)):(x||0)-(y||0))*SORT.d});
+    $("#tbl").innerHTML=`<table><thead><tr>${cols.map(([k,t])=>`<th data-k="${k}">${t}${SORT.k===k?(SORT.d>0?" ▲":" ▼"):""}</th>`).join("")}</tr></thead><tbody>${L.map(s=>`<tr data-s="${esc(s.s)}">
+      <td>${esc(s.n||s.s)} <span class="meta">${esc(s.s)}</span>${s.inRoster?"":' <span class="pill bad">đã xóa</span>'}</td><td>${s.min}</td><td>${s.f}</td><td>${s.seen}</td><td>${s.li}</td>
+      <td>${s.q?`${s.qc}/${s.q} <span class="pill ${s.qc/s.q<.6?"bad":""}">${pct(s.qc,s.q)}</span>`:"–"}</td><td>${s.lq?`${s.lqc}/${s.lq} <span class="pill ${s.lqc/s.lq<.6?"bad":""}">${pct(s.lqc,s.lq)}</span>`:"–"}</td>
+      <td>${s.kn}</td><td>${when(s.last)}</td></tr>`).join("")}</tbody></table>`;
+    $("#tbl").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;SORT=SORT.k===k?{k,d:-SORT.d}:{k,d:k==="n"?1:-1};render()})}
+  else{const lessons=["Tổng hợp",...Array.from({length:15},(_,i)=>"Bài "+(i+1))];const val=(r)=>METRIC==="q"?(+r[COL.q]||0)+(+r[COL.lq]||0):(+r[COL[METRIC]]||0);
+    const max=Math.max(1,...L.flatMap(s=>s.rows.map(val)));
+    const show=lessons.filter(l=>l!=="Tổng hợp"||L.some(s=>s.rows.some(r=>r[3]===l)));
+    $("#tbl").innerHTML=`<table><thead><tr><th>Học sinh</th>${show.map(l=>`<th>${l.replace("Bài ","B")}</th>`).join("")}</tr></thead><tbody>${L.map(s=>`<tr data-s="${esc(s.s)}"><td>${esc(s.n||s.s)}</td>${show.map(l=>{const r=s.rows.find(r=>r[3]===l);const v=r?val(r):0;
+      return `<td><span class="cell" style="background:${v?`color-mix(in srgb,var(--acc) ${Math.round(12+v/max*68)}%,transparent)`:"transparent"};color:${v/max>.55?"#fff":"inherit"}">${v?(Math.round(v*10)/10):"·"}</span></td>`}).join("")}</tr>`).join("")}</tbody></table>`}
+  $("#tbl").querySelectorAll("tbody tr").forEach(tr=>tr.onclick=()=>detail(L.find(s=>s.s===tr.dataset.s)))}
+function detail(st){const el=$("#detail");el.hidden=false;const rs=[...st.rows].sort((a,b)=>(a[3]==="Tổng hợp"?0:+String(a[3]).replace(/\D/g,""))-(b[3]==="Tổng hợp"?0:+String(b[3]).replace(/\D/g,"")));
+  el.innerHTML=`<div class="bar"><h2 style="margin:0">${esc(st.n||st.s)}</h2><span class="meta">Lớp ${esc(CLS)} · Mã ${esc(st.s)}</span><span class="sp"></span><button class="btn sm" id="dClose">Đóng</button></div>
+   ${rs.length?`<div class="tbox" style="margin-top:12px"><table><thead><tr><th>Bài</th><th>Phút học</th><th>Lật thẻ</th><th>Thẻ đã xem</th><th>Lần nghe</th><th>Trắc nghiệm</th><th>Luyện nghe</th><th>Từ đã nhớ</th><th>Lần cuối</th></tr></thead><tbody>
+   ${rs.map(r=>`<tr><td>${esc(r[3])}</td><td>${r[11]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]?`${r[8]}/${r[7]} (${pct(r[8],r[7])})`:"–"}</td><td>${r[9]?`${r[10]}/${r[9]} (${pct(r[10],r[9])})`:"–"}</td><td>${r[12]}</td><td>${when(r[13])}</td></tr>`).join("")}</tbody></table></div>`:`<p class="meta">Học sinh này chưa có số liệu.</p>`}`;
+  $("#dClose").onclick=()=>{el.hidden=true};el.scrollIntoView({behavior:"smooth",block:"start"})}
+function rosterDraw(){const rs=DATA.roster.filter(r=>r.c===CLS);$("#newC").value=$("#newC").value||CLS;
+  $("#roster").innerHTML=rs.length?`<table><tbody>${rs.map(r=>`<tr><td>${esc(r.s)}</td><td style="text-align:left">${esc(r.n)}</td><td><button class="x" data-del="${esc(r.s)}" aria-label="Xóa">✕</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty">Chưa có học sinh.</div>`;
+  $("#roster").querySelectorAll("[data-del]").forEach(b=>b.onclick=async e=>{e.stopPropagation();if(!confirm(`Xóa ${b.dataset.del} khỏi lớp ${CLS}?`))return;const r=await api({a:"del",c:CLS,s:b.dataset.del});if(r.ok){DATA.roster=r.roster;render()}})}
+$("#add").onclick=async()=>{const c=$("#newC").value.trim().toUpperCase();const lines=$("#newList").value.split("\n").map(l=>l.trim()).filter(Boolean);
+  if(!c||!lines.length){$("#addMsg").textContent="Nhập mã lớp và ít nhất một học sinh.";return}
+  const list=lines.map(l=>{const [s,...n]=l.split("|");return `${c}|${(s||"").trim()}|${n.join("|").trim()}`}).join("\n");
+  $("#add").disabled=true;try{const r=await api({a:"add",list});if(r.ok){DATA.roster=r.roster;$("#addMsg").textContent=`Đã thêm ${r.added} học sinh vào lớp ${c}.`;$("#newList").value="";CLS=c;ls.set("cls",c);fillCls();render()}else $("#addMsg").textContent=r.err}
+  catch(e){$("#addMsg").textContent="Không kết nối được máy chủ."}finally{$("#add").disabled=false}};
+$("#csv").onclick=()=>{const head=DATA.head;const rows=DATA.rows.filter(r=>String(r[0])===CLS);const q=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  const csv="﻿"+[head,...rows].map(r=>r.map(q).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=`thong-ke-${CLS||"lop"}.csv`;a.click()};
+if(PW&&TRACK_URL){$("#remember").checked=!!ls.get("pw");login()}
+</script>
+</body>
+</html>
