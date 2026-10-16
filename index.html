@@ -311,6 +311,8 @@ body.pp-bottom .padgrip{display:flex}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .authcard .btn.wide{color:#0b1412}}
 .authwall{position:fixed;inset:0;z-index:60;background:radial-gradient(1200px 600px at 20% -10%,var(--acc-soft),transparent),var(--paper);display:grid;place-items:center;overflow:auto;padding:max(24px,env(safe-area-inset-top)) 16px 24px}
 .authcard{width:min(440px,100%);background:var(--sheet);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.authcard{position:relative}
+.authx{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--sheet);color:var(--muted);font-size:16px;cursor:pointer}
 .authcard h2{margin:0;text-align:center;font-size:24px}
 .roletabs{display:grid;grid-template-columns:1fr 1fr;background:var(--paper2);border-radius:14px;padding:4px}
 .roletabs button{border:0;background:none;font:inherit;font-weight:700;color:var(--muted);min-height:44px;border-radius:11px;cursor:pointer}
@@ -410,6 +412,7 @@ body.pp-bottom .padgrip{display:flex}
 
 <div class="authwall" id="loginScrim" hidden>
   <div class="authcard" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
+    <button class="authx" id="lgClose" aria-label="Đóng">✕</button>
     <div class="lg-stamp">當代<br>中文</div>
     <h2 id="lgTitle">BALO Mandarin</h2>
     <p class="meta" style="text-align:center;margin:-8px 0 2px">當代中文課程 1 · Thẻ từ · Bài đọc · Ngữ pháp · Luyện viết</p>
@@ -428,7 +431,8 @@ body.pp-bottom .padgrip{display:flex}
       <p class="note lgErr" id="tgErr"></p>
       <button class="btn yes wide" id="tgGo" type="submit">Vào trang quản lý</button>
     </form>
-    <p class="meta" style="text-align:center;margin:0;font-size:12px">Chưa có mã? Hỏi giáo viên của bạn.</p>
+    <button class="tbtn" id="lgSkip" style="width:100%;border:0;background:none;color:var(--muted);font-weight:600">Học ngay, không cần đăng nhập →</button>
+    <p class="meta" style="text-align:center;margin:0;font-size:12px">Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.</p>
   </div>
 </div>
 <div class="scrim" id="whoScrim" hidden>
@@ -873,7 +877,7 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 addEventListener("pagehide",()=>trkFlush(true));
 /* mark "Đã nhớ" changes so known counts get sent */
 {const sk=saveKnown;saveKnown=function(){const r=sk.apply(this,arguments);try{const l=curLesson();if(tracking()&&l)(TRK[l]=TRK[l]||{}),store.set("trk",TRK)}catch(e){}return r}}
-function whoDraw(){const b=$("#whoBtn");b.hidden=!tracking();if(!STU)return;$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
+function whoDraw(){const b=$("#whoBtn");b.hidden=!TRACK_URL;if(!STU){$("#whoName").textContent="Đăng nhập";$("#whoIni").textContent="登";return}$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
 async function api(o){const r=await fetch(TRACK_URL+"?j="+encodeURIComponent(JSON.stringify(o)),{method:"GET",redirect:"follow",cache:"no-store"});return r.json()}
 function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>{try{$("#lgC").focus()}catch(e){}},80)}
 function role(r){$("#roleTabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.r===r));$("#fSt").hidden=r!=="st";$("#fGv").hidden=r!=="gv"}
@@ -891,13 +895,13 @@ function openWho(first){$("#whoTitle").textContent=STU.n||STU.s;$("#whoInfo").te
 if(TRACK_URL){
   $("#roleTabs").onclick=e=>{const b=e.target.closest("button");if(b)role(b.dataset.r)};
   $("#fSt").onsubmit=e=>{e.preventDefault();doLogin();return false};$("#fGv").onsubmit=e=>{e.preventDefault();doTLogin();return false};
-  $("#whoBtn").onclick=()=>openWho(false);$("#whoClose").onclick=()=>{$("#whoScrim").hidden=true};
+  $("#whoBtn").onclick=()=>{if(STU)openWho(false);else showLogin()};
+  const closeLogin=()=>{$("#loginScrim").hidden=true};$("#lgClose").onclick=closeLogin;$("#lgSkip").onclick=closeLogin;$("#whoClose").onclick=()=>{$("#whoScrim").hidden=true};
   $("#cpGo").onclick=()=>busy($("#cpGo"),"Đang lưu…",async()=>{const np=$("#cpNew").value;if(np.length<4){$("#cpMsg").textContent="Mật khẩu mới cần ít nhất 4 ký tự.";return}
     try{const r=await api({a:"chpw",c:STU.c,s:STU.s,p:$("#cpOld").value,np});$("#cpMsg").style.color=r.ok?"var(--good)":"";$("#cpMsg").textContent=r.ok?"Đã đổi mật khẩu.":r.err}catch(e){$("#cpMsg").textContent="Không kết nối được máy chủ."}});
-  $("#whoOut").onclick=()=>{trkFlush(true);STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw();showLogin()};
+  $("#whoOut").onclick=()=>{trkFlush(true);STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw()};
   if(STU&&!STU.tok){STU=null;store.set("stu",null)}
-  if(/[?&]gv=1/.test(location.search))role("gv");
-  whoDraw();if(!STU)showLogin()}
+  whoDraw();if(/[?&]gv=1/.test(location.search)){role("gv");showLogin()}}
 
 /* ---------- voice settings ---------- */
 (()=>{const add=(t,l)=>{t=normT(t);if(t&&!(t in TTSL))TTSL[t]=l};
