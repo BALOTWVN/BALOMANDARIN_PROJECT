@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 3 (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 4 (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -26,14 +26,14 @@ const SH = {
 const NTK = SH.tk[1].length;
 
 function caiDat() {
-  const s = sheets_();
+  const s = setupSheets_();
   secret_();
   if (!rows_(s.gv).some(r => norm_(r[0]) === norm_(ADMIN_USER)))
     s.gv.appendRow([norm_(ADMIN_USER), 'Quản trị', hash_(ADMIN_PASS), 'x', new Date()]);
 }
 
 /* ---------- helpers ---------- */
-function sheets_() {
+function setupSheets_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet(), o = {};
   Object.keys(SH).forEach(k => {
     const [name, head] = SH[k];
@@ -48,13 +48,29 @@ function sheets_() {
   ['Sheet1', 'Trang tính1', 'Trang tính 1'].forEach(n => { const x = ss.getSheetByName(n); if (x && x.getLastRow() === 0 && ss.getSheets().length > 5) ss.deleteSheet(x); });
   return o;
 }
+/* Nhanh: chỉ mở trang tính khi thật sự cần */
+function sheets_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet(), o = {}, cache = {};
+  Object.keys(SH).forEach(k => Object.defineProperty(o, k, { get() {
+    if (!cache[k]) {
+      let sh = ss.getSheetByName(SH[k][0]);
+      if (!sh) { sh = ss.insertSheet(SH[k][0]); sh.appendRow(SH[k][1]); sh.setFrozenRows(1); }
+      cache[k] = sh;
+    }
+    return cache[k];
+  } }));
+  return o;
+}
 const norm_ = v => String(v == null ? '' : v).trim().toUpperCase();
 const out_ = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 const rows_ = sh => sh.getDataRange().getValues().slice(1);
+let SECRET_MEMO = null;
 function secret_() {
+  if (SECRET_MEMO) return SECRET_MEMO;
   const p = PropertiesService.getScriptProperties();
   let s = p.getProperty('SECRET');
   if (!s) { s = Utilities.getUuid() + Utilities.getUuid(); p.setProperty('SECRET', s); }
+  SECRET_MEMO = s;
   return s;
 }
 const hex_ = b => b.map(x => ('0' + (x & 255).toString(16)).slice(-2)).join('');
@@ -87,8 +103,12 @@ function handle_(p) {
     }
     const t = teacher_(s, p);
     if (!t) return out_({ ok: false, err: 'Phiên đăng nhập giáo viên không hợp lệ', auth: true });
+    if (p.a === 'data') return out_(teacherAct_(s, t, p));
     const lock = LockService.getScriptLock(); lock.waitLock(20000);
-    try { return out_(teacherAct_(s, t, p)); } finally { lock.releaseLock(); }
+    let res;
+    try { res = teacherAct_(s, t, p); } finally { lock.releaseLock(); }
+    if (res && res.ok && p.a !== 'tchpw') res.data = teacherAct_(s, t, { a: 'data' }); // trả luôn dữ liệu mới, đỡ 1 lần gọi
+    return out_(res);
   } catch (err) { return out_({ ok: false, err: String(err) }); }
 }
 
