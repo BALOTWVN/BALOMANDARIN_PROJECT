@@ -1,5 +1,5 @@
 /**
- * BALO Mandarin · 當代中文課程 1 — máy chủ tài khoản & thống kê
+ * BALO Mandarin · 當代中文課程 1 & 2 — máy chủ tài khoản & thống kê
  * (Google Apps Script gắn với 1 file Google Sheets của giáo viên)
  *
  * CÀI ĐẶT (một lần):
@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 6 (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 7 (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -282,7 +282,7 @@ function log_(s, d) {
     for (let i = 1; i < tkR.length; i++) idx[norm_(tkR[i][0]) + '|' + norm_(tkR[i][1]) + '|' + tkR[i][3]] = i;
     Object.keys(data).forEach(bai => {
       const x = data[bai] || {}, n = k => Math.max(0, Math.min(100000, Number(x[k]) || 0));
-      const lesson = bai === '0' ? 'Tổng hợp' : 'Bài ' + Number(bai);
+      const nb = Number(bai), lesson = bai === '0' ? 'Tổng hợp' : (nb > 100 ? 'Q2 · Bài ' + (nb - 100) : 'Bài ' + nb);
       logRows.push([now, c, st, lesson, n('f'), n('li'), n('q'), n('qc'), n('lq'), n('lqc'), n('t')]);
       const key = c + '|' + st + '|' + lesson;
       let row = idx[key] != null && idx[key] >= 0 ? tkR[idx[key]] : null;
