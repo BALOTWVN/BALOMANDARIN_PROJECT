@@ -632,7 +632,7 @@ const _g=n=>{try{return eval(n)}catch(e){return undefined}};
 const NB=[1,2,3,4,5,6,7,8,9].filter(i=>_g("DATA"+i)).length;
 const BOOK=(()=>{try{const b=JSON.parse(localStorage.getItem("tv1:book"));return b>=1&&b<=NB?b:1}catch(e){return 1}})();
 let FREE=(()=>{try{const v=JSON.parse(localStorage.getItem("tv1:free"));return typeof v==="number"?v:1}catch(e){return 1}})();
-const LANG=(()=>{try{const l=JSON.parse(localStorage.getItem("tv1:lang"));return l==="en"||l==="id"?l:"vi"}catch(e){return "vi"}})();
+const LANG=(()=>{try{const l=JSON.parse(localStorage.getItem("tv1:lang"));return l==="en"||l==="id"||l==="hi"?l:"vi"}catch(e){return "vi"}})();
 const BP=BOOK>1?"b"+BOOK+":":"",AP=BOOK>1?"b"+BOOK+"/":"",LOFF=(BOOK-1)*100;
 const DATA=_g("DATA"+BOOK),EX=_g("EX"+BOOK);
 const NL=DATA.reduce((m,d)=>Math.max(m,d[0]),1);
@@ -1377,18 +1377,106 @@ const VHELP_EN=`<summary>How to install a better Chinese “Device voice”</sum
 <p><b>Android:</b> Settings → search “Text-to-speech” → tap the gear next to <b>Speech Services by Google</b> → <b>Install voice data</b> → choose <b>中文（台灣）</b> → download and pick a voice. Names may differ slightly by phone brand.</p>
 <p><b>No sound on iPhone?</b> Flip the silent switch on the side to sound mode (no orange line) and turn the volume up — in silent mode the page cannot play speech.</p>
 <p><b>Computer:</b> add Chinese (Taiwan) with speech in the Windows / macOS language settings.</p>`;
-function T(s){if(LANG==="vi"||s==null)return s;const k=String(s).trim();if(!k)return s;const UI_=LANG==="id"?ID_UI:EN_UI,RX_=LANG==="id"?ID_RX:EN_RX;
+function T(s){if(LANG==="vi"||s==null)return s;const k=String(s).trim();if(!k)return s;const UI_=LANG==="id"?ID_UI:LANG==="hi"?HI_UI:EN_UI,RX_=LANG==="id"?ID_RX:LANG==="hi"?HI_RX:EN_RX;
   let r=UI_[k];if(r==null){if(!/[à-ỹăâđêôơư]/i.test(k))return s;for(const [rx,to] of RX_){if(rx.test(k)){r=k.replace(rx,to);break}}}if(r==null)return s;
   const lead=String(s).match(/^\s*/)[0],trail=String(s).match(/\s*$/)[0];return lead+r+trail}
 function trNode(n){if(n.nodeType===3){const t=T(n.data);if(t!==n.data)n.data=t;return}if(n.nodeType!==1||n.tagName==="SCRIPT"||n.tagName==="STYLE")return;
   for(const a of ["placeholder","title","aria-label"]){const v=n.getAttribute(a);if(v){const t=T(v);if(t!==v)n.setAttribute(a,t)}}
-  if(n.classList&&n.classList.contains("vhelp")&&!n._en){n._en=1;n.innerHTML=LANG==="id"?VHELP_ID:VHELP_EN;return}
+  if(n.classList&&n.classList.contains("vhelp")&&!n._en){n._en=1;n.innerHTML=LANG==="id"?VHELP_ID:LANG==="hi"?VHELP_HI:VHELP_EN;return}
   for(const c of n.childNodes)trNode(c)}
 const FLAG_VI='<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#DA251D"/><polygon points="15,4 16.8,9.4 22.5,9.4 17.9,12.8 19.6,18.2 15,14.9 10.4,18.2 12.1,12.8 7.5,9.4 13.2,9.4" fill="#FFDD00"/></svg>';
 const FLAG_EN='<svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukS"><path d="M0,0v30h60V0z"/></clipPath><clipPath id="ukT"><path d="M30,15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clip-path="url(#ukS)"><path d="M0,0v30h60V0z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukT)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></g></svg>';
-function setLang(l){if(l!=="vi"&&l!=="en"&&l!=="id")return;try{localStorage.setItem("tv1:lang",JSON.stringify(l))}catch(_){}if(typeof CFG!=="undefined"&&CFG.lang!==l){CFG.lang=l;try{store.set("cfg",CFG);if(typeof cfgPushNow==="function")cfgPushNow()}catch(_){}}
+function setLang(l){if(l!=="vi"&&l!=="en"&&l!=="id"&&l!=="hi")return;try{localStorage.setItem("tv1:lang",JSON.stringify(l))}catch(_){}if(typeof CFG!=="undefined"&&CFG.lang!==l){CFG.lang=l;try{store.set("cfg",CFG);if(typeof cfgPushNow==="function")cfgPushNow()}catch(_){}}
   if(l!==LANG)setTimeout(()=>location.reload(),typeof STU!=="undefined"&&STU?400:0)}
-function langBtns(){return `<button type="button" data-lang="vi" aria-pressed="${LANG==="vi"}" title="Tiếng Việt">${FLAG_VI}<span>Tiếng Việt</span></button><button type="button" data-lang="en" aria-pressed="${LANG==="en"}" title="English">${FLAG_EN}<span>English</span></button><button type="button" data-lang="id" aria-pressed="${LANG==="id"}" title="Bahasa Indonesia">${FLAG_ID}<span>Bahasa Indonesia</span></button>`}
+function langBtns(){return `<button type="button" data-lang="vi" aria-pressed="${LANG==="vi"}" title="Tiếng Việt">${FLAG_VI}<span>Tiếng Việt</span></button><button type="button" data-lang="en" aria-pressed="${LANG==="en"}" title="English">${FLAG_EN}<span>English</span></button><button type="button" data-lang="id" aria-pressed="${LANG==="id"}" title="Bahasa Indonesia">${FLAG_ID}<span>Bahasa Indonesia</span></button><button type="button" data-lang="hi" aria-pressed="${LANG==="hi"}" title="हिन्दी">${FLAG_HI}<span>हिन्दी</span></button>`}
+/* ---------- Hindi interface (LANG==="hi") ---------- */
+const HI_UI={
+"Mục học":"अनुभाग","Chọn quyển":"पुस्तक चुनें","Thẻ từ vựng":"शब्दावली कार्ड","Bài đọc":"पाठ","Ngữ pháp":"व्याकरण","Học sinh":"छात्र","Tùy chỉnh":"सेटिंग्स",
+"Chọn bài":"पाठ चुनें","Từ bài":"पाठ से","Đến bài":"पाठ तक","Thẻ lật":"फ़्लैशकार्ड","Trắc nghiệm":"क्विज़","Luyện nghe":"सुनने का अभ्यास","Danh sách":"शब्द सूची",
+"Bỏ tên riêng":"व्यक्तिवाचक नाम छोड़ें","Chỉ từ chưa nhớ":"केवल न याद किए शब्द","Luyện viết":"लेखन अभ्यास","Khu vực luyện viết":"लेखन अभ्यास क्षेत्र",
+"Kéo lên / xuống để đổi chiều cao khung viết":"लेखन पैड की ऊँचाई बदलने के लिए ऊपर / नीचे खींचें","Ẩn khung viết":"लेखन पैड छिपाएँ","Bút chì":"पेंसिल","Bút bi":"पेन","Bút lông":"ब्रश",
+"Cỡ nét":"स्ट्रोक आकार","Mực đen":"काली स्याही","Mực đỏ":"लाल स्याही","Mực xanh":"हरी स्याही","Ô chữ điền":"田 ग्रिड","Ô chữ mễ":"米 ग्रिड","Trơn":"सादा","Tô theo mẫu":"नमूने पर ट्रेस करें",
+"Xem chữ":"अक्षर देखें","Tẩy":"रबर","Hoàn tác":"पूर्ववत करें","Xóa hết":"सब मिटाएँ","Đóng":"बंद करें",
+"Thẻ từ · Bài đọc · Ngữ pháp · Luyện viết":"कार्ड · पाठ · व्याकरण · लेखन","Giáo viên":"शिक्षक","Mã lớp":"कक्षा कोड","Mã học sinh":"छात्र आईडी","Mật khẩu":"पासवर्ड",
+"VD: HOA1A":"जैसे HOA1A","VD: HS01":"जैसे HS01","Lần đầu: nhập lại mã học sinh":"पहली बार: छात्र आईडी दोबारा लिखें","Đăng nhập":"लॉग इन",
+"Chưa có tài khoản?":"खाता नहीं है?","Tạo tài khoản bằng mã lớp":"कक्षा कोड से खाता बनाएँ","Mã lớp (giáo viên cung cấp)":"कक्षा कोड (शिक्षक से)","Họ tên":"पूरा नाम",
+"VD: Nguyễn Văn An":"जैसे राहुल शर्मा","Mã học sinh (tự đặt, dùng để đăng nhập)":"छात्र आईडी (स्वयं चुनें, लॉग इन के लिए)","VD: AN2005 hoặc mã số sinh viên":"जैसे RAHUL2005 या विद्यार्थी संख्या",
+"Mật khẩu (ít nhất 4 ký tự)":"पासवर्ड (कम से कम 4 अक्षर)","Nhập lại mật khẩu":"पासवर्ड दोबारा लिखें","Tạo tài khoản & vào học":"खाता बनाएँ और सीखना शुरू करें","Đã có tài khoản?":"पहले से खाता है?",
+"Tên đăng nhập":"उपयोगकर्ता नाम","Ghi nhớ đăng nhập trên máy này":"इस डिवाइस पर याद रखें","Vào trang quản lý":"शिक्षक डैशबोर्ड खोलें","Trang quản lý giáo viên":"शिक्षक डैशबोर्ड",
+"Học ngay, không cần đăng nhập →":"बिना लॉग इन किए अभी सीखें →",
+"Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.":"छात्र लॉग इन केवल इसलिए है ताकि शिक्षक आपकी प्रगति देख सकें। कोड नहीं है? शिक्षक से पूछें।",
+"Đổi mật khẩu":"पासवर्ड बदलें","Mật khẩu hiện tại":"वर्तमान पासवर्ड","Mật khẩu mới (ít nhất 4 ký tự)":"नया पासवर्ड (कम से कम 4 अक्षर)","Lưu mật khẩu mới":"नया पासवर्ड सहेजें",
+"Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.":"अध्ययन समय, पलटे गए कार्ड, सुनना, क्विज़ और याद किए शब्द शिक्षक को भेजे जाते हैं।","Đăng xuất":"लॉग आउट",
+"Xong":"हो गया","Giáo trình":"पाठ्यपुस्तक","Chọn giáo trình":"पाठ्यपुस्तक चुनें","Chế độ sáng tối":"लाइट / डार्क मोड","Theo máy":"सिस्टम के अनुसार","Sáng":"लाइट","Tối":"डार्क","Màu chủ đề":"थीम रंग",
+"Thanh từ":"सेलाडॉन","Lam nhuộm":"नील","Anh đào":"चेरी","Trúc":"बाँस","Mực tàu":"स्याही","Kiểu chữ Hán":"चीनी फ़ॉन्ट","Minh (sách in)":"Ming (मुद्रित)","Khải (viết tay)":"Kai (हस्तलिखित)","Hắc (không chân)":"Hei (सैन्स)",
+"Giọng đọc":"आवाज़","Giọng thu sẵn (AI)":"रिकॉर्ड की गई आवाज़ (AI)","Giọng thu sẵn (nữ)":"रिकॉर्ड की गई आवाज़ (AI)","Giọng của máy":"डिवाइस की आवाज़","Cỡ chữ giao diện":"इंटरफ़ेस टेक्स्ट आकार","Cỡ chữ Hán":"चीनी अक्षर आकार",
+"Tô màu thanh điệu pinyin":"पिनयिन टोन रंगें","Vị trí khung luyện viết":"लेखन पैड की जगह","Tự động":"स्वचालित","Bên phải":"दाएँ","Bên dưới":"नीचे","Kích thước khung luyện viết":"लेखन पैड आकार","Nhỏ":"छोटा","Lớn":"बड़ा",
+"Các tùy chỉnh được lưu trong trình duyệt của thiết bị này. Đăng nhập tài khoản học sinh để lưu theo tài khoản và dùng lại trên mọi máy.":"सेटिंग्स इस ब्राउज़र में सहेजी जाती हैं। सभी डिवाइस पर रखने के लिए छात्र खाते से लॉग इन करें।",
+"Ngôn ngữ":"भाषा","Ngôn ngữ · Language":"भाषा · Language","· Thẻ từ · Bài đọc · Ngữ pháp · Luyện viết":"· कार्ड · पाठ · व्याकरण · लेखन","Tiếng Việt":"Tiếng Việt",
+"Danh từ":"संज्ञा","Động từ":"क्रिया","Tính từ (Vs)":"अवस्था क्रिया (Vs)","Động từ trạng thái":"अवस्था क्रिया","Nội động từ":"अकर्मक क्रिया","Động từ quá trình":"प्रक्रिया क्रिया",
+"Trợ động từ":"सहायक क्रिया","Phó từ":"क्रियाविशेषण","Trợ từ":"निपात","Giới từ":"संबंधसूचक","Liên từ":"समुच्चयबोधक","Định từ":"निर्धारक","Lượng từ":"परिमाण शब्द","Động từ ly hợp":"विभाज्य क्रिया",
+"Tính từ (vị ngữ)":"अवस्था क्रिया (विधेय)","Tính từ (định ngữ)":"अवस्था क्रिया (विशेषण)","Tên riêng":"व्यक्तिवाचक नाम","Cụm từ":"वाक्यांश","Tên":"नाम","Cụm":"वाक्यांश",
+"Tổng hợp":"संयुक्त","bài · Hán tự, pinyin, nghĩa Việt và Anh":"पाठ · अक्षर, पिनयिन, हिंदी और अंग्रेज़ी अर्थ","Không còn từ nào trong mục này. Bỏ chọn “Chỉ từ chưa nhớ” hoặc chọn bài khác.":"यहाँ कोई शब्द नहीं बचा। “केवल न याद किए शब्द” हटाएँ या दूसरा पाठ चुनें।",
+"Thứ tự:":"क्रम:","Mặt trước:":"सामने:","Theo sách":"पुस्तक क्रम","Xáo trộn":"फेरबदल","Chữ Hán":"अक्षर","Nghĩa Việt":"अर्थ","Hết bộ thẻ":"कार्ड समाप्त",
+"từ trong lượt này bạn đã đánh dấu “Đã nhớ”.":"शब्द इस दौर में “याद है” चिह्नित।","Học lại từ đầu":"फिर से शुरू करें","Ôn từ chưa nhớ":"न याद किए शब्द दोहराएँ","đã nhớ":"याद","Lật thẻ":"कार्ड पलटें",
+"Chạm để lật thẻ":"पलटने के लिए टैप करें","Nghe phát âm":"सुनें","← Trước":"← पिछला","Chưa nhớ":"याद नहीं","Đã nhớ ✓":"याद है ✓","Sau →":"अगला →","Câu ví dụ":"उदाहरण वाक्य",
+"Hiện pinyin & nghĩa":"पिनयिन और अर्थ दिखाएँ","Ẩn pinyin & nghĩa":"पिनयिन और अर्थ छिपाएँ","Nghe câu":"वाक्य सुनें","Phím tắt: Space lật thẻ · ← → chuyển thẻ · 1 chưa nhớ · 2 đã nhớ":"शॉर्टकट: Space पलटें · ← → आगे/पीछे · 1 याद नहीं · 2 याद है",
+"Dạng câu:":"प्रश्न प्रकार:","Trộn":"मिश्रित","Hán → nghĩa":"अक्षर → अर्थ","Nghĩa → Hán":"अर्थ → अक्षर","Hán → pinyin":"अक्षर → पिनयिन","Kết quả":"परिणाम","Rất tốt!":"बहुत बढ़िया!",
+"Khá tốt, ôn thêm vài từ dưới đây.":"अच्छा — नीचे दिए शब्द दोहराएँ।","Cần ôn thêm. Thử học thẻ lật các từ sai rồi làm lại.":"और अभ्यास करें। गलत शब्द कार्ड से सीखें और फिर कोशिश करें।",
+"Từ trả lời sai":"गलत शब्द","Làm lượt mới":"नया दौर","Từ này nghĩa là gì?":"इस शब्द का अर्थ क्या है?","Từ này đọc là gì?":"यह शब्द कैसे पढ़ते हैं?","Chữ Hán nào có nghĩa này?":"किस शब्द का यह अर्थ है?",
+"Nghe và chọn chữ đúng":"सुनें और सही शब्द चुनें","Phát lại":"फिर चलाएँ","Bấm loa để nghe lại":"फिर सुनने के लिए स्पीकर टैप करें","Câu tiếp →":"अगला प्रश्न →","Luyện viết chữ này":"यह शब्द लिखने का अभ्यास करें",
+"Tìm chữ Hán, pinyin hoặc nghĩa…":"अक्षर, पिनयिन या अर्थ खोजें…","Không tìm thấy từ nào.":"कोई शब्द नहीं मिला।","Viết tự do. Ở tab Danh sách, chạm vào một chữ Hán để luyện chữ đó.":"मुक्त लेखन। शब्द सूची में किसी शब्द को टैप करके उसका अभ्यास करें।",
+"Bài đọc · 課文":"पाठ · 課文","Ngữ pháp · 文法":"व्याकरण · 文法","Tốc độ đọc":"पढ़ने की गति","Chậm":"धीमा","Vừa":"मध्यम","Thường":"सामान्य","▶︎ Đọc từng câu":"▶︎ वाक्य दर वाक्य पढ़ें","■ Dừng":"■ रोकें",
+"Thanh “Âm thanh gốc” phát bản ghi của sách. Chạm vào một câu, hoặc bấm “Đọc từng câu”, để nghe giọng đọc của máy cho riêng câu đó.":"“मूल ऑडियो” पट्टी पुस्तक की रिकॉर्डिंग चलाती है। कोई वाक्य टैप करें, या “वाक्य दर वाक्य पढ़ें” दबाएँ, उसे पढ़कर सुनने के लिए।",
+"Phần giải thích tiếng Việt được tóm tắt từ mục 文法 của sách; ví dụ lấy từ sách và bài khóa.":"व्याख्या पुस्तक के 文法 भाग से संक्षेपित है; उदाहरण पुस्तक और पाठ से लिए गए हैं।",
+"Tự động (ưu tiên tiếng Trung Đài Loan)":"स्वचालित (ताइवानी मंदारिन प्राथमिकता)","Máy chưa có giọng tiếng Trung — đang dùng giọng thu sẵn (AI). Xem hướng dẫn cài bên dưới.":"इस डिवाइस में चीनी आवाज़ नहीं है — रिकॉर्ड की गई (AI) आवाज़ उपयोग हो रही है। नीचे इंस्टॉल करने का तरीका देखें।",
+"Trình duyệt này không hỗ trợ giọng của máy.":"इस ब्राउज़र में अंतर्निहित आवाज़ें नहीं हैं।","Trình duyệt này không hỗ trợ đọc phát âm.":"यह ब्राउज़र आवाज़ का समर्थन नहीं करता।",
+"Cách cài giọng tiếng Trung hay hơn cho “Giọng của máy”":"“डिवाइस की आवाज़” के लिए बेहतर चीनी आवाज़ कैसे इंस्टॉल करें",
+"Nhập đủ mã lớp và mã học sinh.":"कक्षा कोड और छात्र आईडी दर्ज करें।","Đang đăng nhập…":"लॉग इन हो रहा है…","Máy chủ chưa cập nhật mã mới — báo giáo viên.":"सर्वर अपडेट नहीं है — शिक्षक को बताएँ।",
+"Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.":"सर्वर से कनेक्ट नहीं हो सका। नेटवर्क जाँचें और फिर कोशिश करें।","Nhập đủ mã lớp, họ tên và mã học sinh.":"कक्षा कोड, पूरा नाम और छात्र आईडी दर्ज करें।",
+"Mật khẩu cần ít nhất 4 ký tự.":"पासवर्ड कम से कम 4 अक्षर का हो।","Hai mật khẩu không khớp.":"दोनों पासवर्ड मेल नहीं खाते।","Đang tạo tài khoản…":"खाता बन रहा है…",
+"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 3).":"सर्वर अपडेट नहीं है (Code.gs संस्करण 3)।","Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2).":"सर्वर अपडेट नहीं है (Code.gs संस्करण 2)।",
+"Nhập tên đăng nhập và mật khẩu.":"उपयोगकर्ता नाम और पासवर्ड दर्ज करें।","Bạn đang dùng mật khẩu mặc định (là mã học sinh). Hãy đặt mật khẩu riêng để bạn khác không vào được tài khoản của bạn.":"आप डिफ़ॉल्ट पासवर्ड (छात्र आईडी) उपयोग कर रहे हैं। अपना पासवर्ड बनाएँ ताकि कोई और आपके खाते में न जा सके।",
+"Đang lưu…":"सहेजा जा रहा है…","Mật khẩu mới cần ít nhất 4 ký tự.":"नया पासवर्ड कम से कम 4 अक्षर का हो।","Đã đổi mật khẩu.":"पासवर्ड बदल गया।","Không kết nối được máy chủ.":"सर्वर से कनेक्ट नहीं हो सका।",
+"Chỉ quản trị mới tạo được tài khoản giáo viên":"केवल एडमिन शिक्षक खाते बना सकते हैं","Không có quyền":"अनुमति नहीं","Không tìm thấy học sinh":"छात्र नहीं मिला",
+"Mã học sinh cần ít nhất 2 ký tự (chữ không dấu, số, - hoặc _)":"छात्र आईडी कम से कम 2 अक्षर (अक्षर, अंक, - या _)","Mã lớp không tồn tại. Hỏi lại giáo viên mã lớp.":"कक्षा कोड नहीं मिला। शिक्षक से फिर पूछें।",
+"Mật khẩu cần ít nhất 4 ký tự":"पासवर्ड कम से कम 4 अक्षर का हो","Mật khẩu hiện tại không đúng":"वर्तमान पासवर्ड गलत है","Mật khẩu mới cần ít nhất 4 ký tự":"नया पासवर्ड कम से कम 4 अक्षर का हो",
+"Nhập họ tên":"पूरा नाम दर्ज करें","Phiên học sinh không hợp lệ":"सत्र समाप्त — फिर से लॉग इन करें","Sai mã lớp, mã học sinh hoặc mật khẩu":"कक्षा कोड, छात्र आईडी या पासवर्ड गलत है",
+"Sai tên đăng nhập hoặc mật khẩu":"उपयोगकर्ता नाम या पासवर्ड गलत है","Yêu cầu không hợp lệ":"अमान्य अनुरोध",
+"Giấy nháp":"रफ़ कागज़","✍️ Giấy nháp luyện viết":"✍️ लेखन अभ्यास पत्र","← Quay lại":"← वापस","Chữ mẫu":"नमूना अक्षर","✋ Kéo":"✋ खींचें",
+"Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo":"दो उँगलियाँ: ज़ूम इन / आउट / खिसकाएँ (Apple Pencil के साथ एक उँगली कागज़ खिसकाती है) · माउस: ज़ूम के लिए स्क्रॉल, खींचने के लिए दायाँ बटन या Space दबाए रखें",
+"Quyển này cần tài khoản":"इस पुस्तक के लिए खाता चाहिए","✍️ Chép bài này":"✍️ यह पाठ लिखें","✍️ Chép cả bài":"✍️ पूरा पाठ लिखें","Luyện viết bài đọc trên giấy nháp:":"रफ़ कागज़ पर पाठ लिखने का अभ्यास:",
+"Bảng màu":"रंग पैलेट","Màu khác…":"अन्य रंग…","Chọn tất cả":"सब चुनें","Bỏ chọn":"चयन हटाएँ","Chọn chữ để luyện":"अभ्यास के लिए अक्षर चुनें","Tất cả":"सभी","Chọn chữ":"अक्षर",
+"Cả bài":"पूरा पाठ","Giấy trắng":"खाली कागज़","Học Quyển 1":"पुस्तक 1 सीखें",
+"Tick chọn từ để luyện viết trên giấy nháp":"रफ़ कागज़ पर अभ्यास के लिए शब्द चिह्नित करें","✍️ Giấy nháp (tất cả)":"✍️ रफ़ कागज़ (सभी)",
+"Cần đăng nhập bằng tài khoản lớp học để học.":"सीखने के लिए कक्षा खाते से लॉग इन करें।","Chưa có mã lớp? Hãy liên hệ giáo viên để được cung cấp mã lớp học.":"कक्षा कोड नहीं है? कोड पाने के लिए शिक्षक से संपर्क करें।",
+"Xóa hết toàn bộ giấy nháp?":"पूरा रफ़ कागज़ मिटाएँ?","Thu nhỏ":"छोटा करें","Phóng to":"बड़ा करें","Về 100%":"100% पर लौटें","Ô chữ điền ":"田 ग्रिड",
+"Đã có bản cập nhật mới":"नया संस्करण उपलब्ध है","Cập nhật":"अपडेट करें","Thêm màu":"अन्य रंग"
+};
+const HI_RX=[
+[/^Thẻ (\d+) \/ (\d+)$/,"कार्ड $1 / $2"],[/^Câu (\d+)\/(\d+) · Đúng (\d+)$/,"प्रश्न $1/$2 · सही $3"],[/^Bài (\d+)–(\d+):$/,"पाठ $1–$2:"],[/^Bài (\d+):$/,"पाठ $1:"],
+[/^\/ (\d+) từ đã nhớ$/,"/ $1 शब्द याद"],[/^bài (\d+)$/,"पाठ $1"],[/^(\d+) từ$/,"$1 शब्द"],[/^Ôn từ$/,"दोहराएँ"],[/^đến$/,"तक"],
+[/^Quyển (\d+)( 🔒)?$/,"पुस्तक $1$2"],[/^當代中文課程 (\d+) · Quyển (\d+)( 🔒)?$/,"當代中文課程 $1 · पुस्तक $2$3"],[/^Q(\d+)( 🔒)?$/,"P$1$2"],[/^Tập (\d+)$/,"पुस्तक $1"],
+[/^LESSON (\d+) · (\d+) điểm ngữ pháp$/,"पाठ $1 · $2 व्याकरण बिंदु"],[/^LESSON (\d+) · (.*)$/,"पाठ $1 · $2"],[/^Âm thanh gốc · (.+)$/,"मूल ऑडियो · $1"],[/^Nghe (.+)$/,"सुनें: $1"],
+[/^Lớp (\S+)(.*) · Mã (\S+)$/,"कक्षा $1$2 · आईडी $3"],[/^Tùy chỉnh được lưu vào tài khoản (.+) — đăng nhập ở máy khác sẽ tự áp dụng\.$/,"सेटिंग्स खाते $1 में सहेजी गईं — दूसरे डिवाइस पर लॉग इन करने पर अपने आप लागू होंगी।"],
+[/^Đã tạo tài khoản! Lần sau đăng nhập bằng mã lớp (\S+), mã học sinh (\S+) và mật khẩu bạn vừa đặt\.$/,"खाता बन गया! अगली बार कक्षा कोड $1, छात्र आईडी $2 और अपने नए पासवर्ड से लॉग इन करें।"],
+[/^Đang dùng: (.+)\. Giọng nghe ra sao tùy giọng đã cài trong máy\.$/,"उपयोग में: $1। आवाज़ डिवाइस में इंस्टॉल आवाज़ पर निर्भर है।"],
+[/^Giọng nữ đọc sẵn cho toàn bộ từ vựng, câu ví dụ, hội thoại và ví dụ ngữ pháp — máy nào cũng nghe giống nhau\. Mỗi bài tải lần đầu khoảng 1–3 MB(?: \(đã tải (\d+) bài\))?\. Câu nào chưa có bản thu sẽ dùng giọng của máy\.$/,(m,k)=>"सभी शब्दों, उदाहरणों, पाठों और व्याकरण उदाहरणों के लिए रिकॉर्ड की गई AI आवाज़ — हर डिवाइस पर एक जैसी। हर पाठ पहली बार लगभग 1–3 MB डाउनलोड करता है"+(k?` (${k} डाउनलोड हो चुके)`:"")+"। जिनकी रिकॉर्डिंग नहीं है वे डिवाइस की आवाज़ से चलेंगे।"],
+[/^Mã (học sinh|lớp) (.+)$/,(m,a,b)=>(a==="lớp"?"कक्षा कोड ":"छात्र आईडी ")+b.replace("đã tồn tại","पहले से मौजूद है")],
+[/^Máy bạn chưa có giọng đọc tiếng Trung.*/,"इस डिवाइस में चीनी आवाज़ नहीं है, इसलिए रिकॉर्ड की गई AI आवाज़ उपयोग होती है। आप डिवाइस की भाषा सेटिंग्स में चीनी (ताइवान) आवाज़ इंस्टॉल कर सकते हैं।"],
+[/^Quyển (\d+) cần tài khoản$/,"पुस्तक $1 के लिए खाता चाहिए"],
+[/^Quyển (1(?:–\d+)?) học tự do\. Từ Quyển (\d+) trở đi cần đăng nhập bằng tài khoản lớp học\.$/,"पुस्तक $1 मुफ़्त में सीखें। पुस्तक $2 से, शिक्षक के कक्षा खाते से लॉग इन करें।"],
+[/^Đã chọn (\d+) từ · (\d+) chữ$/,"$1 शब्द चुने · $2 अक्षर"],[/^✍️ Viết (\d+) chữ đã chọn$/,"✍️ चुने गए $1 अक्षर लिखें"],
+[/^(\d+) chữ đang luyện$/,"$1 अक्षरों का अभ्यास"],[/^Bài (\d+) · chép bài đọc$/,"पाठ $1 · पाठ लिखें"],
+[/^Giáo viên · tên đăng nhập (.+) · tùy chỉnh và từ đã nhớ được lưu theo tài khoản$/,"शिक्षक · उपयोगकर्ता नाम $1 · सेटिंग्स और याद किए शब्द खाते में सहेजे जाते हैं"],
+[/^Chọn (.+)$/,"$1 चुनें"],[/^✍️ (對話.|短文|課文.|摘要.?)$/,"✍️ $1"]
+];
+const VHELP_HI=`<summary>“डिवाइस की आवाज़” के लिए बेहतर चीनी आवाज़ कैसे इंस्टॉल करें</summary>
+<p><b>iPad / iPhone:</b> सेटिंग्स → एक्सेसिबिलिटी → स्पोकन कंटेंट → वॉइसेज़ → चीनी (ताइवान) → <b>Meijia</b> चुनें → उपलब्ध हो तो <b>Enhanced</b> या <b>Premium</b> संस्करण डाउनलोड करें। फिर यह पेज दोबारा खोलें और ऊपर वह आवाज़ चुनें।</p>
+<p><b>Android:</b> सेटिंग्स → “Text-to-speech” खोजें → <b>Speech Services by Google</b> के पास गियर आइकन टैप करें → <b>Install voice data</b> → <b>中文（台灣）</b> चुनें → डाउनलोड करके आवाज़ चुनें। फ़ोन ब्रांड के अनुसार नाम थोड़े अलग हो सकते हैं।</p>
+<p><b>iPhone में आवाज़ नहीं?</b> साइड का साइलेंट स्विच रिंग मोड पर करें (नारंगी रेखा न दिखे) और वॉल्यूम बढ़ाएँ — साइलेंट मोड में पेज आवाज़ नहीं चला सकता।</p>
+<p><b>कंप्यूटर:</b> Windows / macOS की भाषा सेटिंग्स में चीनी (ताइवान) भाषा और उसकी आवाज़ जोड़ें।</p>`;
+const FLAG_HI='<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#FF9933"/><rect y="13.33" width="30" height="6.67" fill="#138808"/><circle cx="15" cy="10" r="2.6" fill="none" stroke="#000080" stroke-width=".6"/><circle cx="15" cy="10" r=".5" fill="#000080"/></svg>';
 /* ---------- Indonesian interface (LANG==="id") ---------- */
 const ID_UI={
 "Mục học":"Bagian","Chọn quyển":"Pilih buku","Thẻ từ vựng":"Kartu kosakata","Bài đọc":"Bacaan","Ngữ pháp":"Tata bahasa","Học sinh":"Siswa","Tùy chỉnh":"Pengaturan",
@@ -1479,14 +1567,14 @@ const VHELP_ID=`<summary>Cara memasang “Suara perangkat” Mandarin yang lebih
 const FLAG_ID='<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="10" fill="#E70011"/><rect y="10" width="30" height="10" fill="#fff"/></svg>';
 
 
-function ENB(b,o){if(b!==BOOK)return;try{enApply(o)}catch(e){}try{if(o.w)W.forEach(w=>{const t=o.w[w.id];if(t){if(LANG==="id")w.e=w.v;w.v=t}})}catch(e){}document.documentElement.classList.remove("enwait");try{rerender()}catch(e){}}
+function ENB(b,o){if(b!==BOOK)return;try{enApply(o)}catch(e){}try{if(o.w)W.forEach(w=>{const t=o.w[w.id];if(t){if(LANG==="id"||LANG==="hi")w.e=w.v;w.v=t}})}catch(e){}document.documentElement.classList.remove("enwait");try{rerender()}catch(e){}}
 function enApply(o){(o.c||[]).forEach((L,i)=>{const C=CONTENT[i];if(!C||!L)return;if(L.tv)C.tv=L.tv;
   (L.d||[]).forEach((d,j)=>{const D=C.d[j];if(!D||!d)return;if(d.v)D.v=d.v;(d.x||[]).forEach((t,k)=>{if(t&&D.x[k])D.x[k][4]=t})});
   (L.g||[]).forEach((g,j)=>{const G=C.g[j];if(!G||!g)return;if(g.v)G.v=g.v;if(g.e)G.e=g.e;if(g.s)G.s=g.s;(g.x||[]).forEach((t,k)=>{if(t&&G.x[k])G.x[k][2]=t})})});
   (o.x||[]).forEach((a,gi)=>{if(a&&EX[gi])a.forEach((t,k)=>{if(t&&EX[gi][k])EX[gi][k][2]=t})})}
-if(LANG!=="vi"){const R=document.documentElement;R.classList.add("enwait");const sc=document.createElement("script");sc.src=LANG+"/b"+BOOK+".js";sc.onerror=()=>{if(LANG==="id"&&!sc.fb){sc.fb=1;const s2=document.createElement("script");s2.src="en/b"+BOOK+".js";s2.onload=s2.onerror=()=>R.classList.remove("enwait");document.head.appendChild(s2)}else R.classList.remove("enwait")};document.head.appendChild(sc);setTimeout(()=>R.classList.remove("enwait"),8000)}
+if(LANG!=="vi"){const R=document.documentElement;R.classList.add("enwait");const sc=document.createElement("script");sc.src=LANG+"/b"+BOOK+".js";sc.onerror=()=>{if((LANG==="id"||LANG==="hi")&&!sc.fb){sc.fb=1;const s2=document.createElement("script");s2.src="en/b"+BOOK+".js";s2.onload=s2.onerror=()=>R.classList.remove("enwait");document.head.appendChild(s2)}else R.classList.remove("enwait")};document.head.appendChild(sc);setTimeout(()=>R.classList.remove("enwait"),8000)}
 renderLessons();render();showSec(S.sec);
-(()=>{const nm="當代中文課程 "+BOOK;document.title=(LANG==="en"?"Learn 當代中文 ":LANG==="id"?"Belajar 當代中文 ":"Học 當代中文 ")+BOOK;document.getElementById("brandT").textContent="Tập "+BOOK;document.querySelectorAll(".bkN").forEach(e=>e.textContent=nm);try{document.getElementById("bkNL").textContent=NL}catch(_){}
+(()=>{const nm="當代中文課程 "+BOOK;document.title=(LANG==="en"?"Learn 當代中文 ":LANG==="id"?"Belajar 當代中文 ":LANG==="hi"?"當代中文 सीखें ":"Học 當代中文 ")+BOOK;document.getElementById("brandT").textContent="Tập "+BOOK;document.querySelectorAll(".bkN").forEach(e=>e.textContent=nm);try{document.getElementById("bkNL").textContent=NL}catch(_){}
   [["bookPick",i=>(innerWidth<560?"Q":"Quyển ")+i],["sBook",i=>"當代中文課程 "+i+" · Quyển "+i]].forEach(([id,lb])=>{const g=document.getElementById(id);g.innerHTML=Array.from({length:NB},(_,k)=>`<option value="${k+1}"${k+1===BOOK?" selected":""}>${lb(k+1)}</option>`).join("");
     g.onchange=()=>{const v=+g.value;if(v===BOOK)return;try{if(typeof trkFlush==="function")trkFlush()}catch(_){}try{localStorage.setItem("tv1:book",v)}catch(_){}location.reload()}});try{lockCheck()}catch(_){}})();
 (()=>{["langSide","langAuth","langSet"].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=langBtns()});
@@ -1495,7 +1583,7 @@ renderLessons();render();showSec(S.sec);
   if(LANG!=="vi"){trNode(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode)}}).observe(document.body,{childList:true,subtree:true,characterData:true})}})();
 </script>
 
-<script>(()=>{const V="8933af0178";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="d7b3b96010";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const lg=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))}catch(e){return "vi"}})(),en=lg==="en",idn=lg==="id";
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
