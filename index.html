@@ -317,6 +317,22 @@ body.pp-bottom .padgrip{display:flex}
 #whoName{display:block;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
 .authwall[hidden],.authform[hidden],.navbtn[hidden]{display:none!important}
 #whoPw[hidden],#whoNote[hidden],#whoMgr[hidden]{display:none!important}
+.scratch{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
+.scratch[hidden]{display:none!important}
+body.sc-open{overflow:hidden}
+.scbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;background:var(--sheet);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.sctitle{display:flex;flex-direction:column;line-height:1.2;margin-right:6px}.sctitle b{font-size:16px}.sctitle .meta{font-size:12px}
+.scbar .sizer input{width:96px}
+.scboard{position:relative;flex:1;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;background:var(--sheet)}
+.scboard canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#scL{cursor:crosshair}
+.sczoom{position:absolute;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;background:var(--sheet);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.sczoom button{border:0;background:none;min-width:46px;min-height:44px;font:inherit;font-size:18px;font-weight:700;color:var(--ink);cursor:pointer}
+.sczoom #scPct{font-size:13px;min-width:62px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.schint{position:absolute;left:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);margin:0;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--sheet) 88%,transparent);box-shadow:var(--shadow);transition:opacity .6s;max-width:calc(100% - 230px);font-size:12px;color:var(--muted);pointer-events:none}
+@media (max-width:700px){.scbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.scbar>*{flex:none}.schint{display:none}}
+.listtools{display:flex;justify-content:flex-end}
+
 .lockwall{display:none;max-width:560px;margin:8vh auto 0;padding:36px 28px;text-align:center;flex-direction:column;align-items:center;gap:12px}
 .lockwall h2{margin:0;font-size:24px}.lockwall p{margin:0;color:var(--muted);line-height:1.6}
 .lockico{display:grid;place-items:center;flex:none;width:64px;height:64px;border-radius:50%;background:var(--acc-soft);color:var(--acc)}.lockico svg{width:30px;height:30px}
@@ -428,6 +444,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
   <div class="padgrip" id="padGrip" title="Kéo lên / xuống để đổi chiều cao khung viết"><i></i></div>
   <div class="padhead">
     <div class="padtitle"><span class="label" style="margin:0">Luyện viết</span><span class="padword" id="padWord"></span></div>
+    <button class="btn sm" id="padScr" title="Mở tờ giấy nháp nhiều ô, phóng to thu nhỏ được">Giấy nháp</button>
     <button class="btn sm" id="padHide">Ẩn khung viết</button>
   </div>
   <div class="tools">
@@ -448,6 +465,26 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
 </aside>
 
 
+<div class="scratch" id="scratch" hidden>
+  <div class="scbar">
+    <button class="btn sm" id="scClose">← Quay lại</button>
+    <div class="sctitle"><b>Giấy nháp</b><span class="meta" id="scInfo"></span></div>
+    <span class="seg" id="scTip"><button data-v="pencil">Bút chì</button><button data-v="pen">Bút bi</button><button data-v="brush">Bút lông</button></span>
+    <label class="sizer" title="Cỡ nét"><input type="range" id="scSize" min="2" max="30" step="1" aria-label="Cỡ nét"></label>
+    <span class="swatches" id="scCol"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button></span>
+    <span class="seg" id="scGridSeg"><button data-v="tian" class="han" title="Ô chữ điền">田</button><button data-v="mi" class="han" title="Ô chữ mễ">米</button><button data-v="none">Trơn</button></span>
+    <button class="tbtn" id="scModel" aria-pressed="true">Chữ mẫu</button>
+    <button class="tbtn" id="scTrace" aria-pressed="false">Tô theo mẫu</button>
+    <button class="tbtn" id="scHand" aria-pressed="false" title="Kéo để di chuyển tờ giấy">✋ Kéo</button>
+    <button class="tbtn" id="scErase" aria-pressed="false">Tẩy</button>
+    <button class="tbtn" id="scUndo">Hoàn tác</button>
+    <button class="tbtn" id="scClear">Xóa hết</button>
+  </div>
+  <div class="scboard" id="scBoard"><canvas id="scG"></canvas><canvas id="scI"></canvas><canvas id="scL"></canvas>
+    <div class="sczoom"><button id="scOut" aria-label="Thu nhỏ">−</button><button id="scPct" title="Về 100%">100%</button><button id="scIn" aria-label="Phóng to">+</button></div>
+    <p class="schint" id="scHint">Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo</p>
+  </div>
+</div>
 <div class="authwall" id="loginScrim" hidden>
   <div class="authcard" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
     <button class="authx" id="lgClose" aria-label="Đóng">✕</button>
@@ -751,7 +788,7 @@ function quizDraw(){const v=$("#view");
 /* ---------- list ---------- */
 function rowHTML(w){return `<tr><td class="h" data-id="${esc(w.id)}" title="Luyện viết chữ này">${esc(w.c)}</td><td class="p">${PY(w.p)}</td><td>${esc(w.v)}<div class="en">${esc(w.e)}</div></td><td class="l">L${w.l} · ${esc(w.t)}</td><td><button class="say" data-gi="${w.gi}" aria-label="Nghe ${esc(w.c)}">${SPK}</button></td></tr>`}
 function bindSay(root){root.querySelectorAll("[data-say],[data-gi]").forEach(b=>b.onclick=()=>b.dataset.gi!=null?playWord(W[+b.dataset.gi]):speak(b.dataset.say))}
-function listDraw(){$("#optExtra").innerHTML="";const v=$("#view");
+function listDraw(){$("#optExtra").innerHTML=`<button class="btn sm" id="openScr">✍️ Giấy nháp luyện viết</button>`;$("#openScr").onclick=()=>scOpen(pool().map(w=>w.c));const v=$("#view");
   v.innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><input class="search" id="q" type="search" placeholder="Tìm chữ Hán, pinyin hoặc nghĩa…"><div id="lst" style="display:flex;flex-direction:column;gap:16px"></div></div>`;
   const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
   const fill=()=>{const t=strip($("#q").value.trim());const rows=pool().filter(w=>!t||strip(w.c+" "+w.p+" "+w.v+" "+w.e).includes(t));
@@ -846,6 +883,119 @@ $("#pErase").onclick=()=>{P.erase=!P.erase;syncTools()};
 $("#pUndo").onclick=()=>{P.strokes.pop();redrawInk()};
 $("#pClear").onclick=()=>{P.strokes=[];redrawInk()};
 $("#padHide").onclick=()=>setPad(false);$("#padShow").onclick=()=>setPad(true);
+$("#padScr").onclick=()=>scOpen(P.target?[P.target.c]:pool().map(w=>w.c));
+/* ---------- scratch paper: infinite practice sheet with pan / zoom ---------- */
+const SC={open:false,z:1,tx:24,ty:24,C:140,strokes:[],cur:null,erase:false,hand:false,touch:new Map(),pinch:null,mpan:null,fpan:null,space:false,
+  chars:[],model:true,trace:false,W:0,H:0,raf:0,saveT:0};
+const scG=$("#scG"),scI=$("#scI"),scL=$("#scL"),sxG=scG.getContext("2d"),sxI=scI.getContext("2d"),sxL=scL.getContext("2d"),scB=$("#scBoard");
+const scKey=()=>"scr"+BOOK;
+function scLoad(){const d=store.get(scKey(),null);if(d&&Array.isArray(d.s)){SC.strokes=d.s.map(s=>({tip:s.t,color:s.c,erase:!!s.e,pts:s.p}));SC.strokes.forEach(scBB);
+  if(d.v){SC.z=d.v[0];SC.tx=d.v[1];SC.ty=d.v[2]}}}
+function scSave(now){clearTimeout(SC.saveT);const f=()=>{const r=v=>Math.round(v*10)/10;
+  store.set(scKey(),{v:[SC.z,r(SC.tx),r(SC.ty)],s:SC.strokes.map(s=>({t:s.tip,c:s.color,e:s.erase?1:0,p:s.pts.map(q=>[r(q[0]),r(q[1]),Math.round(q[2]*100)/100])}))})};if(now)f();else SC.saveT=setTimeout(f,600)}
+addEventListener("pagehide",()=>{if(SC.open||SC.saveT)scSave(true)});
+function scBB(s){let a=1e9,b=1e9,c=-1e9,d=-1e9,m=0;for(const q of s.pts){a=Math.min(a,q[0]);b=Math.min(b,q[1]);c=Math.max(c,q[0]);d=Math.max(d,q[1]);m=Math.max(m,q[2])}s.bb=[a-m,b-m,c+m,d+m]}
+function scSize(){const r=scB.getBoundingClientRect();SC.W=r.width;SC.H=r.height;const dpr=window.devicePixelRatio||1;
+  for(const c of [scG,scI,scL]){c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr)}scDraw()}
+const scW=(x,y)=>[(x-SC.tx)/SC.z,(y-SC.ty)/SC.z];
+function scPos(e){const r=scL.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
+function scReq(){if(!SC.raf)SC.raf=requestAnimationFrame(()=>{SC.raf=0;scDraw()})}
+function scDraw(){scGrid();scInk();$("#scPct").textContent=Math.round(SC.z*100)+"%"}
+function scGrid(){const dpr=window.devicePixelRatio||1,x=sxG,C=SC.C,z=SC.z,cs=C*z;x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,SC.W,SC.H);
+  const i0=Math.floor(-SC.tx/cs)-1,i1=Math.ceil((SC.W-SC.tx)/cs)+1,j0=Math.floor(-SC.ty/cs)-1,j1=Math.ceil((SC.H-SC.ty)/cs)+1;
+  const red=tok("--seal"),X=i=>SC.tx+i*cs,Y=j=>SC.ty+j*cs;
+  if(P.grid!=="none"&&cs>34){x.save();x.strokeStyle=red;x.globalAlpha=.3;x.lineWidth=1;x.setLineDash([Math.max(3,cs/24),Math.max(3,cs/24)]);x.beginPath();
+    for(let i=i0;i<=i1;i++){x.moveTo(X(i)+cs/2,Y(j0));x.lineTo(X(i)+cs/2,Y(j1))}for(let j=j0;j<=j1;j++){x.moveTo(X(i0),Y(j)+cs/2);x.lineTo(X(i1),Y(j)+cs/2)}
+    if(P.grid==="mi")for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++){x.moveTo(X(i),Y(j));x.lineTo(X(i+1),Y(j+1));x.moveTo(X(i+1),Y(j));x.lineTo(X(i),Y(j+1))}
+    x.stroke();x.restore()}
+  x.save();x.strokeStyle=red;x.globalAlpha=.55;x.lineWidth=cs>40?1.4:1;x.beginPath();
+  for(let i=i0;i<=i1;i++){x.moveTo(X(i),Y(j0));x.lineTo(X(i),Y(j1))}for(let j=j0;j<=j1;j++){x.moveTo(X(i0),Y(j));x.lineTo(X(i1),Y(j))}x.stroke();x.restore();
+  if(SC.model&&SC.chars.length){x.save();x.font=`${Math.round(cs*.78)}px ${MODELFONT}`;x.textAlign="center";x.textBaseline="middle";
+    for(let j=Math.max(0,j0);j<=Math.min(j1,SC.chars.length-1);j++){const ch=SC.chars[j];
+      for(let i=Math.max(0,i0);i<=Math.min(i1,SC.trace?7:0);i++){x.globalAlpha=i===0?.62:.16;x.fillStyle=i===0?tok("--ink"):tok("--muted");x.fillText(ch,X(i)+cs/2,Y(j)+cs/2+cs*.03)}}
+    x.restore()}}
+function scStyle(x,st){x.globalCompositeOperation=st.erase?"destination-out":"source-over";const col=st.erase?"#000":tok(COLORS[st.color]||"--ink");
+  x.strokeStyle=col;x.fillStyle=col;x.lineCap="round";x.lineJoin="round";x.globalAlpha=st.tip==="pencil"&&!st.erase?.85:1}
+function scStroke(x,st){const p=st.pts;if(!p.length)return;x.save();scStyle(x,st);
+  if(p.length===1){x.beginPath();x.arc(p[0][0],p[0][1],p[0][2]/2,0,Math.PI*2);x.fill();x.restore();return}
+  if(st.tip==="brush"&&!st.erase){for(let i=1;i<p.length;i++){const a=p[i-1],b=p[i],z0=i>=2?p[i-2]:a;x.lineWidth=(a[2]+b[2])/2;x.beginPath();
+      x.moveTo((z0[0]+a[0])/2,(z0[1]+a[1])/2);x.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);x.stroke()}
+    const a=p[p.length-2],b=p[p.length-1];x.lineWidth=b[2];x.beginPath();x.moveTo((a[0]+b[0])/2,(a[1]+b[1])/2);x.lineTo(b[0],b[1]);x.stroke()}
+  else{x.lineWidth=p[0][2];x.beginPath();x.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length-1;i++)x.quadraticCurveTo(p[i][0],p[i][1],(p[i][0]+p[i+1][0])/2,(p[i][1]+p[i+1][1])/2);
+    x.lineTo(p[p.length-1][0],p[p.length-1][1]);x.stroke()}
+  x.restore()}
+function scXf(x){const dpr=window.devicePixelRatio||1;x.setTransform(dpr*SC.z,0,0,dpr*SC.z,dpr*SC.tx,dpr*SC.ty)}
+function scInk(){const x=sxI;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,scI.width,scI.height);scXf(x);
+  const [a,b]=scW(0,0),[c,d]=scW(SC.W,SC.H);
+  for(const st of SC.strokes){const q=st.bb;if(q&&(q[2]<a||q[0]>c||q[3]<b||q[1]>d))continue;scStroke(x,st)}}
+function scLive(){const x=sxL;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,scL.width,scL.height);if(SC.cur&&!SC.cur.erase){scXf(x);scStroke(x,SC.cur)}}
+function scAdd(e){const st=SC.cur,[sx,sy]=scPos(e),[wx,wy]=scW(sx,sy);let w=baseW(st)/SC.z;
+  if(st.tip==="brush"&&!st.erase){let f=1;const now=e.timeStamp||performance.now();
+    if(e.pointerType==="pen"&&e.pressure>0)f=.2+1.6*e.pressure;
+    else{const l=st.pts[st.pts.length-1];if(l){const v=Math.hypot(wx-l[0],wy-l[1])*SC.z/Math.max(1,now-st.lt);f=Math.max(.35,Math.min(1.2,1.2-v*.3))}}
+    st.lt=now;const tw=w*f;w=st.lw==null?tw:st.lw*.65+tw*.35;st.lw=w}
+  st.pts.push([wx,wy,w]);
+  if(st.erase){scXf(sxI);const n=st.pts.length;scStroke(sxI,{...st,pts:st.pts.slice(Math.max(0,n-3))})}else scLive()}
+function scBegin(e){SC.cur={id:e.pointerId,tip:P.tip,color:P.color,erase:SC.erase,pts:[],lt:0,lw:null,t0:performance.now()};scAdd(e)}
+function scEnd(){const st=SC.cur;if(!st)return;SC.cur=null;scBB(st);SC.strokes.push(st);if(!st.erase){scXf(sxI);scStroke(sxI,st)}scLive();scSave()}
+function scCancel(){SC.cur=null;scLive()}
+function scZoomAt(sx,sy,f){const z=Math.max(.2,Math.min(5,SC.z*f));const [wx,wy]=scW(sx,sy);SC.z=z;SC.tx=sx-wx*z;SC.ty=sy-wy*z;scReq();scSave()}
+function scPinchStart(){const [a,b]=[...SC.touch.values()];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;SC.pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:SC.z,w:scW(mx,my)}}
+function scPinchMove(){const [a,b]=[...SC.touch.values()];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,d=Math.hypot(a.x-b.x,a.y-b.y)||1;
+  const z=Math.max(.2,Math.min(5,SC.pinch.z*d/SC.pinch.d));SC.z=z;SC.tx=mx-SC.pinch.w[0]*z;SC.ty=my-SC.pinch.w[1]*z;scReq()}
+scL.addEventListener("pointerdown",e=>{const [x,y]=scPos(e);try{scL.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
+  if(e.pointerType==="pen"){P.penSeen=true;if(SC.cur)scCancel();scBegin(e);return}
+  if(e.pointerType==="touch"){SC.touch.set(e.pointerId,{x,y});
+    if(SC.touch.size>=2){if(SC.cur&&SC.cur.id!==undefined&&SC.touch.has(SC.cur.id)){if(SC.cur.pts.length<14||performance.now()-SC.cur.t0<350)scCancel();else scEnd()}SC.fpan=null;scPinchStart();return}
+    if(P.penSeen||SC.hand){SC.fpan={id:e.pointerId,x,y};return}
+    if(!SC.cur)scBegin(e);return}
+  if(e.button===1||e.button===2||SC.hand||SC.space){SC.mpan={id:e.pointerId,x,y};scL.style.cursor="grabbing";return}
+  if(e.button===0&&!SC.cur)scBegin(e)});
+scL.addEventListener("pointermove",e=>{const [x,y]=scPos(e);
+  if(SC.touch.has(e.pointerId)){SC.touch.set(e.pointerId,{x,y});if(SC.pinch&&SC.touch.size>=2){scPinchMove();return}}
+  const pan=(SC.fpan&&SC.fpan.id===e.pointerId)?SC.fpan:(SC.mpan&&SC.mpan.id===e.pointerId)?SC.mpan:null;
+  if(pan){SC.tx+=x-pan.x;SC.ty+=y-pan.y;pan.x=x;pan.y=y;scReq();return}
+  if(SC.cur&&SC.cur.id===e.pointerId){e.preventDefault();const evs=(e.getCoalescedEvents&&e.getCoalescedEvents())||[];for(const ev of (evs.length?evs:[e]))scAdd(ev)}});
+function scUp(e){if(SC.touch.has(e.pointerId)){SC.touch.delete(e.pointerId);if(SC.touch.size<2&&SC.pinch){SC.pinch=null;scSave();
+      if(SC.touch.size===1&&(P.penSeen||SC.hand)){const [id,p]=[...SC.touch.entries()][0];SC.fpan={id,x:p.x,y:p.y}}}}
+  if(SC.fpan&&SC.fpan.id===e.pointerId){SC.fpan=null;scSave()}
+  if(SC.mpan&&SC.mpan.id===e.pointerId){SC.mpan=null;scL.style.cursor="";scSave()}
+  if(SC.cur&&SC.cur.id===e.pointerId)scEnd()}
+scL.addEventListener("pointerup",scUp);scL.addEventListener("pointercancel",e=>{if(SC.cur&&SC.cur.id===e.pointerId)scCancel();scUp(e)});
+scL.addEventListener("contextmenu",e=>e.preventDefault());
+scL.addEventListener("wheel",e=>{e.preventDefault();const [x,y]=scPos(e);const k=e.ctrlKey?.012:.0016;scZoomAt(x,y,Math.exp(-e.deltaY*k))},{passive:false});
+["gesturestart","gesturechange"].forEach(ev=>document.getElementById("scratch").addEventListener(ev,e=>e.preventDefault()));
+scB.addEventListener("touchstart",e=>e.preventDefault(),{passive:false});scB.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
+addEventListener("keydown",e=>{if(!SC.open)return;if(e.code==="Space"&&!SC.space){SC.space=true;scL.style.cursor="grab";e.preventDefault()}
+  else if(e.key==="Escape")scClose();else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();scUndo()}});
+addEventListener("keyup",e=>{if(e.code==="Space"){SC.space=false;if(!SC.mpan)scL.style.cursor=""}});
+addEventListener("resize",()=>{if(SC.open)scSize()});
+function scUndo(){SC.strokes.pop();scInk();scSave()}
+function scSync(){document.querySelectorAll("#scTip button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.tip&&!SC.erase&&!SC.hand));
+  document.querySelectorAll("#scCol button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.color));
+  document.querySelectorAll("#scGridSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.grid));
+  $("#scSize").value=P.size;$("#scErase").setAttribute("aria-pressed",SC.erase);$("#scHand").setAttribute("aria-pressed",SC.hand);
+  $("#scModel").setAttribute("aria-pressed",SC.model);$("#scTrace").setAttribute("aria-pressed",SC.trace);$("#scModel").hidden=$("#scTrace").hidden=!SC.chars.length}
+$("#scTip").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.tip=b.dataset.v;SC.erase=false;SC.hand=false;store.set("tip",P.tip);scSync();try{syncTools()}catch(_){}};
+$("#scCol").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.color=b.dataset.v;SC.erase=false;SC.hand=false;store.set("color",P.color);scSync();try{syncTools()}catch(_){}};
+$("#scGridSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.grid=b.dataset.v;store.set("grid",P.grid);scSync();scGrid();try{syncTools();drawGuide()}catch(_){}};
+$("#scSize").oninput=e=>{P.size=+e.target.value;store.set("size",P.size);try{syncTools()}catch(_){}};
+$("#scErase").onclick=()=>{SC.erase=!SC.erase;SC.hand=false;scSync()};
+$("#scHand").onclick=()=>{SC.hand=!SC.hand;SC.erase=false;scSync()};
+$("#scModel").onclick=()=>{SC.model=!SC.model;store.set("scModel",SC.model);scSync();scGrid()};
+$("#scTrace").onclick=()=>{SC.trace=!SC.trace;store.set("scTrace",SC.trace);scSync();scGrid()};
+$("#scUndo").onclick=scUndo;
+$("#scClear").onclick=()=>{if(!SC.strokes.length)return;if(!confirm(LANG==="en"?"Clear the whole sheet?":"Xóa hết toàn bộ giấy nháp?"))return;SC.strokes=[];scInk();scSave()};
+$("#scIn").onclick=()=>scZoomAt(SC.W/2,SC.H/2,1.25);$("#scOut").onclick=()=>scZoomAt(SC.W/2,SC.H/2,.8);
+$("#scPct").onclick=()=>{SC.z=1;SC.tx=24;SC.ty=24;scDraw();scSave()};
+$("#scClose").onclick=()=>scClose();
+function scOpen(chars){SC.chars=[...new Set((chars||[]).join("").split("").filter(ch=>/[㐀-鿿豈-﫿]/.test(ch)))].slice(0,300);
+  SC.model=store.get("scModel",true);SC.trace=store.get("scTrace",false);SC.erase=false;SC.hand=false;SC.cur=null;SC.touch.clear();SC.pinch=SC.fpan=SC.mpan=null;
+  scLoad();SC.open=true;$("#scratch").hidden=false;document.body.classList.add("sc-open");scSync();
+  $("#scInfo").textContent=SC.chars.length?(LANG==="en"?`${SC.chars.length} characters from this list`:`${SC.chars.length} chữ trong danh sách này`):"";
+  requestAnimationFrame(scSize);$("#scHint").style.opacity=1;clearTimeout(SC.hintT);SC.hintT=setTimeout(()=>{$("#scHint").style.opacity=0},7000);if(SC.chars.length&&document.fonts&&document.fonts.load)document.fonts.load(`64px "LXGW WenKai TC"`,SC.chars.join("")).then(()=>{if(SC.open)scGrid()}).catch(()=>{})}
+function scClose(){SC.open=false;$("#scratch").hidden=true;document.body.classList.remove("sc-open");scSave(true)}
+
 if(window.ResizeObserver)new ResizeObserver(()=>layout()).observe(board);else window.addEventListener("resize",layout);
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>layout())}catch(_){}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>layout());
@@ -1059,7 +1209,7 @@ const EN_UI={
 "Chưa có tài khoản?":"No account yet?","Tạo tài khoản bằng mã lớp":"Create an account with a class code","Mã lớp (giáo viên cung cấp)":"Class code (from your teacher)","Họ tên":"Full name",
 "VD: Nguyễn Văn An":"e.g. John Smith","Mã học sinh (tự đặt, dùng để đăng nhập)":"Student ID (your choice, used to log in)","VD: AN2005 hoặc mã số sinh viên":"e.g. JOHN2005 or your student number",
 "Mật khẩu (ít nhất 4 ký tự)":"Password (at least 4 characters)","Nhập lại mật khẩu":"Repeat password","Tạo tài khoản & vào học":"Create account & start","Đã có tài khoản?":"Already have an account?",
-"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
+"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Giấy nháp":"Scratch paper","✍️ Giấy nháp luyện viết":"✍️ Practice sheet","← Quay lại":"← Back","Chữ mẫu":"Model characters","✋ Kéo":"✋ Pan","Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo":"Two fingers: zoom / move (with Apple Pencil, one finger moves the sheet) · Mouse: scroll to zoom, hold right button or Space to drag","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
 "Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.":"Student login only lets your teacher follow your progress. No code yet? Ask your teacher.",
 "Đổi mật khẩu":"Change password","Mật khẩu hiện tại":"Current password","Mật khẩu mới (ít nhất 4 ký tự)":"New password (at least 4 characters)","Lưu mật khẩu mới":"Save new password",
 "Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.":"Study time, card flips, listening, quizzes and learned words are sent to your teacher.","Đăng xuất":"Log out",
