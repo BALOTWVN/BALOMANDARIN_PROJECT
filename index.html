@@ -311,9 +311,12 @@ body.pp-bottom .padgrip{display:flex}
 .fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
 .fld input{min-height:50px;border:1px solid var(--line);border-radius:14px;padding:0 16px;font:inherit;font-size:18px;letter-spacing:.06em;background:var(--paper);color:var(--ink);text-transform:uppercase}
 .fld input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.navbtn.who{min-height:0;padding:6px 4px 10px;border-bottom:1px solid var(--line);border-radius:16px 16px 0 0;margin-bottom:2px}
+.navbtn.who #whoName{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .navbtn.who .g{font-size:15px;width:34px;height:34px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;margin:0 auto 4px}
 #whoName{display:block;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
 .authwall[hidden],.authform[hidden],.navbtn[hidden]{display:none!important}
+#whoPw[hidden],#whoNote[hidden],#whoMgr[hidden]{display:none!important}
 .authcard .btn.wide{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
 :root[data-theme="dark"] .authcard .btn.wide{color:#0b1412}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .authcard .btn.wide{color:#0b1412}}
@@ -352,11 +355,11 @@ body.pp-bottom .padgrip{display:flex}
 <div class="layout">
 <nav class="side" id="side" aria-label="Mục học">
   <div class="brand"><span class="stamp">當代<br>中文</span><span id="brandT">Tập 1</span></div>
+  <button class="navbtn who" id="whoBtn" hidden><span class="g" id="whoIni">學</span><span id="whoName">Học sinh</span></button>
   <div class="bookpick"><select id="bookPick" class="booksel" aria-label="Chọn quyển"></select></div>
   <button class="navbtn" data-sec="vocab"><span class="g">詞</span>Thẻ từ vựng</button>
   <button class="navbtn" data-sec="read"><span class="g">讀</span>Bài đọc</button>
   <button class="navbtn" data-sec="gram"><span class="g">法</span>Ngữ pháp</button>
-  <button class="navbtn who" id="whoBtn" hidden><span class="g" id="whoIni">學</span><span id="whoName">Học sinh</span></button>
   <button class="navbtn gear" id="openSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Tùy chỉnh</button>
 </nav>
 <div class="wrap">
@@ -462,7 +465,7 @@ body.pp-bottom .padgrip{display:flex}
       <label class="fld"><span>Mật khẩu</span><input id="tgP" name="password" type="password" autocomplete="current-password" required></label>
       <label class="rem"><input type="checkbox" id="tgR"> Ghi nhớ đăng nhập trên máy này</label>
       <p class="note lgErr" id="tgErr"></p>
-      <button class="btn yes wide" id="tgGo" type="submit">Vào trang quản lý</button>
+      <button class="btn yes wide" id="tgGo" type="submit">Đăng nhập</button>
     </form>
     <button class="tbtn" id="lgSkip" style="width:100%;border:0;background:none;color:var(--muted);font-weight:600">Học ngay, không cần đăng nhập →</button>
     <p class="meta" style="text-align:center;margin:0;font-size:12px">Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.</p>
@@ -473,12 +476,13 @@ body.pp-bottom .padgrip{display:flex}
     <h2><span id="whoTitle">Học sinh</span><button class="btn sm" id="whoClose">Đóng</button></h2>
     <p class="meta" id="whoInfo" style="margin:-6px 0 0"></p>
     <p class="note" id="pwHint"></p>
-    <div class="set"><div class="label">Đổi mật khẩu</div>
+    <button class="btn yes" id="whoMgr" style="width:100%" hidden>Trang quản lý giáo viên</button>
+    <div class="set" id="whoPw"><div class="label">Đổi mật khẩu</div>
       <label class="fld"><span>Mật khẩu hiện tại</span><input type="password" id="cpOld" autocomplete="current-password"></label>
       <label class="fld"><span>Mật khẩu mới (ít nhất 4 ký tự)</span><input type="password" id="cpNew" autocomplete="new-password"></label>
       <p class="note lgErr" id="cpMsg"></p>
       <button class="btn" id="cpGo">Lưu mật khẩu mới</button></div>
-    <p class="note">Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.</p>
+    <p class="note" id="whoNote">Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.</p>
     <button class="btn" id="whoOut" style="width:100%">Đăng xuất</button>
   </div>
 </div>
@@ -921,7 +925,7 @@ applyCfg();window.cfgReady=true;
 /* ---------- class tracking (only when TRACK_URL is set) ---------- */
 const TRACK_URL="https://script.google.com/macros/s/AKfycbyRqPnotsCmWmIq41fskY-MyqUliFWeventBwIQw7Ps0JJavWCKRxj-T0aTnV6gdRE4TA/exec";
 let STU=store.get("stu",null),TRK=store.get("trk",{}),SEEN=store.get("seen",{}),lastAct=Date.now();
-const tracking=()=>!!(TRACK_URL&&STU);
+const tracking=()=>!!(TRACK_URL&&STU&&!STU.gv);
 function curLesson(){if(S.sec!=="vocab")return S.rl;if(S.lesson!=="all")return S.lesson;if(S.mode==="cards"&&deck&&deck[pos])return deck[pos].l;return 0}
 function trkAdd(l,k,n){if(!tracking())return;l=+l||0;if(LOFF&&l>0&&l<100)l+=LOFF;l=String(l);(TRK[l]=TRK[l]||{})[k]=(TRK[l][k]||0)+(n||1);store.set("trk",TRK)}
 function trkSeen(w){if(!tracking())return;const L=w.l+LOFF;const a=SEEN[L]=SEEN[L]||[];if(!a.includes(w.id)){a.push(w.id);store.set("seen",SEEN);(TRK[L]=TRK[L]||{})}}
@@ -977,9 +981,12 @@ async function doReg(){const c=$("#rgC").value.trim(),n=$("#rgN").value.trim(),s
   catch(e){$("#rgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 async function doTLogin(){const u=$("#tgU").value.trim(),pw=$("#tgP").value;if(!u||!pw){$("#tgErr").textContent="Nhập tên đăng nhập và mật khẩu.";return}
   await busy($("#tgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"tlogin",u,p:pw});
-    if(r.ok&&r.u){const cr=JSON.stringify({u,p:pw,n:r.n});try{sessionStorage.setItem("tvT:cred",cr);if($("#tgR").checked)localStorage.setItem("tvT:cred",cr)}catch(e){}location.href="teacher.html"}else $("#tgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2)."}
+    if(r.ok&&r.u){const cr=JSON.stringify({u,p:pw,n:r.n});try{sessionStorage.setItem("tvT:cred",cr);if($("#tgR").checked)localStorage.setItem("tvT:cred",cr)}catch(e){}
+      if(!r.tok||/[?&]gv=1/.test(location.search)){location.href="teacher.html";return}
+      STU={c:r.c,s:r.s,n:r.n||r.u,tok:r.tok,gv:1,u:r.u,admin:!!r.admin};store.set("stu",STU);$("#loginScrim").hidden=true;$("#tgP").value="";whoDraw();cfgPull(r.cfg);knPull(r.kn,true)}else $("#tgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2)."}
   catch(e){$("#tgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
-function openWho(first){$("#whoTitle").textContent=STU.n||STU.s;$("#whoInfo").textContent=`Lớp ${STU.c}${STU.cn?" · "+STU.cn:""} · Mã ${STU.s}`;
+function openWho(first){const gv=!!STU.gv;$("#whoMgr").hidden=!gv;$("#whoPw").hidden=gv;$("#whoNote").hidden=gv;$("#whoTitle").textContent=STU.n||STU.s;
+  $("#whoInfo").textContent=gv?(LANG==="en"?"Teacher · username ":"Giáo viên · tên đăng nhập ")+(STU.u||STU.s).toLowerCase()+(LANG==="en"?" · your settings and learned words are saved":" · tùy chỉnh và từ đã nhớ được lưu theo tài khoản"):`Lớp ${STU.c}${STU.cn?" · "+STU.cn:""} · Mã ${STU.s}`;
   $("#pwHint").textContent=first?"Bạn đang dùng mật khẩu mặc định (là mã học sinh). Hãy đặt mật khẩu riêng để bạn khác không vào được tài khoản của bạn.":"";$("#cpMsg").textContent="";$("#cpOld").value=first?STU.s:"";$("#cpNew").value="";$("#whoScrim").hidden=false}
 if(TRACK_URL){
   $("#roleTabs").onclick=e=>{const b=e.target.closest("button");if(b)role(b.dataset.r)};
@@ -990,7 +997,8 @@ if(TRACK_URL){
   const closeLogin=()=>{$("#loginScrim").hidden=true};$("#lgClose").onclick=closeLogin;$("#lgSkip").onclick=closeLogin;$("#whoClose").onclick=()=>{$("#whoScrim").hidden=true};
   $("#cpGo").onclick=()=>busy($("#cpGo"),"Đang lưu…",async()=>{const np=$("#cpNew").value;if(np.length<4){$("#cpMsg").textContent="Mật khẩu mới cần ít nhất 4 ký tự.";return}
     try{const r=await api({a:"chpw",c:STU.c,s:STU.s,p:$("#cpOld").value,np});$("#cpMsg").style.color=r.ok?"var(--good)":"";$("#cpMsg").textContent=r.ok?"Đã đổi mật khẩu.":r.err}catch(e){$("#cpMsg").textContent="Không kết nối được máy chủ."}});
-  $("#whoOut").onclick=()=>{trkFlush(true);clearTimeout(knT);known=new Set();store.set("known",[]);store.set("knownT",0);try{stats();rerender()}catch(e){}STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw()};
+  $("#whoMgr").onclick=()=>{location.href="teacher.html"};
+  $("#whoOut").onclick=()=>{if(STU&&STU.gv){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}}trkFlush(true);clearTimeout(knT);known=new Set();store.set("known",[]);store.set("knownT",0);try{stats();rerender()}catch(e){}STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw()};
   if(STU&&!STU.tok){STU=null;store.set("stu",null)}
   whoDraw();if(/[?&]gv=1/.test(location.search)){role("gv");showLogin()}
   if(STU&&STU.tok)api({a:"getcfg",c:STU.c,s:STU.s,tok:STU.tok}).then(r=>{if(r&&r.ok){if(r.cfg){const ch=CFG_SYNC.some(k=>r.cfg[k]!==undefined&&r.cfg[k]!==CFG[k]);if(ch)cfgPull(r.cfg)}knPull(r.kn,false)}}).catch(()=>{})}
@@ -1026,7 +1034,7 @@ const EN_UI={
 "Chưa có tài khoản?":"No account yet?","Tạo tài khoản bằng mã lớp":"Create an account with a class code","Mã lớp (giáo viên cung cấp)":"Class code (from your teacher)","Họ tên":"Full name",
 "VD: Nguyễn Văn An":"e.g. John Smith","Mã học sinh (tự đặt, dùng để đăng nhập)":"Student ID (your choice, used to log in)","VD: AN2005 hoặc mã số sinh viên":"e.g. JOHN2005 or your student number",
 "Mật khẩu (ít nhất 4 ký tự)":"Password (at least 4 characters)","Nhập lại mật khẩu":"Repeat password","Tạo tài khoản & vào học":"Create account & start","Đã có tài khoản?":"Already have an account?",
-"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
+"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
 "Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.":"Student login only lets your teacher follow your progress. No code yet? Ask your teacher.",
 "Đổi mật khẩu":"Change password","Mật khẩu hiện tại":"Current password","Mật khẩu mới (ít nhất 4 ký tự)":"New password (at least 4 characters)","Lưu mật khẩu mới":"Save new password",
 "Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.":"Study time, card flips, listening, quizzes and learned words are sent to your teacher.","Đăng xuất":"Log out",

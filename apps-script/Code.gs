@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 8 (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 9 (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -109,7 +109,9 @@ function handle_(p) {
         if (p.tok && p.tok === tok_(p.c, p.s)) return out_({ ok: true, cfg: getCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s)), kn: getCfg_(s, 'KN:' + norm_(p.c) + ':' + norm_(p.s)) });
         const tt = teacher_(s, p); return out_(tt ? { ok: true, cfg: getCfg_(s, 'GV:' + tt.u) } : { ok: false });
       }
-      case 'tlogin': { const t = teacher_(s, p); return out_(t ? { ok: true, u: t.u, n: t.n, admin: t.admin } : { ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' }); }
+      case 'tlogin': { const t = teacher_(s, p); if (!t) return out_({ ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' });
+        const gc = '#GV'; // tài khoản học của giáo viên: lưu tùy chỉnh + từ đã nhớ như học sinh (không tính vào thống kê lớp)
+        return out_({ ok: true, u: t.u, n: t.n, admin: t.admin, c: gc, s: t.u, tok: tok_(gc, t.u), cfg: getCfg_(s, 'HS:' + gc + ':' + t.u), kn: getCfg_(s, 'KN:' + gc + ':' + t.u) }); }
     }
     const t = teacher_(s, p);
     if (!t) return out_({ ok: false, err: 'Phiên đăng nhập giáo viên không hợp lệ', auth: true });
