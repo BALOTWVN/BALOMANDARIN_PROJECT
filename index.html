@@ -239,6 +239,7 @@ body.pp-right .pad{left:auto;top:0;height:auto;width:var(--padW);border-top:0;bo
 body.pad-on.pp-right{padding-bottom:56px;padding-right:calc(var(--padW) + max(16px,env(safe-area-inset-right,0px)))}
 .padhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .padtitle{display:flex;flex-direction:column;min-width:0}
+.padhead .btn{white-space:nowrap;flex:none}.padtitle{flex:1}.padword{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .padword{font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .padword b{color:var(--acc)}
 .padword .tag{position:static;margin-right:6px;font-size:10px}
@@ -331,7 +332,31 @@ body.sc-open{overflow:hidden}
 .sczoom #scPct{font-size:13px;min-width:62px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .schint{position:absolute;left:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);margin:0;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--sheet) 88%,transparent);box-shadow:var(--shadow);transition:opacity .6s;max-width:calc(100% - 230px);font-size:12px;color:var(--muted);pointer-events:none}
 @media (max-width:700px){.scbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.scbar>*{flex:none}.schint{display:none}}
-.listtools{display:flex;justify-content:flex-end}
+.bzoom{position:absolute;right:8px;bottom:8px;display:flex;background:var(--sheet);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;z-index:2}
+.bzoom button{border:0;background:none;min-width:38px;min-height:36px;font:inherit;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer}
+.bzoom #bzPct{font-size:12px;min-width:50px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.board canvas#cInk{touch-action:none}
+.swatches .more i{background:conic-gradient(#e53935,#f2b705,#43a047,#1e88e5,#8e24aa,#e53935)}
+.pop{position:fixed;z-index:80;background:var(--sheet);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.22);padding:12px;display:flex;flex-direction:column;gap:10px}
+.pop[hidden]{display:none!important}
+.palgrid{display:grid;grid-template-columns:repeat(8,30px);gap:8px}
+.palgrid button{width:30px;height:30px;border-radius:50%;border:2px solid var(--sheet);background:var(--c);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.palgrid button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--acc)}
+.palcustom{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer}
+.palcustom input{width:44px;height:32px;border:1px solid var(--line);border-radius:8px;padding:0;background:none;cursor:pointer}
+.pickpop{width:min(460px,calc(100vw - 16px));max-height:min(60vh,520px)}
+.pickhead{display:flex;align-items:center;gap:8px}.pickhead .meta{font-size:13px}
+.tbtn.sm{min-height:32px;padding:0 10px;font-size:13px}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;overflow:auto}
+.pickgrid button{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--sheet);font-family:var(--han);font-size:22px;color:var(--muted);cursor:pointer;opacity:.55}
+.pickgrid button[aria-pressed="true"]{opacity:1;color:var(--ink);border-color:var(--acc);background:var(--acc-soft)}
+.selbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;background:var(--sheet);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.selall{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;cursor:pointer}
+.selall input,td.ck input,.gck input{width:20px;height:20px;accent-color:var(--acc);cursor:pointer;margin:0}
+.selinfo{font-size:13px;color:var(--muted)}
+td.ck{width:34px;padding-right:0}
+tr.picked td{background:var(--acc-soft)}
+.gck{display:flex;align-items:center;padding:0 2px;cursor:pointer}
 
 .lockwall{display:none;max-width:560px;margin:8vh auto 0;padding:36px 28px;text-align:center;flex-direction:column;align-items:center;gap:12px}
 .lockwall h2{margin:0;font-size:24px}.lockwall p{margin:0;color:var(--muted);line-height:1.6}
@@ -450,7 +475,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
   <div class="tools">
     <span class="seg" id="tipSeg"><button data-v="pencil">Bút chì</button><button data-v="pen">Bút bi</button><button data-v="brush">Bút lông</button></span>
     <label class="sizer" title="Cỡ nét"><span class="dotprev" id="dotPrev"></span><input type="range" id="pSize" min="2" max="30" step="1" aria-label="Cỡ nét"><span class="meta" id="pSizeV"></span></label>
-    <span class="swatches" id="colSeg"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button></span>
+    <span class="swatches" id="colSeg"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button><button data-v="more" class="more" aria-label="Bảng màu" title="Bảng màu"><i></i></button></span>
   </div>
   <div class="tools">
     <span class="seg" id="gridSeg"><button data-v="tian" class="han" title="Ô chữ điền">田</button><button data-v="mi" class="han" title="Ô chữ mễ">米</button><button data-v="none">Trơn</button></span>
@@ -461,7 +486,8 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <button class="tbtn" id="pUndo">Hoàn tác</button>
     <button class="tbtn" id="pClear">Xóa hết</button>
   </div>
-  <div class="board" id="board"><canvas id="cGuide"></canvas><canvas id="cInk"></canvas><canvas id="cTop"></canvas></div>
+  <div class="board" id="board"><canvas id="cGuide"></canvas><canvas id="cInk"></canvas><canvas id="cTop"></canvas>
+    <div class="bzoom"><button id="bzOut" aria-label="Thu nhỏ">−</button><button id="bzPct" title="Về 100%">100%</button><button id="bzIn" aria-label="Phóng to">+</button></div></div>
 </aside>
 
 
@@ -471,8 +497,9 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <div class="sctitle"><b>Giấy nháp</b><span class="meta" id="scInfo"></span></div>
     <span class="seg" id="scTip"><button data-v="pencil">Bút chì</button><button data-v="pen">Bút bi</button><button data-v="brush">Bút lông</button></span>
     <label class="sizer" title="Cỡ nét"><input type="range" id="scSize" min="2" max="30" step="1" aria-label="Cỡ nét"></label>
-    <span class="swatches" id="scCol"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button></span>
+    <span class="swatches" id="scCol"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button><button data-v="more" class="more" aria-label="Bảng màu" title="Bảng màu"><i></i></button></span>
     <span class="seg" id="scGridSeg"><button data-v="tian" class="han" title="Ô chữ điền">田</button><button data-v="mi" class="han" title="Ô chữ mễ">米</button><button data-v="none">Trơn</button></span>
+    <button class="tbtn" id="scPickBtn" aria-haspopup="true">Chọn chữ <span id="scPickN"></span> ▾</button>
     <button class="tbtn" id="scModel" aria-pressed="true">Chữ mẫu</button>
     <button class="tbtn" id="scTrace" aria-pressed="false">Tô theo mẫu</button>
     <button class="tbtn" id="scHand" aria-pressed="false" title="Kéo để di chuyển tờ giấy">✋ Kéo</button>
@@ -786,16 +813,32 @@ function quizDraw(){const v=$("#view");
 }
 
 /* ---------- list ---------- */
-function rowHTML(w){return `<tr><td class="h" data-id="${esc(w.id)}" title="Luyện viết chữ này">${esc(w.c)}</td><td class="p">${PY(w.p)}</td><td>${esc(w.v)}<div class="en">${esc(w.e)}</div></td><td class="l">L${w.l} · ${esc(w.t)}</td><td><button class="say" data-gi="${w.gi}" aria-label="Nghe ${esc(w.c)}">${SPK}</button></td></tr>`}
+const SELW=new Set();
+function selChars(){return W.filter(w=>SELW.has(w.id)).map(w=>w.c)}
+function rowHTML(w){return `<tr${SELW.has(w.id)?' class="picked"':""}><td class="ck"><input type="checkbox" data-ck="${esc(w.id)}" aria-label="Chọn ${esc(w.c)}"${SELW.has(w.id)?" checked":""}></td><td class="h" data-id="${esc(w.id)}" title="Luyện viết chữ này">${esc(w.c)}</td><td class="p">${PY(w.p)}</td><td>${esc(w.v)}<div class="en">${esc(w.e)}</div></td><td class="l">L${w.l} · ${esc(w.t)}</td><td><button class="say" data-gi="${w.gi}" aria-label="Nghe ${esc(w.c)}">${SPK}</button></td></tr>`}
 function bindSay(root){root.querySelectorAll("[data-say],[data-gi]").forEach(b=>b.onclick=()=>b.dataset.gi!=null?playWord(W[+b.dataset.gi]):speak(b.dataset.say))}
-function listDraw(){$("#optExtra").innerHTML=`<button class="btn sm" id="openScr">✍️ Giấy nháp luyện viết</button>`;$("#openScr").onclick=()=>scOpen(pool().map(w=>w.c));const v=$("#view");
-  v.innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><input class="search" id="q" type="search" placeholder="Tìm chữ Hán, pinyin hoặc nghĩa…"><div id="lst" style="display:flex;flex-direction:column;gap:16px"></div></div>`;
+function listDraw(){$("#optExtra").innerHTML="";const v=$("#view");
+  v.innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><input class="search" id="q" type="search" placeholder="Tìm chữ Hán, pinyin hoặc nghĩa…">
+    <div class="selbar" id="selbar"><label class="selall"><input type="checkbox" id="selAll"><span>Chọn tất cả</span></label><span class="selinfo" id="selInfo"></span>
+      <button class="tbtn sm" id="selNone" hidden>Bỏ chọn</button><span style="flex:1"></span><button class="btn yes sm" id="openScr">✍️ Giấy nháp luyện viết</button></div>
+    <div id="lst" style="display:flex;flex-direction:column;gap:16px"></div></div>`;
+  let shown=[];const selUI=()=>{const k=SELW.size,ch=hanOnly(selChars()).length,vis=shown.filter(w=>SELW.has(w.id)).length,en=LANG==="en";
+    const a=$("#selAll");a.checked=shown.length>0&&vis===shown.length;a.indeterminate=vis>0&&vis<shown.length;
+    $("#selInfo").textContent=k?(en?`${k} words · ${ch} characters selected`:`Đã chọn ${k} từ · ${ch} chữ`):(en?"Tick words to practice them on the scratch sheet":"Tick chọn từ để luyện viết trên giấy nháp");
+    $("#selNone").hidden=!k;$("#openScr").textContent=k?(en?`✍️ Write ${ch} selected characters`:`✍️ Viết ${ch} chữ đã chọn`):(en?"✍️ Practice sheet (all)":"✍️ Giấy nháp (tất cả)");
+    document.querySelectorAll("#lst .vgroup").forEach(g=>{const bx=[...g.querySelectorAll("[data-ck]")],n=bx.filter(x=>x.checked).length,gc=g.querySelector("[data-gck]");if(gc){gc.checked=n===bx.length&&n>0;gc.indeterminate=n>0&&n<bx.length}})};
+  $("#selAll").onchange=e=>{shown.forEach(w=>e.target.checked?SELW.add(w.id):SELW.delete(w.id));fill()};
+  $("#selNone").onclick=()=>{SELW.clear();fill()};
+  $("#openScr").onclick=()=>{const all=pool().map(w=>w.c);scOpen(SELW.size?selChars():all,all)};
   const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
   const fill=()=>{const t=strip($("#q").value.trim());const rows=pool().filter(w=>!t||strip(w.c+" "+w.p+" "+w.v+" "+w.e).includes(t));
-    const groups=[];rows.forEach(w=>{const k=w.trk;let g=groups[groups.length-1];if(!g||g.k!==k){g={k,w,rows:[]};groups.push(g)}g.rows.push(w)});
-    $("#lst").innerHTML=groups.map(g=>`<section class="vgroup"><div class="vg-h"><span class="tagx">L${g.w.l} · ${g.w.sec===1?"生詞一":"生詞二"}</span><audio controls preload="none" src="audio/${g.k}.mp3"></audio></div>
+    shown=rows;const groups=[];rows.forEach(w=>{const k=w.trk;let g=groups[groups.length-1];if(!g||g.k!==k){g={k,w,rows:[]};groups.push(g)}g.rows.push(w)});
+    $("#lst").innerHTML=groups.map(g=>`<section class="vgroup"><div class="vg-h"><label class="gck" title="Chọn cả nhóm"><input type="checkbox" data-gck="${esc(g.k)}"></label><span class="tagx">L${g.w.l} · ${g.w.sec===1?"生詞一":"生詞二"}</span><audio controls preload="none" src="audio/${g.k}.mp3"></audio></div>
       <div class="tablebox"><table><tbody>${g.rows.map(rowHTML).join("")}</tbody></table></div></section>`).join("")||`<p class="note">Không tìm thấy từ nào.</p>`;
-    bindSay($("#lst"));$("#lst").querySelectorAll("td.h").forEach(td=>td.onclick=()=>{const w=W.find(x=>x.id===td.dataset.id);if(!w)return;setTarget(w);if(!P.on)setPad(true);td.classList.add("sel")})};
+    bindSay($("#lst"));$("#lst").querySelectorAll("td.h").forEach(td=>td.onclick=()=>{const w=W.find(x=>x.id===td.dataset.id);if(!w)return;setTarget(w);if(!P.on)setPad(true);td.classList.add("sel")});
+    $("#lst").querySelectorAll("[data-ck]").forEach(b=>b.onchange=()=>{b.checked?SELW.add(b.dataset.ck):SELW.delete(b.dataset.ck);b.closest("tr").classList.toggle("picked",b.checked);selUI()});
+    $("#lst").querySelectorAll("[data-gck]").forEach(b=>b.onchange=()=>{const sec=b.closest(".vgroup");sec.querySelectorAll("[data-ck]").forEach(x=>{x.checked=b.checked;b.checked?SELW.add(x.dataset.ck):SELW.delete(x.dataset.ck);x.closest("tr").classList.toggle("picked",b.checked)});selUI()});
+    selUI()};
   $("#q").oninput=fill;fill()}
 
 function vaudDraw(){const el=$("#vaud");if(true){el.hidden=true;return}const n=String(S.lesson).padStart(2,"0");el.hidden=false;
@@ -809,6 +852,11 @@ function render(){vaudDraw();document.querySelectorAll(".tab").forEach(t=>t.setA
 const P={on:store.get("padOn",true),tip:store.get("tip","brush"),size:store.get("size",10),color:store.get("color","ink"),grid:store.get("grid","tian"),
   trace:store.get("trace",false),reveal:false,erase:false,target:null,strokes:[],cur:null,penSeen:false,cells:[],s:0,W:0,H:0};
 const board=$("#board"),cg=$("#cGuide"),ci=$("#cInk"),ct=$("#cTop");
+const V={z:1,tx:0,ty:0},PT=new Map();let PZ=null,PPAN=null;
+function applyV(x){const d=window.devicePixelRatio||1;x.setTransform(d*V.z,0,0,d*V.z,d*V.tx,d*V.ty)}
+function clr(x,c){x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,c.width,c.height);applyV(x)}
+const toB=(e,r)=>[(e.clientX-r.left-V.tx)/V.z,(e.clientY-r.top-V.ty)/V.z];
+const colOf=c=>c&&c[0]==="#"?c:tok(COLORS[c]||"--ink");
 const xg=cg.getContext("2d"),xi=ci.getContext("2d"),xt=ct.getContext("2d");
 const MODELFONT='"LXGW WenKai TC","Noto Serif TC","Kaiti TC","STKaiti","PMingLiU",serif';
 const tok=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#222";
@@ -823,17 +871,17 @@ function layout(){if(!P.on)return;const r=board.getBoundingClientRect();if(r.wid
   for(let i=0;i<n;i++){const rr=Math.floor(i/cols),inRow=Math.min(cols,n-rr*cols),rx=(r.width-inRow*s)/2;P.cells.push({x:rx+(i%cols)*s,y:oy+rr*s,ch:chars[i]||""})}
   drawGuide();redrawInk();drawTop()}
 function glyph(x,c,color,a){const s=P.s;x.save();x.globalAlpha=a;x.fillStyle=color;x.font=`${Math.round(s*.8)}px ${MODELFONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText(c.ch,c.x+s/2,c.y+s/2+s*.03);x.restore()}
-function drawGuide(){xg.clearRect(0,0,P.W,P.H);const red=tok("--seal"),s=P.s;
+function drawGuide(){clr(xg,cg);const red=tok("--seal"),s=P.s;
   for(const c of P.cells){xg.save();xg.strokeStyle=red;xg.globalAlpha=.6;xg.lineWidth=1.5;xg.strokeRect(c.x+1,c.y+1,s-2,s-2);
     if(P.grid!=="none"){xg.globalAlpha=.35;xg.lineWidth=1;xg.setLineDash([6,6]);xg.beginPath();
       xg.moveTo(c.x+s/2,c.y);xg.lineTo(c.x+s/2,c.y+s);xg.moveTo(c.x,c.y+s/2);xg.lineTo(c.x+s,c.y+s/2);
       if(P.grid==="mi"){xg.moveTo(c.x,c.y);xg.lineTo(c.x+s,c.y+s);xg.moveTo(c.x+s,c.y);xg.lineTo(c.x,c.y+s)}xg.stroke()}
     xg.restore();if(P.trace&&c.ch)glyph(xg,c,tok("--muted"),.3)}}
-function drawTop(){xt.clearRect(0,0,P.W,P.H);if(P.reveal)for(const c of P.cells)if(c.ch)glyph(xt,c,tok("--seal"),.5)}
+function drawTop(){clr(xt,ct);if(P.reveal)for(const c of P.cells)if(c.ch)glyph(xt,c,tok("--seal"),.5)}
 function cellAt(x,y){let b=0,bd=1e9;P.cells.forEach((c,i)=>{const d=Math.hypot(x-c.x-P.s/2,y-c.y-P.s/2);if(d<bd){bd=d;b=i}});return b}
 function baseW(st){return P.size*(st.erase?2.6:st.tip==="pencil"?.4:st.tip==="pen"?.75:1.25)}
 function toPx(st,p){const c=P.cells[st.cell]||P.cells[0],s=P.s;return [c.x+p[0]*s,c.y+p[1]*s,p[2]*s]}
-function styleFor(x,st){x.globalCompositeOperation=st.erase?"destination-out":"source-over";const col=st.erase?"#000":tok(COLORS[st.color]||"--ink");
+function styleFor(x,st){x.globalCompositeOperation=st.erase?"destination-out":"source-over";const col=st.erase?"#000":colOf(st.color);
   x.strokeStyle=col;x.fillStyle=col;x.lineCap="round";x.lineJoin="round";x.globalAlpha=st.tip==="pencil"&&!st.erase?.85:1}
 function seg(x,st,i){const pts=st.pts;x.save();styleFor(x,st);
   if(i===0){const [px,py,w]=toPx(st,pts[0]);x.beginPath();x.arc(px,py,w/2,0,Math.PI*2);x.fill();x.restore();return}
@@ -841,40 +889,72 @@ function seg(x,st,i){const pts=st.pts;x.save();styleFor(x,st);
   x.lineWidth=(a[2]+b[2])/2;x.beginPath();x.moveTo((z[0]+a[0])/2,(z[1]+a[1])/2);x.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);x.stroke();x.restore()}
 function finish(x,st){const n=st.pts.length;if(n<2)return;const a=toPx(st,st.pts[n-2]),b=toPx(st,st.pts[n-1]);x.save();styleFor(x,st);x.lineWidth=b[2];
   x.beginPath();x.moveTo((a[0]+b[0])/2,(a[1]+b[1])/2);x.lineTo(b[0],b[1]);x.stroke();x.restore()}
-function redrawInk(){xi.clearRect(0,0,P.W,P.H);if(!P.cells.length)return;for(const st of P.strokes){if(st.tip==="pencil"&&!st.erase){pencilPath(xi,st)}else{for(let i=0;i<st.pts.length;i++)seg(xi,st,i);finish(xi,st)}}}
+function redrawInk(){clr(xi,ci);if(!P.cells.length)return;for(const st of P.strokes){if(st.tip==="pencil"&&!st.erase){pencilPath(xi,st)}else{for(let i=0;i<st.pts.length;i++)seg(xi,st,i);finish(xi,st)}}}
 function pencilPath(x,st){x.save();styleFor(x,st);const p=st.pts.map(q=>toPx(st,q));x.lineWidth=p[0][2];x.beginPath();x.moveTo(p[0][0],p[0][1]);
   if(p.length===1)x.lineTo(p[0][0]+.1,p[0][1]);for(let i=1;i<p.length-1;i++)x.quadraticCurveTo(p[i][0],p[i][1],(p[i][0]+p[i+1][0])/2,(p[i][1]+p[i+1][1])/2);
   if(p.length>1)x.lineTo(p[p.length-1][0],p[p.length-1][1]);x.stroke();x.restore()}
-function addPt(e,r){const st=P.cur,c=P.cells[st.cell],s=P.s,x=e.clientX-r.left,y=e.clientY-r.top;let w=baseW(st);
+function addPt(e,r){const st=P.cur,c=P.cells[st.cell],s=P.s,[x,y]=toB(e,r);let w=baseW(st);
   if(st.tip==="brush"&&!st.erase){let f=1;const now=e.timeStamp||performance.now();
     if(e.pointerType==="pen"&&e.pressure>0)f=.2+1.6*e.pressure;
     else{const last=st.pts[st.pts.length-1];if(last){const px=c.x+last[0]*s,py=c.y+last[1]*s,v=Math.hypot(x-px,y-py)/Math.max(1,now-st.lt);f=Math.max(.35,Math.min(1.2,1.2-v*.3))}}
     st.lt=now;const tw=w*f;w=st.lw==null?tw:st.lw*.65+tw*.35;st.lw=w}
   st.pts.push([(x-c.x)/s,(y-c.y)/s,w/s]);
   if(st.tip==="pencil"&&!st.erase){redrawInk()}else seg(xi,st,st.pts.length-1)}
-function down(e){if(e.pointerType==="pen")P.penSeen=true;if(P.penSeen&&e.pointerType==="touch")return;if(P.cur||!P.cells.length)return;e.preventDefault();
-  try{ci.setPointerCapture(e.pointerId)}catch(_){}
-  const r=ci.getBoundingClientRect();P.cur={id:e.pointerId,cell:cellAt(e.clientX-r.left,e.clientY-r.top),tip:P.tip,color:P.color,erase:P.erase,pts:[],lt:0,lw:null};
+function vZoomAt(sx,sy,f){const z=Math.max(.6,Math.min(5,V.z*f)),wx=(sx-V.tx)/V.z,wy=(sy-V.ty)/V.z;V.z=z;V.tx=sx-wx*z;V.ty=sy-wy*z;vDraw()}
+function vDraw(){drawGuide();redrawInk();drawTop();$("#bzPct").textContent=Math.round(V.z*100)+"%"}
+function vReset(){V.z=1;V.tx=V.ty=0;if(P.on)vDraw()}
+function bPos(e){const r=ci.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
+function pinchStart(){const [a,b]=[...PT.values()],mx=(a.x+b.x)/2,my=(a.y+b.y)/2;PZ={d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:V.z,w:[(mx-V.tx)/V.z,(my-V.ty)/V.z]}}
+function pinchMove(){const [a,b]=[...PT.values()],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,d=Math.hypot(a.x-b.x,a.y-b.y)||1;
+  const z=Math.max(.6,Math.min(5,PZ.z*d/PZ.d));V.z=z;V.tx=mx-PZ.w[0]*z;V.ty=my-PZ.w[1]*z;vDraw()}
+function gDown(e){try{ci.setPointerCapture(e.pointerId)}catch(_){}const [x,y]=bPos(e);
+  if(e.pointerType==="pen"){P.penSeen=true;return down(e)}
+  if(e.pointerType==="touch"){e.preventDefault();PT.set(e.pointerId,{x,y});
+    if(PT.size>=2){if(P.cur&&PT.has(P.cur.id)){const st=P.cur;P.cur=null;if(st.pts.length<14||performance.now()-st.t0<350){P.strokes.pop();redrawInk()}else finish(xi,st)}PPAN=null;pinchStart();return}
+    if(P.penSeen){PPAN={id:e.pointerId,x,y};return}return down(e)}
+  if(e.button===1||e.button===2){e.preventDefault();PPAN={id:e.pointerId,x,y};ci.style.cursor="grabbing";return}
+  if(e.button===0)down(e)}
+function gMove(e){const [x,y]=bPos(e);if(PT.has(e.pointerId)){PT.set(e.pointerId,{x,y});if(PZ&&PT.size>=2){e.preventDefault();pinchMove();return}}
+  if(PPAN&&PPAN.id===e.pointerId){V.tx+=x-PPAN.x;V.ty+=y-PPAN.y;PPAN.x=x;PPAN.y=y;vDraw();return}move(e)}
+function gUp(e){if(PT.has(e.pointerId)){PT.delete(e.pointerId);if(PT.size<2)PZ=null}if(PPAN&&PPAN.id===e.pointerId){PPAN=null;ci.style.cursor=""}up(e)}
+function down(e){if(P.cur||!P.cells.length)return;e.preventDefault();
+  const r=ci.getBoundingClientRect(),[bx,by]=toB(e,r);P.cur={id:e.pointerId,t0:performance.now(),cell:cellAt(bx,by),tip:P.tip,color:P.color,erase:P.erase,pts:[],lt:0,lw:null};
   P.strokes.push(P.cur);addPt(e,r)}
 function move(e){if(!P.cur||e.pointerId!==P.cur.id)return;e.preventDefault();const r=ci.getBoundingClientRect();
   const evs=(e.getCoalescedEvents&&e.getCoalescedEvents())||[];for(const ev of (evs.length?evs:[e]))addPt(ev,r)}
 function up(e){if(!P.cur||e.pointerId!==P.cur.id)return;const st=P.cur;P.cur=null;if(!(st.tip==="pencil"&&!st.erase))finish(xi,st)}
-ci.addEventListener("pointerdown",down);ci.addEventListener("pointermove",move);ci.addEventListener("pointerup",up);ci.addEventListener("pointercancel",up);
+ci.addEventListener("pointerdown",gDown);ci.addEventListener("pointermove",gMove);ci.addEventListener("pointerup",gUp);ci.addEventListener("pointercancel",gUp);
+ci.addEventListener("contextmenu",e=>e.preventDefault());
+ci.addEventListener("wheel",e=>{e.preventDefault();const [x,y]=bPos(e);vZoomAt(x,y,Math.exp(-e.deltaY*(e.ctrlKey?.012:.0016)))},{passive:false});
+$("#bzIn").onclick=()=>vZoomAt(P.W/2,P.H/2,1.25);$("#bzOut").onclick=()=>vZoomAt(P.W/2,P.H/2,.8);$("#bzPct").onclick=vReset;
 board.addEventListener("touchstart",e=>e.preventDefault(),{passive:false});board.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
 function padWord(){const w=P.target;$("#padWord").innerHTML=w?`<span class="tag">L${w.l}</span><b>${PY(w.p)}</b> · ${esc(w.v)}`:'<span class="meta">Viết tự do. Ở tab Danh sách, chạm vào một chữ Hán để luyện chữ đó.</span>'}
 function loadModel(){const t=targetChars().join("");if(!t||!document.fonts||!document.fonts.load)return;
   document.fonts.load(`64px "LXGW WenKai TC"`,t).then(()=>{if(P.on){drawGuide();drawTop()}}).catch(()=>{})}
-function setTarget(w){if((P.target&&w&&P.target.id===w.id)||(!P.target&&!w))return;P.target=w||null;P.strokes=[];P.cur=null;P.reveal=false;
+function setTarget(w){if((P.target&&w&&P.target.id===w.id)||(!P.target&&!w))return;P.target=w||null;V.z=1;V.tx=V.ty=0;$("#bzPct").textContent="100%";P.strokes=[];P.cur=null;P.reveal=false;
   $("#pReveal").setAttribute("aria-pressed","false");padWord();layout();loadModel();
   document.querySelectorAll("td.h.sel").forEach(t=>t.classList.remove("sel"))}
 function setPad(on){P.on=on;store.set("padOn",on);$("#pad").hidden=!on;$("#padShow").hidden=on;document.body.classList.toggle("pad-on",on);if(on)requestAnimationFrame(layout)}
 function syncTools(){document.querySelectorAll("#tipSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.tip&&!P.erase));
-  document.querySelectorAll("#colSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.color));
+  document.querySelectorAll("#colSeg button,#scCol button").forEach(b=>{const m=b.dataset.v==="more",hex=P.color&&P.color[0]==="#";b.setAttribute("aria-pressed",m?hex:b.dataset.v===P.color);if(m)b.querySelector("i").style.background=hex?P.color:""});
   document.querySelectorAll("#gridSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.grid));
   $("#pSize").value=P.size;$("#pSizeV").textContent=P.size;$("#dotPrev").style.setProperty("--d",Math.min(28,Math.max(3,baseW({tip:P.tip,erase:P.erase}))).toFixed(1)+"px");
   $("#pTrace").setAttribute("aria-pressed",P.trace);$("#pErase").setAttribute("aria-pressed",P.erase)}
 $("#tipSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.tip=b.dataset.v;P.erase=false;store.set("tip",P.tip);syncTools()};
-$("#colSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.color=b.dataset.v;P.erase=false;store.set("color",P.color);syncTools()};
+function setColor(c){P.color=c;P.erase=false;if(typeof SC!=="undefined"){SC.erase=false;SC.hand=false}store.set("color",P.color);syncTools();try{scSync()}catch(_){}}
+const PAL=["#1b1b1b","#5f6368","#a0a4a8","#b3261e","#e8590c","#f2b705","#2e7d32","#7cb342","#00897b","#0288d1","#1f3c88","#5e35b1","#8e24aa","#c2185b","#ff7aa2","#8d5524"];
+function palOpen(btn){let pop=document.getElementById("palPop");if(!pop){pop=document.createElement("div");pop.id="palPop";pop.className="pop";document.body.appendChild(pop)}
+  const cur=P.color&&P.color[0]==="#"?P.color:"";
+  pop.innerHTML=`<div class="label" style="margin:0">Bảng màu</div><div class="palgrid">${PAL.map(c=>`<button data-c="${c}" style="--c:${c}" aria-label="${c}" aria-pressed="${cur===c}"></button>`).join("")}</div>
+    <label class="palcustom"><input type="color" id="palIn" value="${cur||"#0288d1"}"><span>Màu khác…</span></label>`;
+  popAt(pop,btn);pop.onclick=e=>{const b=e.target.closest("[data-c]");if(b){setColor(b.dataset.c);popClose()}};
+  pop.querySelector("#palIn").oninput=e=>setColor(e.target.value)}
+function popAt(pop,btn){pop.hidden=false;const r=btn.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;
+  let left=Math.max(8,Math.min(r.left+r.width/2-w/2,innerWidth-w-8)),top=r.bottom+8;if(top+h>innerHeight-8)top=Math.max(8,r.top-h-8);
+  pop.style.left=left+"px";pop.style.top=top+"px";setTimeout(()=>addEventListener("pointerdown",popOut,true),0)}
+function popOut(e){const p=[...document.querySelectorAll(".pop")].find(x=>!x.hidden);if(p&&!p.contains(e.target)&&!e.target.closest(".more,#scPickBtn"))popClose()}
+function popClose(){document.querySelectorAll(".pop").forEach(x=>x.hidden=true);removeEventListener("pointerdown",popOut,true)}
+$("#colSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.v==="more"){const p=document.getElementById("palPop");if(p&&!p.hidden)popClose();else palOpen(b);return}setColor(b.dataset.v)};
 $("#gridSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.grid=b.dataset.v;store.set("grid",P.grid);syncTools();drawGuide()};
 $("#pSize").oninput=e=>{P.size=+e.target.value;store.set("size",P.size);syncTools()};
 $("#pTrace").onclick=()=>{P.trace=!P.trace;store.set("trace",P.trace);syncTools();drawGuide()};
@@ -883,7 +963,7 @@ $("#pErase").onclick=()=>{P.erase=!P.erase;syncTools()};
 $("#pUndo").onclick=()=>{P.strokes.pop();redrawInk()};
 $("#pClear").onclick=()=>{P.strokes=[];redrawInk()};
 $("#padHide").onclick=()=>setPad(false);$("#padShow").onclick=()=>setPad(true);
-$("#padScr").onclick=()=>scOpen(P.target?[P.target.c]:pool().map(w=>w.c));
+$("#padScr").onclick=()=>scOpen(P.target?[P.target.c]:selChars(),pool().map(w=>w.c));
 /* ---------- scratch paper: infinite practice sheet with pan / zoom ---------- */
 const SC={open:false,z:1,tx:24,ty:24,C:140,strokes:[],cur:null,erase:false,hand:false,touch:new Map(),pinch:null,mpan:null,fpan:null,space:false,
   chars:[],model:true,trace:false,W:0,H:0,raf:0,saveT:0};
@@ -914,7 +994,7 @@ function scGrid(){const dpr=window.devicePixelRatio||1,x=sxG,C=SC.C,z=SC.z,cs=C*
     for(let j=Math.max(0,j0);j<=Math.min(j1,SC.chars.length-1);j++){const ch=SC.chars[j];
       for(let i=Math.max(0,i0);i<=Math.min(i1,SC.trace?7:0);i++){x.globalAlpha=i===0?.62:.16;x.fillStyle=i===0?tok("--ink"):tok("--muted");x.fillText(ch,X(i)+cs/2,Y(j)+cs/2+cs*.03)}}
     x.restore()}}
-function scStyle(x,st){x.globalCompositeOperation=st.erase?"destination-out":"source-over";const col=st.erase?"#000":tok(COLORS[st.color]||"--ink");
+function scStyle(x,st){x.globalCompositeOperation=st.erase?"destination-out":"source-over";const col=st.erase?"#000":colOf(st.color);
   x.strokeStyle=col;x.fillStyle=col;x.lineCap="round";x.lineJoin="round";x.globalAlpha=st.tip==="pencil"&&!st.erase?.85:1}
 function scStroke(x,st){const p=st.pts;if(!p.length)return;x.save();scStyle(x,st);
   if(p.length===1){x.beginPath();x.arc(p[0][0],p[0][1],p[0][2]/2,0,Math.PI*2);x.fill();x.restore();return}
@@ -972,12 +1052,14 @@ addEventListener("keyup",e=>{if(e.code==="Space"){SC.space=false;if(!SC.mpan)scL
 addEventListener("resize",()=>{if(SC.open)scSize()});
 function scUndo(){SC.strokes.pop();scInk();scSave()}
 function scSync(){document.querySelectorAll("#scTip button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.tip&&!SC.erase&&!SC.hand));
-  document.querySelectorAll("#scCol button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.color));
+  document.querySelectorAll("#scCol button").forEach(b=>{const m=b.dataset.v==="more",hex=P.color&&P.color[0]==="#";b.setAttribute("aria-pressed",m?hex:b.dataset.v===P.color);if(m)b.querySelector("i").style.background=hex?P.color:""});
   document.querySelectorAll("#scGridSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.grid));
   $("#scSize").value=P.size;$("#scErase").setAttribute("aria-pressed",SC.erase);$("#scHand").setAttribute("aria-pressed",SC.hand);
-  $("#scModel").setAttribute("aria-pressed",SC.model);$("#scTrace").setAttribute("aria-pressed",SC.trace);$("#scModel").hidden=$("#scTrace").hidden=!SC.chars.length}
+  $("#scModel").setAttribute("aria-pressed",SC.model);$("#scTrace").setAttribute("aria-pressed",SC.trace);$("#scModel").hidden=$("#scTrace").hidden=!SC.chars.length;$("#scPickBtn").hidden=!SC.all.length;$("#scPickN").textContent=SC.all.length?`(${SC.chars.length})`:"";
+  $("#scInfo").textContent=SC.chars.length?(LANG==="en"?`${SC.chars.length} characters`:`${SC.chars.length} chữ đang luyện`):(SC.all.length?(LANG==="en"?"Blank sheet":"Giấy trắng"):"")}
+$("#scPickBtn").onclick=e=>{const p=document.getElementById("scPick");if(p&&!p.hidden)popClose();else scPickOpen(e.currentTarget)};
 $("#scTip").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.tip=b.dataset.v;SC.erase=false;SC.hand=false;store.set("tip",P.tip);scSync();try{syncTools()}catch(_){}};
-$("#scCol").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.color=b.dataset.v;SC.erase=false;SC.hand=false;store.set("color",P.color);scSync();try{syncTools()}catch(_){}};
+$("#scCol").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.v==="more"){const p=document.getElementById("palPop");if(p&&!p.hidden)popClose();else palOpen(b);return}setColor(b.dataset.v)};
 $("#scGridSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.grid=b.dataset.v;store.set("grid",P.grid);scSync();scGrid();try{syncTools();drawGuide()}catch(_){}};
 $("#scSize").oninput=e=>{P.size=+e.target.value;store.set("size",P.size);try{syncTools()}catch(_){}};
 $("#scErase").onclick=()=>{SC.erase=!SC.erase;SC.hand=false;scSync()};
@@ -989,12 +1071,20 @@ $("#scClear").onclick=()=>{if(!SC.strokes.length)return;if(!confirm(LANG==="en"?
 $("#scIn").onclick=()=>scZoomAt(SC.W/2,SC.H/2,1.25);$("#scOut").onclick=()=>scZoomAt(SC.W/2,SC.H/2,.8);
 $("#scPct").onclick=()=>{SC.z=1;SC.tx=24;SC.ty=24;scDraw();scSave()};
 $("#scClose").onclick=()=>scClose();
-function scOpen(chars){SC.chars=[...new Set((chars||[]).join("").split("").filter(ch=>/[㐀-鿿豈-﫿]/.test(ch)))].slice(0,300);
+const hanOnly=a=>[...new Set((a||[]).join("").split("").filter(ch=>/[㐀-鿿豈-﫿]/.test(ch)))];
+function scPickOpen(btn){let pop=document.getElementById("scPick");if(!pop){pop=document.createElement("div");pop.id="scPick";pop.className="pop pickpop";document.body.appendChild(pop)}
+  const draw=()=>{const on=new Set(SC.chars);pop.innerHTML=`<div class="pickhead"><b>Chọn chữ để luyện</b><span class="meta">${SC.chars.length}/${SC.all.length}</span><span style="flex:1"></span><button class="tbtn sm" data-a="all">Tất cả</button><button class="tbtn sm" data-a="none">Bỏ chọn</button></div>
+    <div class="pickgrid">${SC.all.map(c=>`<button class="han" data-ch="${esc(c)}" aria-pressed="${on.has(c)}">${esc(c)}</button>`).join("")}</div>`};
+  draw();popAt(pop,btn);
+  pop.onclick=e=>{const a=e.target.closest("[data-a]"),b=e.target.closest("[data-ch]");
+    if(a)SC.chars=a.dataset.a==="all"?SC.all.slice():[];
+    else if(b){const c=b.dataset.ch,i=SC.chars.indexOf(c);if(i>=0)SC.chars.splice(i,1);else{const on=new Set(SC.chars);on.add(c);SC.chars=SC.all.filter(x=>on.has(x))}}
+    else return;if(SC.chars.length)SC.model=true;draw();scSync();scGrid()}}
+function scOpen(chars,all){SC.chars=hanOnly(chars).slice(0,300);SC.all=hanOnly(all&&all.length?all:chars).slice(0,600);
   SC.model=store.get("scModel",true);SC.trace=store.get("scTrace",false);SC.erase=false;SC.hand=false;SC.cur=null;SC.touch.clear();SC.pinch=SC.fpan=SC.mpan=null;
   scLoad();SC.open=true;$("#scratch").hidden=false;document.body.classList.add("sc-open");scSync();
-  $("#scInfo").textContent=SC.chars.length?(LANG==="en"?`${SC.chars.length} characters from this list`:`${SC.chars.length} chữ trong danh sách này`):"";
   requestAnimationFrame(scSize);$("#scHint").style.opacity=1;clearTimeout(SC.hintT);SC.hintT=setTimeout(()=>{$("#scHint").style.opacity=0},7000);if(SC.chars.length&&document.fonts&&document.fonts.load)document.fonts.load(`64px "LXGW WenKai TC"`,SC.chars.join("")).then(()=>{if(SC.open)scGrid()}).catch(()=>{})}
-function scClose(){SC.open=false;$("#scratch").hidden=true;document.body.classList.remove("sc-open");scSave(true)}
+function scClose(){popClose();SC.open=false;$("#scratch").hidden=true;document.body.classList.remove("sc-open");scSave(true)}
 
 if(window.ResizeObserver)new ResizeObserver(()=>layout()).observe(board);else window.addEventListener("resize",layout);
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>layout())}catch(_){}
@@ -1209,7 +1299,7 @@ const EN_UI={
 "Chưa có tài khoản?":"No account yet?","Tạo tài khoản bằng mã lớp":"Create an account with a class code","Mã lớp (giáo viên cung cấp)":"Class code (from your teacher)","Họ tên":"Full name",
 "VD: Nguyễn Văn An":"e.g. John Smith","Mã học sinh (tự đặt, dùng để đăng nhập)":"Student ID (your choice, used to log in)","VD: AN2005 hoặc mã số sinh viên":"e.g. JOHN2005 or your student number",
 "Mật khẩu (ít nhất 4 ký tự)":"Password (at least 4 characters)","Nhập lại mật khẩu":"Repeat password","Tạo tài khoản & vào học":"Create account & start","Đã có tài khoản?":"Already have an account?",
-"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Giấy nháp":"Scratch paper","✍️ Giấy nháp luyện viết":"✍️ Practice sheet","← Quay lại":"← Back","Chữ mẫu":"Model characters","✋ Kéo":"✋ Pan","Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo":"Two fingers: zoom / move (with Apple Pencil, one finger moves the sheet) · Mouse: scroll to zoom, hold right button or Space to drag","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
+"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Bảng màu":"Colors","Màu khác…":"Custom color…","Chọn tất cả":"Select all","Bỏ chọn":"Clear selection","Chọn chữ để luyện":"Choose characters to practice","Tất cả":"All","Chọn chữ":"Characters","Giấy nháp":"Scratch paper","✍️ Giấy nháp luyện viết":"✍️ Practice sheet","← Quay lại":"← Back","Chữ mẫu":"Model characters","✋ Kéo":"✋ Pan","Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo":"Two fingers: zoom / move (with Apple Pencil, one finger moves the sheet) · Mouse: scroll to zoom, hold right button or Space to drag","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
 "Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.":"Student login only lets your teacher follow your progress. No code yet? Ask your teacher.",
 "Đổi mật khẩu":"Change password","Mật khẩu hiện tại":"Current password","Mật khẩu mới (ít nhất 4 ký tự)":"New password (at least 4 characters)","Lưu mật khẩu mới":"Save new password",
 "Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.":"Study time, card flips, listening, quizzes and learned words are sent to your teacher.","Đăng xuất":"Log out",
@@ -1295,7 +1385,7 @@ renderLessons();render();showSec(S.sec);
   if(LANG==="en"){trNode(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode)}}).observe(document.body,{childList:true,subtree:true,characterData:true})}})();
 </script>
 
-<script>(()=>{const V="84a9fa1451";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="456d4d93df";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const en=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))==="en"}catch(e){return false}})();
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
