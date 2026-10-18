@@ -317,6 +317,13 @@ body.pp-bottom .padgrip{display:flex}
 #whoName{display:block;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
 .authwall[hidden],.authform[hidden],.navbtn[hidden]{display:none!important}
 #whoPw[hidden],#whoNote[hidden],#whoMgr[hidden]{display:none!important}
+.lockwall{display:none;max-width:560px;margin:8vh auto 0;padding:36px 28px;text-align:center;flex-direction:column;align-items:center;gap:12px}
+.lockwall h2{margin:0;font-size:24px}.lockwall p{margin:0;color:var(--muted);line-height:1.6}
+.lockico{display:grid;place-items:center;flex:none;width:64px;height:64px;border-radius:50%;background:var(--acc-soft);color:var(--acc)}.lockico svg{width:30px;height:30px}
+.lockbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}.lockbtns .btn{min-width:150px}
+body.locked .lockwall{display:flex}
+body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{display:none!important}
+@media (max-width:520px){.lockwall{padding:28px 16px;margin-top:4vh}.lockwall h2{font-size:21px}}
 .authcard .btn.wide{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
 :root[data-theme="dark"] .authcard .btn.wide{color:#0b1412}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .authcard .btn.wide{color:#0b1412}}
@@ -363,6 +370,13 @@ body.pp-bottom .padgrip{display:flex}
   <button class="navbtn gear" id="openSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Tùy chỉnh</button>
 </nav>
 <div class="wrap">
+<div class="card lockwall" id="lockWall" role="alert">
+  <span class="lockico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span>
+  <h2 id="lockT">Quyển này cần tài khoản</h2>
+  <p id="lockP"></p>
+  <div class="lockbtns"><button class="btn yes" id="lockLogin">Đăng nhập</button><button class="btn" id="lockFree">Học Quyển 1</button></div>
+  <p class="meta" id="lockM">Chưa có mã lớp? Hãy liên hệ giáo viên để được cung cấp mã lớp học.</p>
+</div>
 <div class="sec" id="sec-vocab">
   <header>
     <div>
@@ -549,6 +563,7 @@ const CONTENT6=[{"l":1,"t":"職校教育","tv":"Giáo dục trường nghề","d
 const _g=n=>{try{return eval(n)}catch(e){return undefined}};
 const NB=[1,2,3,4,5,6,7,8,9].filter(i=>_g("DATA"+i)).length;
 const BOOK=(()=>{try{const b=JSON.parse(localStorage.getItem("tv1:book"));return b>=1&&b<=NB?b:1}catch(e){return 1}})();
+let FREE=(()=>{try{const v=JSON.parse(localStorage.getItem("tv1:free"));return typeof v==="number"?v:1}catch(e){return 1}})();
 const LANG=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))==="en"?"en":"vi"}catch(e){return "vi"}})();
 const BP=BOOK>1?"b"+BOOK+":":"",AP=BOOK>1?"b"+BOOK+"/":"",LOFF=(BOOK-1)*100;
 const DATA=_g("DATA"+BOOK),EX=_g("EX"+BOOK);
@@ -964,14 +979,22 @@ let knT=0;function knPush(){if(!TRACK_URL||!STU||!STU.tok)return;clearTimeout(kn
 function knPull(kn,merge){if(!kn||!KIDS.some((_,i)=>kn[knK(i)])){if(known.size)knPush();return}const srv=knDecode(kn);
   if(merge){const before=known.size;srv.forEach(id=>known.add(id));store.set("known",[...known]);store.set("knownT",Date.now());try{stats();rerender()}catch(e){}if(known.size!==srv.size)knPush();return}
   const lt=store.get("knownT",0);if((kn.t||0)>lt){known=srv;store.set("known",[...known]);store.set("knownT",kn.t);try{stats();rerender()}catch(e){}}else if(lt>(kn.t||0))knPush()}
-function whoDraw(){const b=$("#whoBtn");b.hidden=!TRACK_URL;if(!STU){$("#whoName").textContent="Đăng nhập";$("#whoIni").textContent="登";return}$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
+function setFree(v){if(typeof v!=="number"||isNaN(v))return;FREE=v;try{localStorage.setItem("tv1:free",JSON.stringify(v))}catch(e){}lockCheck()}
+function lockCheck(){const lk=!!(TRACK_URL&&!STU&&BOOK>FREE);document.body.classList.toggle("locked",lk);
+  ["bookPick","sBook"].forEach(id=>{const g=document.getElementById(id);if(!g)return;[...g.options].forEach(o=>{const v=+o.value;o.textContent=o.textContent.replace(/ 🔒$/,"")+(TRACK_URL&&!STU&&v>FREE?" 🔒":"")})});
+  if(!lk)return;const en=LANG==="en";
+  $("#lockT").textContent=en?`Book ${BOOK} requires an account`:`Quyển ${BOOK} cần tài khoản`;
+  $("#lockP").textContent=FREE>0?(en?`Book${FREE>1?"s 1–"+FREE:" 1"} can be studied freely. From Book ${FREE+1} on, please log in with the class code your teacher gives you.`:`Quyển ${FREE>1?"1–"+FREE:"1"} học tự do. Từ Quyển ${FREE+1} trở đi cần đăng nhập bằng tài khoản lớp học.`):(en?"Please log in with the class code your teacher gives you.":"Cần đăng nhập bằng tài khoản lớp học để học.");
+  $("#lockM").textContent=en?"No class code yet? Contact your teacher to get one.":"Chưa có mã lớp? Hãy liên hệ giáo viên để được cung cấp mã lớp học.";
+  $("#lockFree").hidden=FREE<1;$("#lockFree").textContent=en?"Study Book 1":"Học Quyển 1"}
+function whoDraw(){lockCheck();const b=$("#whoBtn");b.hidden=!TRACK_URL;if(!STU){$("#whoName").textContent="Đăng nhập";$("#whoIni").textContent="登";return}$("#whoName").textContent=STU.n||STU.s;$("#whoIni").textContent=(STU.n||STU.s).trim().split(/\s+/).pop().slice(0,1).toUpperCase()}
 async function api(o){const r=await fetch(TRACK_URL+"?j="+encodeURIComponent(JSON.stringify(o)),{method:"GET",redirect:"follow",cache:"no-store"});return r.json()}
 function showLogin(){$("#loginScrim").hidden=false;$("#lgErr").textContent="";setTimeout(()=>{try{$("#lgC").focus()}catch(e){}},80)}
 function role(r){$("#roleTabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.r===(r==="reg"?"st":r)));$("#fSt").hidden=r!=="st";$("#fGv").hidden=r!=="gv";$("#fReg").hidden=r!=="reg"}
 async function busy(btn,txt,fn){const t=btn.textContent;btn.disabled=true;btn.textContent=txt;try{await fn()}finally{btn.disabled=false;btn.textContent=t}}
 async function doLogin(){const c=$("#lgC").value.trim(),s2=$("#lgS").value.trim(),pw=$("#lgP").value;if(!c||!s2){$("#lgErr").textContent="Nhập đủ mã lớp và mã học sinh.";return}
   await busy($("#lgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"login",c,s:s2,p:pw||s2});
-    if(r.ok&&r.tok){STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();cfgPull(r.cfg);knPull(r.kn,true);if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới — báo giáo viên."}
+    if(r.ok&&r.tok){if(r.free!=null)setFree(r.free);STU={c:r.c,s:r.s,n:r.n,cn:r.cn,tok:r.tok};store.set("stu",STU);$("#loginScrim").hidden=true;$("#lgP").value="";whoDraw();cfgPull(r.cfg);knPull(r.kn,true);if(r.mustChange)openWho(true)}else $("#lgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới — báo giáo viên."}
   catch(e){$("#lgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 async function doReg(){const c=$("#rgC").value.trim(),n=$("#rgN").value.trim(),s2=$("#rgS").value.trim(),pw=$("#rgP").value;
   if(!c||!n||!s2){$("#rgErr").textContent="Nhập đủ mã lớp, họ tên và mã học sinh.";return}if(pw.length<4){$("#rgErr").textContent="Mật khẩu cần ít nhất 4 ký tự.";return}if(pw!==$("#rgP2").value){$("#rgErr").textContent="Hai mật khẩu không khớp.";return}
@@ -983,7 +1006,7 @@ async function doTLogin(){const u=$("#tgU").value.trim(),pw=$("#tgP").value;if(!
   await busy($("#tgGo"),"Đang đăng nhập…",async()=>{try{const r=await api({a:"tlogin",u,p:pw});
     if(r.ok&&r.u){const cr=JSON.stringify({u,p:pw,n:r.n});try{sessionStorage.setItem("tvT:cred",cr);if($("#tgR").checked)localStorage.setItem("tvT:cred",cr)}catch(e){}
       if(!r.tok||/[?&]gv=1/.test(location.search)){location.href="teacher.html";return}
-      STU={c:r.c,s:r.s,n:r.n||r.u,tok:r.tok,gv:1,u:r.u,admin:!!r.admin};store.set("stu",STU);$("#loginScrim").hidden=true;$("#tgP").value="";whoDraw();cfgPull(r.cfg);knPull(r.kn,true)}else $("#tgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2)."}
+      if(r.free!=null)setFree(r.free);STU={c:r.c,s:r.s,n:r.n||r.u,tok:r.tok,gv:1,u:r.u,admin:!!r.admin};store.set("stu",STU);$("#loginScrim").hidden=true;$("#tgP").value="";whoDraw();cfgPull(r.cfg);knPull(r.kn,true)}else $("#tgErr").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2)."}
   catch(e){$("#tgErr").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại."}})}
 function openWho(first){const gv=!!STU.gv;$("#whoMgr").hidden=!gv;$("#whoPw").hidden=gv;$("#whoNote").hidden=gv;$("#whoTitle").textContent=STU.n||STU.s;
   $("#whoInfo").textContent=gv?(LANG==="en"?"Teacher · username ":"Giáo viên · tên đăng nhập ")+(STU.u||STU.s).toLowerCase()+(LANG==="en"?" · your settings and learned words are saved":" · tùy chỉnh và từ đã nhớ được lưu theo tài khoản"):`Lớp ${STU.c}${STU.cn?" · "+STU.cn:""} · Mã ${STU.s}`;
@@ -1001,6 +1024,8 @@ if(TRACK_URL){
   $("#whoOut").onclick=()=>{if(STU&&STU.gv){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}}trkFlush(true);clearTimeout(knT);known=new Set();store.set("known",[]);store.set("knownT",0);try{stats();rerender()}catch(e){}STU=null;store.set("stu",null);TRK={};store.set("trk",{});SEEN={};store.set("seen",{});$("#whoScrim").hidden=true;whoDraw()};
   if(STU&&!STU.tok){STU=null;store.set("stu",null)}
   whoDraw();if(/[?&]gv=1/.test(location.search)){role("gv");showLogin()}
+  api({a:"pub"}).then(r=>{if(r&&r.ok&&r.free!=null)setFree(+r.free)}).catch(()=>{});
+  $("#lockLogin").onclick=()=>{role("st");showLogin()};$("#lockFree").onclick=()=>{try{localStorage.setItem("tv1:book","1")}catch(e){}location.reload()};
   if(STU&&STU.tok)api({a:"getcfg",c:STU.c,s:STU.s,tok:STU.tok}).then(r=>{if(r&&r.ok){if(r.cfg){const ch=CFG_SYNC.some(k=>r.cfg[k]!==undefined&&r.cfg[k]!==CFG[k]);if(ch)cfgPull(r.cfg)}knPull(r.kn,false)}}).catch(()=>{})}
 
 /* ---------- voice settings ---------- */
@@ -1034,7 +1059,7 @@ const EN_UI={
 "Chưa có tài khoản?":"No account yet?","Tạo tài khoản bằng mã lớp":"Create an account with a class code","Mã lớp (giáo viên cung cấp)":"Class code (from your teacher)","Họ tên":"Full name",
 "VD: Nguyễn Văn An":"e.g. John Smith","Mã học sinh (tự đặt, dùng để đăng nhập)":"Student ID (your choice, used to log in)","VD: AN2005 hoặc mã số sinh viên":"e.g. JOHN2005 or your student number",
 "Mật khẩu (ít nhất 4 ký tự)":"Password (at least 4 characters)","Nhập lại mật khẩu":"Repeat password","Tạo tài khoản & vào học":"Create account & start","Đã có tài khoản?":"Already have an account?",
-"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
+"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
 "Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.":"Student login only lets your teacher follow your progress. No code yet? Ask your teacher.",
 "Đổi mật khẩu":"Change password","Mật khẩu hiện tại":"Current password","Mật khẩu mới (ít nhất 4 ký tự)":"New password (at least 4 characters)","Lưu mật khẩu mới":"Save new password",
 "Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.":"Study time, card flips, listening, quizzes and learned words are sent to your teacher.","Đăng xuất":"Log out",
@@ -1113,7 +1138,7 @@ if(LANG==="en"){const R=document.documentElement;R.classList.add("enwait");const
 renderLessons();render();showSec(S.sec);
 (()=>{const nm="當代中文課程 "+BOOK;document.title=(LANG==="en"?"Learn 當代中文 ":"Học 當代中文 ")+BOOK;document.getElementById("brandT").textContent="Tập "+BOOK;document.querySelectorAll(".bkN").forEach(e=>e.textContent=nm);try{document.getElementById("bkNL").textContent=NL}catch(_){}
   [["bookPick",i=>(innerWidth<560?"Q":"Quyển ")+i],["sBook",i=>"當代中文課程 "+i+" · Quyển "+i]].forEach(([id,lb])=>{const g=document.getElementById(id);g.innerHTML=Array.from({length:NB},(_,k)=>`<option value="${k+1}"${k+1===BOOK?" selected":""}>${lb(k+1)}</option>`).join("");
-    g.onchange=()=>{const v=+g.value;if(v===BOOK)return;try{if(typeof trkFlush==="function")trkFlush()}catch(_){}try{localStorage.setItem("tv1:book",v)}catch(_){}location.reload()}})})();
+    g.onchange=()=>{const v=+g.value;if(v===BOOK)return;try{if(typeof trkFlush==="function")trkFlush()}catch(_){}try{localStorage.setItem("tv1:book",v)}catch(_){}location.reload()}});try{lockCheck()}catch(_){}})();
 (()=>{["langSide","langAuth","langSet"].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=langBtns()});
   document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-lang]");if(b)setLang(b.dataset.lang)});
   document.documentElement.lang=LANG;

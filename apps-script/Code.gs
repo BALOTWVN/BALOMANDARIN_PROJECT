@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 9 (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 10 (nhanh hơn nhờ bộ nhớ đệm; quản trị chọn số quyển học tự do, quyển sau cần đăng nhập) — 9: (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -77,6 +77,15 @@ function secret_() {
 const hex_ = b => b.map(x => ('0' + (x & 255).toString(16)).slice(-2)).join('');
 function hash_(pw) { return hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, secret_() + '|' + String(pw))); }
 function tok_(c, s) { return hex_(Utilities.computeHmacSha256Signature(norm_(c) + '|' + norm_(s), secret_())).slice(0, 32); }
+/* ---------- bộ nhớ đệm (nhanh hơn: đỡ đọc lại trang tính) ---------- */
+function cache_() { try { return CacheService.getScriptCache(); } catch (e) { return null; } }
+function ver_() { const c = cache_(); if (!c) return '0'; let v = c.get('VER'); if (!v) { v = String(Date.now()); c.put('VER', v, 21600); } return v; }
+function bump_() { const c = cache_(); if (c) c.put('VER', String(Date.now()) + Math.random().toString(36).slice(2, 6), 21600); }
+function cget_(k) { const c = cache_(); if (!c) return null; const x = c.get(k + ':' + ver_()); if (!x) return null; try { return JSON.parse(x); } catch (e) { return null; } }
+function cput_(k, o) { const c = cache_(); if (!c) return; const j = JSON.stringify(o); if (j.length < 95000) try { c.put(k + ':' + ver_(), j, 900); } catch (e) {} }
+function rowsC_(s, k) { const hit = cget_('R' + k); if (hit) return hit; const v = rows_(s[k]).map(r => r.map(x => x instanceof Date ? x.toISOString() : x)); cput_('R' + k, v); return v; }
+/* ---------- số quyển học tự do (không cần đăng nhập) ---------- */
+function getFree_() { const v = PropertiesService.getScriptProperties().getProperty('FREE_BOOKS'); const n = v == null ? 1 : Number(v); return isNaN(n) ? 1 : n; }
 function delRows_(sh, pred) { const v = sh.getDataRange().getValues(); for (let i = v.length - 1; i >= 1; i--) if (pred(v[i])) sh.deleteRow(i + 1); }
 
 /* ---------- entry points ---------- */
@@ -96,9 +105,10 @@ function handle_(p) {
   try {
     s = sheets_();
     switch (p.a) {
-      case 'login': return out_(stLogin_(s, p));
+      case 'pub': return out_({ ok: true, free: getFree_() });
+      case 'login': return out_(Object.assign(stLogin_(s, p), { free: getFree_() }));
       case 'chpw': return out_(stChpw_(s, p));
-      case 'register': { const lock = LockService.getScriptLock(); lock.waitLock(20000); try { return out_(stRegister_(s, p)); } finally { lock.releaseLock(); } }
+      case 'register': { const lock = LockService.getScriptLock(); lock.waitLock(20000); try { bump_(); return out_(stRegister_(s, p)); } finally { lock.releaseLock(); } }
       case 'log': return out_(log_(s, p));
       case 'setcfg': {
         if (p.tok && p.tok === tok_(p.c, p.s)) return out_(setCfg_(s, (p.kind === 'kn' ? 'KN:' : 'HS:') + norm_(p.c) + ':' + norm_(p.s), p.cfg));
@@ -111,14 +121,14 @@ function handle_(p) {
       }
       case 'tlogin': { const t = teacher_(s, p); if (!t) return out_({ ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' });
         const gc = '#GV'; // tài khoản học của giáo viên: lưu tùy chỉnh + từ đã nhớ như học sinh (không tính vào thống kê lớp)
-        return out_({ ok: true, u: t.u, n: t.n, admin: t.admin, c: gc, s: t.u, tok: tok_(gc, t.u), cfg: getCfg_(s, 'HS:' + gc + ':' + t.u), kn: getCfg_(s, 'KN:' + gc + ':' + t.u) }); }
+        return out_({ ok: true, u: t.u, n: t.n, admin: t.admin, free: getFree_(), c: gc, s: t.u, tok: tok_(gc, t.u), cfg: getCfg_(s, 'HS:' + gc + ':' + t.u), kn: getCfg_(s, 'KN:' + gc + ':' + t.u) }); }
     }
     const t = teacher_(s, p);
     if (!t) return out_({ ok: false, err: 'Phiên đăng nhập giáo viên không hợp lệ', auth: true });
     if (p.a === 'data') return out_(teacherAct_(s, t, p));
     const lock = LockService.getScriptLock(); lock.waitLock(20000);
     let res;
-    try { res = teacherAct_(s, t, p); } finally { lock.releaseLock(); }
+    try { res = teacherAct_(s, t, p); bump_(); } finally { lock.releaseLock(); }
     if (res && res.ok && p.a !== 'tchpw') res.data = teacherAct_(s, t, { a: 'data' }); // trả luôn dữ liệu mới, đỡ 1 lần gọi
     return out_(res);
   } catch (err) { return out_({ ok: false, err: String(err) }); }
@@ -171,13 +181,13 @@ function stChpw_(s, p) {
 /* ---------- teachers ---------- */
 function teacher_(s, p) {
   if (!p.u || !p.p) return null;
-  const r = rows_(s.gv).find(r => norm_(r[0]) === norm_(p.u));
+  const r = rowsC_(s, 'gv').find(r => norm_(r[0]) === norm_(p.u));
   if (!r || r[2] !== hash_(p.p)) return null;
   return { u: norm_(r[0]), n: String(r[1] || r[0]), admin: !!r[3] };
 }
 function myClasses_(s, t) {
-  return rows_(s.lop).filter(r => r[0] !== '' && (t.admin || norm_(r[2]) === t.u))
-    .map(r => ({ c: norm_(r[0]), n: String(r[1] || ''), gv: norm_(r[2]), at: r[3] instanceof Date ? r[3].toISOString() : '' }));
+  return rowsC_(s, 'lop').filter(r => r[0] !== '' && (t.admin || norm_(r[2]) === t.u))
+    .map(r => ({ c: norm_(r[0]), n: String(r[1] || ''), gv: norm_(r[2]), at: String(r[3] || '') }));
 }
 function own_(s, t, c) { return myClasses_(s, t).some(x => x.c === norm_(c)); }
 const cleanCode_ = c => norm_(c).replace(/[^A-Z0-9_-]/g, '').slice(0, 20);
@@ -185,12 +195,22 @@ const cleanCode_ = c => norm_(c).replace(/[^A-Z0-9_-]/g, '').slice(0, 20);
 function teacherAct_(s, t, p) {
   switch (p.a) {
     case 'data': {
+      const hit = cget_('D' + t.u); if (hit) return hit;
       const cls = myClasses_(s, t), set = new Set(cls.map(x => x.c));
       const roster = rows_(s.hs).filter(r => set.has(norm_(r[0]))).map(r => ({ c: norm_(r[0]), s: norm_(r[1]), n: String(r[2] || ''), pw: !!r[3] }));
       const rows = rows_(s.tk).filter(r => set.has(norm_(r[0]))).map(r => r.slice(0, NTK).map(x => x instanceof Date ? x.toISOString() : x));
       const res = { ok: true, me: t, classes: cls, roster, rows, head: SH.tk[1] };
-      if (t.admin) res.teachers = rows_(s.gv).map(r => ({ u: norm_(r[0]), n: String(r[1] || ''), admin: !!r[3] }));
+      if (t.admin) res.teachers = rowsC_(s, 'gv').map(r => ({ u: norm_(r[0]), n: String(r[1] || ''), admin: !!r[3] }));
+      res.free = getFree_();
+      cput_('D' + t.u, res);
       return res;
+    }
+    case 'setfree': {
+      if (!t.admin) return { ok: false, err: 'Chỉ quản trị mới đổi được' };
+      const n = Math.max(0, Math.min(99, Math.round(Number(p.free))));
+      if (isNaN(n)) return { ok: false, err: 'Số quyển không hợp lệ' };
+      PropertiesService.getScriptProperties().setProperty('FREE_BOOKS', String(n));
+      return { ok: true, free: n };
     }
     case 'addclass': {
       const c = cleanCode_(p.c);
@@ -304,6 +324,7 @@ function log_(s, d) {
     if (logRows.length) s.log.getRange(s.log.getLastRow() + 1, 1, logRows.length, logRows[0].length).setValues(logRows);
     if (tkR.length > 1) s.tk.getRange(2, 1, tkR.length - 1, NTK).setValues(tkR.slice(1).map(r => r.slice(0, NTK)));
     if (add.length) s.tk.getRange(s.tk.getLastRow() + 1, 1, add.length, NTK).setValues(add);
+    bump_();
     return { ok: true };
   } finally { lock.releaseLock(); }
 }

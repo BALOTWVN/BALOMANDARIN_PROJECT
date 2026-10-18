@@ -166,21 +166,22 @@ try{CLS=localStorage.getItem("tvT:cls")}catch(e){}
 const COL={c:0,s:1,n:2,bai:3,f:4,seen:5,li:6,q:7,qc:8,lq:9,lqc:10,min:11,kn:12,last:13};
 let PEND=0;function busyUI(on){PEND+=on?1:-1;document.body.classList.toggle("busy",PEND>0);$("#busyBar").hidden=PEND<=0}
 async function api(o){const btn=document.activeElement&&document.activeElement.tagName==="BUTTON"?document.activeElement:null;if(btn){if(btn.disabled)throw new Error("dup");btn.disabled=true;btn.dataset.t=btn.textContent;if(o.a!=="data")btn.textContent="Đang xử lý…"}
-  busyUI(true);try{return await apiRaw(o)}catch(e){if(e.message!=="auth"&&e.message!=="dup"){toast(e.message.startsWith("srv:")?"Máy chủ báo lỗi: "+e.message.slice(4):"Không kết nối được máy chủ, thử lại sau vài giây.")}throw e}finally{busyUI(false);if(btn){btn.disabled=false;if(btn.dataset.t)btn.textContent=btn.dataset.t}}}
+  $("#busyBar span").textContent=o.a==="data"?"Đang cập nhật dữ liệu mới…":"Đang làm việc với máy chủ…";busyUI(true);try{return await apiRaw(o)}catch(e){if(e.message!=="auth"&&e.message!=="dup"){toast(e.message.startsWith("srv:")?"Máy chủ báo lỗi: "+e.message.slice(4):"Không kết nối được máy chủ, thử lại sau vài giây.")}throw e}finally{busyUI(false);if(btn){btn.disabled=false;if(btn.dataset.t)btn.textContent=btn.dataset.t}}}
 addEventListener("unhandledrejection",e=>{e.preventDefault()});
 async function apiRaw(o){o=Object.assign({u:CRED.u,p:CRED.p},o);
   const r=await fetch(TRACK_URL+"?j="+encodeURIComponent(JSON.stringify(o)),{method:"GET",redirect:"follow",cache:"no-store"});const txt=await r.text();let j;try{j=JSON.parse(txt)}catch(e){const m=/<title>([^<]*)<\/title>|class="errorMessage"[^>]*>([^<]*)/i.exec(txt);throw new Error("srv:"+((m&&(m[2]||m[1]))||txt.replace(/<[^>]+>/g," ").trim()).slice(0,160))}
   if(j.auth){logout();throw new Error("auth")}if(j.data&&j.data.ok)FRESH=j.data;return j}
-function logout(){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred")}catch(e){}location.replace("./?gv=1")}
+function logout(){try{sessionStorage.removeItem("tvT:cred");localStorage.removeItem("tvT:cred");localStorage.removeItem(DKEY)}catch(e){}location.replace("./?gv=1")}
 $("#out").onclick=logout;
 function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
 function modal(html,bind){const root=$("#modalRoot");root.innerHTML=`<div class="modal"><div class="card">${html}</div></div>`;const m=root.firstElementChild;
   m.onclick=e=>{if(e.target===m)close()};const close=()=>{root.innerHTML=""};m.querySelectorAll("[data-close]").forEach(b=>b.onclick=close);bind&&bind(m,close);const f=m.querySelector("input,textarea");if(f)setTimeout(()=>f.focus(),50)}
 let FRESH=null;
-async function load(){try{let r;if(FRESH){r=FRESH;FRESH=null}else r=await api({a:"data"});if(!r.ok||!r.classes){$("#loading").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2). Dán lại mã và triển khai Phiên bản mới.";return}D=r;
-    $("#loading").hidden=true;$("#main").hidden=false;$("#me").hidden=false;$("#meN").textContent=D.me.n+(D.me.admin&&!/quản trị/i.test(D.me.n)?" · Quản trị":"");$("#meI").textContent=(D.me.n||"G").trim().slice(0,1).toUpperCase();
-    if(!D.classes.some(c=>c.c===CLS))CLS=D.classes[0]?D.classes[0].c:null;draw()}
-  catch(e){if(e.message!=="auth")$("#loading").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi tải lại trang."}}
+const DKEY="tvT:D:"+(CRED&&CRED.u||"").toUpperCase();
+function show(r){D=r;$("#loading").hidden=true;$("#main").hidden=false;$("#me").hidden=false;$("#meN").textContent=D.me.n+(D.me.admin&&!/quản trị/i.test(D.me.n)?" · Quản trị":"");$("#meI").textContent=(D.me.n||"G").trim().slice(0,1).toUpperCase();
+    if(!D.classes.some(c=>c.c===CLS))CLS=D.classes[0]?D.classes[0].c:null;const ae=document.activeElement;if(!document.querySelector(".modal")&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)&&$("#pane").contains(ae)))draw()}
+async function load(){try{let r;if(FRESH){r=FRESH;FRESH=null}else r=await api({a:"data"});if(!r.ok||!r.classes){if(D)return;$("#loading").textContent=r.err||"Máy chủ chưa cập nhật mã mới (Code.gs phiên bản 2). Dán lại mã và triển khai Phiên bản mới.";return}try{localStorage.setItem(DKEY,JSON.stringify(r))}catch(e){}show(r)}
+  catch(e){if(e.message!=="auth"&&!D)$("#loading").textContent="Không kết nối được máy chủ. Kiểm tra mạng rồi tải lại trang."}}
 function draw(){sideDraw();if(PANE==="teachers")return teachersDraw();if(!CLS)return emptyDraw();paneDraw()}
 function sideDraw(){$("#clist").innerHTML=D.classes.map(c=>{const n=D.roster.filter(r=>r.c===c.c).length;return `<button class="cls" data-c="${esc(c.c)}" aria-current="${PANE==="class"&&c.c===CLS}"><b>${esc(c.c)}</b><span>${esc(c.n||"(chưa đặt tên)")} · ${n} HS${D.me.admin&&c.gv!==D.me.u?" · GV "+esc(c.gv):""}</span></button>`}).join("")+`<button class="cls add" id="newCls">＋ Tạo lớp mới</button>`;
   $("#clist").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{CLS=b.dataset.c;PANE="class";try{localStorage.setItem("tvT:cls",CLS)}catch(e){}draw()});
@@ -263,13 +264,19 @@ function settingsDraw(){const c=D.classes.find(x=>x.c===CLS);const B=$("#tabBody
   $("#sGo").onclick=async()=>{const r=await api({a:"editclass",c:CLS,n:$("#sN").value,gv:D.me.admin?$("#sG").value:""});if(!r.ok){$("#sM").textContent=r.err;return}toast("Đã lưu");await load()};
   $("#sDel").onclick=()=>modal(`<h2>Xóa lớp ${esc(CLS)}?</h2><p class="meta" style="margin:0">Lớp và danh sách học sinh sẽ bị xóa, học sinh không đăng nhập được nữa. Số liệu học cũ vẫn giữ trong trang <b>ThongKe</b> của file Sheets.</p><label class="fld">Gõ <b>${esc(CLS)}</b> để xác nhận<input id="mC"></label><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn dng" id="mGo">Xóa lớp</button></div>`,(m,close)=>{
     m.querySelector("#mGo").onclick=async()=>{if(m.querySelector("#mC").value.trim().toUpperCase()!==CLS)return;await api({a:"delclass",c:CLS});close();CLS=null;toast("Đã xóa lớp");await load()}})}
-function teachersDraw(){sideDraw();const T=D.teachers||[];
-  $("#pane").innerHTML=`<div class="card chead"><div><h2>Tài khoản giáo viên</h2><div class="meta">Mỗi giáo viên chỉ thấy và quản lý lớp do mình tạo. Quản trị thấy tất cả.</div></div></div>
+function teachersDraw(){sideDraw();const T=D.teachers||[];const FR=D.free==null?1:+D.free;
+  $("#pane").innerHTML=`<div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:17px">Quyền vào trang học</h2>
+     <div class="meta" style="margin:0">Học sinh chưa đăng nhập chỉ học được các quyển đầu. Quyển sau sẽ khóa và hiện lời nhắc liên hệ giáo viên để được cung cấp mã lớp học.</div>
+     <div class="bar" style="margin:0"><label class="fld" style="flex:1;min-width:240px">Học tự do không cần đăng nhập<select id="frSel">${[0,1,2,3,4,5,6].map(i=>`<option value="${i}"${i===FR?" selected":""}>${i===0?"Không quyển nào (đều phải đăng nhập)":i===6?"Cả 6 quyển (không khóa)":"Quyển 1"+(i>1?"–"+i:"")+" · khóa từ Quyển "+(i+1)}</option>`).join("")}</select></label>
+     <button class="btn pri" id="frGo" style="align-self:flex-end">Lưu</button></div>
+     <p class="meta" id="frM" style="margin:0">${D.free==null?"Máy chủ chưa cập nhật mã mới (Phiên bản 10) — dán lại mã và triển khai Phiên bản mới để dùng mục này.":"Hiện tại: "+(FR===0?"mọi quyển đều cần đăng nhập.":FR>=6?"không khóa quyển nào.":"Quyển 1"+(FR>1?"–"+FR:"")+" học tự do, từ Quyển "+(FR+1)+" cần đăng nhập.")}</p></div>
+   <div class="card chead"><div><h2>Tài khoản giáo viên</h2><div class="meta">Mỗi giáo viên chỉ thấy và quản lý lớp do mình tạo. Quản trị thấy tất cả.</div></div></div>
    <div class="two"><div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:17px">Thêm giáo viên</h2>
      <label class="fld">Tên đăng nhập<input id="tU" autocapitalize="none"></label><label class="fld">Họ tên<input id="tN"></label><label class="fld">Mật khẩu (ít nhất 6 ký tự)<input id="tP" type="text" autocomplete="off"></label>
      <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="tA" style="width:auto;min-height:auto"> Quyền quản trị</label><p class="err" id="tM"></p><button class="btn pri" id="tGo">Tạo tài khoản</button></div>
    <div class="tbox"><table><thead><tr><th>Tên đăng nhập</th><th class="l">Họ tên</th><th class="l">Quyền</th><th>Lớp</th><th></th></tr></thead><tbody>${T.map(t=>`<tr><td>${esc(t.u)}</td><td class="l">${esc(t.n)}</td><td class="l">${t.admin?'<span class="pill">Quản trị</span>':'<span class="pill mute">Giáo viên</span>'}</td><td>${D.classes.filter(c=>c.gv===t.u).length}</td>
      <td><div class="acts"><button class="lnk" data-rp="${esc(t.u)}">Đặt lại mật khẩu</button>${t.u===D.me.u?"":`<button class="lnk dng" data-dt="${esc(t.u)}">Xóa</button>`}</div></td></tr>`).join("")}</tbody></table></div></div>`;
+  $("#frGo").onclick=async()=>{const r=await api({a:"setfree",free:+$("#frSel").value});if(!r.ok){$("#frM").textContent=r.err||"Chưa lưu được";return}toast("Đã lưu");await load()};
   $("#tGo").onclick=async()=>{const r=await api({a:"addteacher",nu:$("#tU").value,nn:$("#tN").value,np:$("#tP").value,nadmin:$("#tA").checked});if(!r.ok){$("#tM").textContent=r.err;return}toast("Đã tạo tài khoản");await load()};
   document.querySelectorAll("[data-rp]").forEach(b=>b.onclick=()=>modal(`<h2>Đặt lại mật khẩu · ${esc(b.dataset.rp)}</h2><label class="fld">Mật khẩu mới (ít nhất 6 ký tự)<input id="mP" type="text" autocomplete="off"></label><p class="err" id="mE"></p><div class="bar"><span class="sp"></span><button class="btn" data-close>Hủy</button><button class="btn pri" id="mGo">Lưu</button></div>`,(m,close)=>{
     m.querySelector("#mGo").onclick=async()=>{const r=await api({a:"resetteacher",du:b.dataset.rp,np:m.querySelector("#mP").value});if(!r.ok){m.querySelector("#mE").textContent=r.err;return}close();toast("Đã đặt lại");if(b.dataset.rp===D.me.u){CRED.p=m.querySelector("#mP").value}}}));
@@ -279,7 +286,7 @@ $("#acct").onclick=()=>modal(`<h2>Tài khoản · ${esc(CRED.u)}</h2><label clas
   <div class="bar"><span class="sp"></span><button class="btn" data-close>Đóng</button><button class="btn pri" id="mGo">Đổi mật khẩu</button></div>`,(m,close)=>{
   m.querySelector("#mGo").onclick=async()=>{const a=m.querySelector("#mP").value,b=m.querySelector("#mP2").value;if(a!==b){m.querySelector("#mE").textContent="Hai mật khẩu không khớp";return}
     const r=await api({a:"tchpw",np:a});if(!r.ok){m.querySelector("#mE").textContent=r.err;return}CRED.p=a;const cr=JSON.stringify(CRED);try{sessionStorage.setItem("tvT:cred",cr);if(localStorage.getItem("tvT:cred"))localStorage.setItem("tvT:cred",cr)}catch(e){}close();toast("Đã đổi mật khẩu")}});
-if(CRED&&TRACK_URL)load();
+if(CRED&&TRACK_URL){try{const c=JSON.parse(localStorage.getItem(DKEY)||"null");if(c&&c.ok&&c.classes)show(c)}catch(e){}load()}
 </script>
 </body>
 </html>
