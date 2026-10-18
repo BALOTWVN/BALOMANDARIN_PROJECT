@@ -332,6 +332,9 @@ body.sc-open{overflow:hidden}
 .sczoom #scPct{font-size:13px;min-width:62px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .schint{position:absolute;left:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);margin:0;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--sheet) 88%,transparent);box-shadow:var(--shadow);transition:opacity .6s;max-width:calc(100% - 230px);font-size:12px;color:var(--muted);pointer-events:none}
 @media (max-width:700px){.scbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.scbar>*{flex:none}.schint{display:none}}
+.copybar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--sheet);border:1px solid var(--line);border-radius:14px}
+.copybar>span{font-size:13px;color:var(--muted);font-weight:600;margin-right:4px}
+.dlg-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .bzoom{position:absolute;right:8px;bottom:8px;display:flex;background:var(--sheet);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;z-index:2}
 .bzoom button{border:0;background:none;min-width:38px;min-height:36px;font:inherit;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer}
 .bzoom #bzPct{font-size:12px;min-width:50px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
@@ -499,6 +502,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <label class="sizer" title="Cỡ nét"><input type="range" id="scSize" min="2" max="30" step="1" aria-label="Cỡ nét"></label>
     <span class="swatches" id="scCol"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button><button data-v="more" class="more" aria-label="Bảng màu" title="Bảng màu"><i></i></button></span>
     <span class="seg" id="scGridSeg"><button data-v="tian" class="han" title="Ô chữ điền">田</button><button data-v="mi" class="han" title="Ô chữ mễ">米</button><button data-v="none">Trơn</button></span>
+    <span class="seg" id="scPart" hidden></span>
     <button class="tbtn" id="scPickBtn" aria-haspopup="true">Chọn chữ <span id="scPickN"></span> ▾</button>
     <button class="tbtn" id="scModel" aria-pressed="true">Chữ mẫu</button>
     <button class="tbtn" id="scTrace" aria-pressed="false">Tô theo mẫu</button>
@@ -968,14 +972,18 @@ $("#padScr").onclick=()=>scOpen(P.target?[P.target.c]:selChars(),pool().map(w=>w
 const SC={open:false,z:1,tx:24,ty:24,C:140,strokes:[],cur:null,erase:false,hand:false,touch:new Map(),pinch:null,mpan:null,fpan:null,space:false,
   chars:[],model:true,trace:false,W:0,H:0,raf:0,saveT:0};
 const scG=$("#scG"),scI=$("#scI"),scL=$("#scL"),sxG=scG.getContext("2d"),sxI=scI.getContext("2d"),sxL=scL.getContext("2d"),scB=$("#scBoard");
-const scKey=()=>"scr"+BOOK;
-function scLoad(){const d=store.get(scKey(),null);if(d&&Array.isArray(d.s)){SC.strokes=d.s.map(s=>({tip:s.t,color:s.c,erase:!!s.e,pts:s.p}));SC.strokes.forEach(scBB);
+const scKey=()=>SC.mode==="text"?`scrT${BOOK}_${SC.tl}_${SC.parts.join("")}_${SC.trace?1:0}`:"scr"+BOOK;
+const TCOLS=12;
+function scLayout(){SC.trows=[];if(SC.mode!=="text")return;let j=0;const L=CONTENT[SC.tl-1];
+  SC.parts.forEach((pi,k)=>{const d=L&&L.d[pi];if(!d)return;if(k>0)j++;
+    d.x.forEach(r=>{const ch=Array.from(String(r[2]||"").replace(/\s+/g,""));for(let i=0;i<ch.length;i+=TCOLS){SC.trows.push({j,s:ch.slice(i,i+TCOLS)});j+=SC.trace?1:2}})})}
+function scLoad(){SC.strokes=[];SC.z=1;SC.tx=24;SC.ty=24;SC.fit=SC.mode==="text";const d=store.get(scKey(),null);if(d&&d.v)SC.fit=false;if(d&&Array.isArray(d.s)){SC.strokes=d.s.map(s=>({tip:s.t,color:s.c,erase:!!s.e,pts:s.p}));SC.strokes.forEach(scBB);
   if(d.v){SC.z=d.v[0];SC.tx=d.v[1];SC.ty=d.v[2]}}}
 function scSave(now){clearTimeout(SC.saveT);const f=()=>{const r=v=>Math.round(v*10)/10;
   store.set(scKey(),{v:[SC.z,r(SC.tx),r(SC.ty)],s:SC.strokes.map(s=>({t:s.tip,c:s.color,e:s.erase?1:0,p:s.pts.map(q=>[r(q[0]),r(q[1]),Math.round(q[2]*100)/100])}))})};if(now)f();else SC.saveT=setTimeout(f,600)}
 addEventListener("pagehide",()=>{if(SC.open||SC.saveT)scSave(true)});
 function scBB(s){let a=1e9,b=1e9,c=-1e9,d=-1e9,m=0;for(const q of s.pts){a=Math.min(a,q[0]);b=Math.min(b,q[1]);c=Math.max(c,q[0]);d=Math.max(d,q[1]);m=Math.max(m,q[2])}s.bb=[a-m,b-m,c+m,d+m]}
-function scSize(){const r=scB.getBoundingClientRect();SC.W=r.width;SC.H=r.height;const dpr=window.devicePixelRatio||1;
+function scSize(){const r=scB.getBoundingClientRect();SC.W=r.width;SC.H=r.height;if(SC.fit&&r.width>50){SC.z=Math.max(.3,Math.min(1,(r.width-48)/(TCOLS*SC.C)));SC.fit=false}const dpr=window.devicePixelRatio||1;
   for(const c of [scG,scI,scL]){c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr)}scDraw()}
 const scW=(x,y)=>[(x-SC.tx)/SC.z,(y-SC.ty)/SC.z];
 function scPos(e){const r=scL.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
@@ -990,7 +998,10 @@ function scGrid(){const dpr=window.devicePixelRatio||1,x=sxG,C=SC.C,z=SC.z,cs=C*
     x.stroke();x.restore()}
   x.save();x.strokeStyle=red;x.globalAlpha=.55;x.lineWidth=cs>40?1.4:1;x.beginPath();
   for(let i=i0;i<=i1;i++){x.moveTo(X(i),Y(j0));x.lineTo(X(i),Y(j1))}for(let j=j0;j<=j1;j++){x.moveTo(X(i0),Y(j));x.lineTo(X(i1),Y(j))}x.stroke();x.restore();
-  if(SC.model&&SC.chars.length){x.save();x.font=`${Math.round(cs*.78)}px ${MODELFONT}`;x.textAlign="center";x.textBaseline="middle";
+  if(SC.mode==="text"&&SC.model){x.save();x.font=`${Math.round(cs*.78)}px ${MODELFONT}`;x.textAlign="center";x.textBaseline="middle";
+    for(const row of SC.trows){if(row.j<j0||row.j>j1)continue;row.s.forEach((ch,i)=>{if(i<i0||i>i1)return;x.globalAlpha=SC.trace?.2:.62;x.fillStyle=tok(SC.trace?"--muted":"--ink");x.fillText(ch,X(i)+cs/2,Y(row.j)+cs/2+cs*.03)})}
+    x.restore()}
+  else if(SC.model&&SC.chars.length){x.save();x.font=`${Math.round(cs*.78)}px ${MODELFONT}`;x.textAlign="center";x.textBaseline="middle";
     for(let j=Math.max(0,j0);j<=Math.min(j1,SC.chars.length-1);j++){const ch=SC.chars[j];
       for(let i=Math.max(0,i0);i<=Math.min(i1,SC.trace?7:0);i++){x.globalAlpha=i===0?.62:.16;x.fillStyle=i===0?tok("--ink"):tok("--muted");x.fillText(ch,X(i)+cs/2,Y(j)+cs/2+cs*.03)}}
     x.restore()}}
@@ -1055,7 +1066,10 @@ function scSync(){document.querySelectorAll("#scTip button").forEach(b=>b.setAtt
   document.querySelectorAll("#scCol button").forEach(b=>{const m=b.dataset.v==="more",hex=P.color&&P.color[0]==="#";b.setAttribute("aria-pressed",m?hex:b.dataset.v===P.color);if(m)b.querySelector("i").style.background=hex?P.color:""});
   document.querySelectorAll("#scGridSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===P.grid));
   $("#scSize").value=P.size;$("#scErase").setAttribute("aria-pressed",SC.erase);$("#scHand").setAttribute("aria-pressed",SC.hand);
-  $("#scModel").setAttribute("aria-pressed",SC.model);$("#scTrace").setAttribute("aria-pressed",SC.trace);$("#scModel").hidden=$("#scTrace").hidden=!SC.chars.length;$("#scPickBtn").hidden=!SC.all.length;$("#scPickN").textContent=SC.all.length?`(${SC.chars.length})`:"";
+  $("#scModel").setAttribute("aria-pressed",SC.model);$("#scTrace").setAttribute("aria-pressed",SC.trace);const tx=SC.mode==="text";$("#scModel").hidden=$("#scTrace").hidden=!tx&&!SC.chars.length;$("#scPickBtn").hidden=tx||!SC.all.length;$("#scPart").hidden=!tx;
+  if(tx){const L=CONTENT[SC.tl-1];$("#scPart").innerHTML=L.d.map((d,i)=>`<button data-p="${i}" aria-pressed="${SC.parts.length===1&&SC.parts[0]===i}">${esc(d.t)}</button>`).join("")+(L.d.length>1?`<button data-p="all" aria-pressed="${SC.parts.length===L.d.length}">${LANG==="en"?"Whole lesson":"Cả bài"}</button>`:"");
+    $("#scInfo").textContent=(LANG==="en"?`Lesson ${SC.tl} · copy the text`:`Bài ${SC.tl} · chép bài đọc`)}
+  else $("#scPickN").textContent=SC.all.length?`(${SC.chars.length})`:"";
   $("#scInfo").textContent=SC.chars.length?(LANG==="en"?`${SC.chars.length} characters`:`${SC.chars.length} chữ đang luyện`):(SC.all.length?(LANG==="en"?"Blank sheet":"Giấy trắng"):"")}
 $("#scPickBtn").onclick=e=>{const p=document.getElementById("scPick");if(p&&!p.hidden)popClose();else scPickOpen(e.currentTarget)};
 $("#scTip").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.tip=b.dataset.v;SC.erase=false;SC.hand=false;store.set("tip",P.tip);scSync();try{syncTools()}catch(_){}};
@@ -1064,8 +1078,10 @@ $("#scGridSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.gr
 $("#scSize").oninput=e=>{P.size=+e.target.value;store.set("size",P.size);try{syncTools()}catch(_){}};
 $("#scErase").onclick=()=>{SC.erase=!SC.erase;SC.hand=false;scSync()};
 $("#scHand").onclick=()=>{SC.hand=!SC.hand;SC.erase=false;scSync()};
+function scRekey(f){scSave(true);f();scLayout();scLoad();scSync();scSize()}
 $("#scModel").onclick=()=>{SC.model=!SC.model;store.set("scModel",SC.model);scSync();scGrid()};
-$("#scTrace").onclick=()=>{SC.trace=!SC.trace;store.set("scTrace",SC.trace);scSync();scGrid()};
+$("#scTrace").onclick=()=>{if(SC.mode==="text")scRekey(()=>{SC.trace=!SC.trace;store.set("scTraceT",SC.trace)});else{SC.trace=!SC.trace;store.set("scTrace",SC.trace);scSync();scGrid()}};
+$("#scPart").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;const L=CONTENT[SC.tl-1];scRekey(()=>{SC.parts=b.dataset.p==="all"?L.d.map((_,i)=>i):[+b.dataset.p]})};
 $("#scUndo").onclick=scUndo;
 $("#scClear").onclick=()=>{if(!SC.strokes.length)return;if(!confirm(LANG==="en"?"Clear the whole sheet?":"Xóa hết toàn bộ giấy nháp?"))return;SC.strokes=[];scInk();scSave()};
 $("#scIn").onclick=()=>scZoomAt(SC.W/2,SC.H/2,1.25);$("#scOut").onclick=()=>scZoomAt(SC.W/2,SC.H/2,.8);
@@ -1080,10 +1096,13 @@ function scPickOpen(btn){let pop=document.getElementById("scPick");if(!pop){pop=
     if(a)SC.chars=a.dataset.a==="all"?SC.all.slice():[];
     else if(b){const c=b.dataset.ch,i=SC.chars.indexOf(c);if(i>=0)SC.chars.splice(i,1);else{const on=new Set(SC.chars);on.add(c);SC.chars=SC.all.filter(x=>on.has(x))}}
     else return;if(SC.chars.length)SC.model=true;draw();scSync();scGrid()}}
-function scOpen(chars,all){SC.chars=hanOnly(chars).slice(0,300);SC.all=hanOnly(all&&all.length?all:chars).slice(0,600);
-  SC.model=store.get("scModel",true);SC.trace=store.get("scTrace",false);SC.erase=false;SC.hand=false;SC.cur=null;SC.touch.clear();SC.pinch=SC.fpan=SC.mpan=null;
+function scOpenText(tl,parts){SC.mode="text";SC.tl=tl;SC.parts=parts;SC.chars=[];SC.all=[];SC.model=true;SC.trace=store.get("scTraceT",false);scLayout();scOpenCommon();
+  const t=SC.trows.map(r=>r.s.join("")).join("");if(document.fonts&&document.fonts.load)document.fonts.load(`64px "LXGW WenKai TC"`,t.slice(0,400)).then(()=>{if(SC.open)scGrid()}).catch(()=>{})}
+function scOpen(chars,all){SC.mode="chars";SC.trows=[];SC.chars=hanOnly(chars).slice(0,300);SC.all=hanOnly(all&&all.length?all:chars).slice(0,600);
+  SC.model=store.get("scModel",true);SC.trace=store.get("scTrace",false);scOpenCommon();if(SC.chars.length&&document.fonts&&document.fonts.load)document.fonts.load(`64px "LXGW WenKai TC"`,SC.chars.join("")).then(()=>{if(SC.open)scGrid()}).catch(()=>{})}
+function scOpenCommon(){SC.erase=false;SC.hand=false;SC.cur=null;SC.touch.clear();SC.pinch=SC.fpan=SC.mpan=null;
   scLoad();SC.open=true;$("#scratch").hidden=false;document.body.classList.add("sc-open");scSync();
-  requestAnimationFrame(scSize);$("#scHint").style.opacity=1;clearTimeout(SC.hintT);SC.hintT=setTimeout(()=>{$("#scHint").style.opacity=0},7000);if(SC.chars.length&&document.fonts&&document.fonts.load)document.fonts.load(`64px "LXGW WenKai TC"`,SC.chars.join("")).then(()=>{if(SC.open)scGrid()}).catch(()=>{})}
+  requestAnimationFrame(scSize);$("#scHint").style.opacity=1;clearTimeout(SC.hintT);SC.hintT=setTimeout(()=>{$("#scHint").style.opacity=0},7000)}
 function scClose(){popClose();SC.open=false;$("#scratch").hidden=true;document.body.classList.remove("sc-open");scSave(true)}
 
 if(window.ResizeObserver)new ResizeObserver(()=>layout()).observe(board);else window.addEventListener("resize",layout);
@@ -1113,14 +1132,16 @@ function speakRate(t){seqTok++;try{trkListen(t)}catch(e){}if(playClip(t,S.rate>=
 function readDraw(){const L=CONTENT[S.rl-1],el=$("#sec-read");
   el.innerHTML=`<div class="lhead"><div class="label">Bài đọc · 課文</div><h2>第${S.rl}課 ${esc(L.t)}</h2><p>LESSON ${S.rl} · ${esc(L.tv)}</p></div>
    ${lessonChips("rChips",S.rl)}${toggleRow()}
+   <div class="copybar"><span>Luyện viết bài đọc trên giấy nháp:</span>${L.d.map((d,di)=>`<button class="tbtn" data-copy="${di}">✍️ ${esc(d.t)}</button>`).join("")}${L.d.length>1?`<button class="btn yes sm" data-copy="all">✍️ Chép cả bài</button>`:""}</div>
    <div class="${S.showPy?"":"hide-py"} ${S.showVi?"":"hide-vi"}" style="display:flex;flex-direction:column;gap:16px">
    ${L.d.map((d,di)=>`<article class="dlg"><div class="dlg-h"><div><h3>${esc(d.t)}</h3><p>${esc(d.v)}</p></div>
-     <button class="btn sm" data-play="${di}">▶︎ Đọc từng câu</button></div>
+     <div class="dlg-btns"><button class="btn sm" data-copy="${di}">✍️ Chép bài này</button><button class="btn sm" data-play="${di}">▶︎ Đọc từng câu</button></div></div>
      <div class="aud"><span class="label">Âm thanh gốc · ${String(S.rl).padStart(2,"0")}-${d.a||"0"+(di===0?1:3)}</span><audio controls preload="none" src="audio/${AP}${String(S.rl).padStart(2,"0")}-${d.a||"0"+(di===0?1:3)}.mp3"></audio></div>
      ${d.x.map((r,ri)=>`<div class="line" data-d="${di}" data-r="${ri}"><div class="spk">${esc(r[0])}</div><div style="min-width:0"><div class="zh">${esc(r[2])}</div><div class="lpy">${PY(r[3])}</div><div class="lvi">${esc(r[4])}</div></div></div>`).join("")}
    </article>`).join("")}</div>
    <p class="empty-note">Thanh “Âm thanh gốc” phát bản ghi của sách. Chạm vào một câu, hoặc bấm “Đọc từng câu”, để nghe giọng đọc của máy cho riêng câu đó.</p>`;
   bindToggles(el,readDraw);
+  el.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>scOpenText(S.rl,b.dataset.copy==="all"?L.d.map((_,i)=>i):[+b.dataset.copy]));
   el.querySelectorAll(".line").forEach(n=>n.onclick=()=>{const r=L.d[+n.dataset.d].x[+n.dataset.r];el.querySelectorAll(".line.on").forEach(x=>x.classList.remove("on"));n.classList.add("on");speakRate(r[2])});
   el.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>{const di=+b.dataset.play,lines=[...el.querySelectorAll(`.line[data-d="${di}"]`)];
     if(b.dataset.on){stopSpeech();b.dataset.on="";b.textContent="▶︎ Đọc từng câu";lines.forEach(x=>x.classList.remove("on"));return}
@@ -1299,7 +1320,7 @@ const EN_UI={
 "Chưa có tài khoản?":"No account yet?","Tạo tài khoản bằng mã lớp":"Create an account with a class code","Mã lớp (giáo viên cung cấp)":"Class code (from your teacher)","Họ tên":"Full name",
 "VD: Nguyễn Văn An":"e.g. John Smith","Mã học sinh (tự đặt, dùng để đăng nhập)":"Student ID (your choice, used to log in)","VD: AN2005 hoặc mã số sinh viên":"e.g. JOHN2005 or your student number",
 "Mật khẩu (ít nhất 4 ký tự)":"Password (at least 4 characters)","Nhập lại mật khẩu":"Repeat password","Tạo tài khoản & vào học":"Create account & start","Đã có tài khoản?":"Already have an account?",
-"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","Bảng màu":"Colors","Màu khác…":"Custom color…","Chọn tất cả":"Select all","Bỏ chọn":"Clear selection","Chọn chữ để luyện":"Choose characters to practice","Tất cả":"All","Chọn chữ":"Characters","Giấy nháp":"Scratch paper","✍️ Giấy nháp luyện viết":"✍️ Practice sheet","← Quay lại":"← Back","Chữ mẫu":"Model characters","✋ Kéo":"✋ Pan","Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo":"Two fingers: zoom / move (with Apple Pencil, one finger moves the sheet) · Mouse: scroll to zoom, hold right button or Space to drag","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
+"Tên đăng nhập":"Username","Ghi nhớ đăng nhập trên máy này":"Remember me on this device","Vào trang quản lý":"Open teacher dashboard","✍️ Chép bài này":"✍️ Copy this text","✍️ Chép cả bài":"✍️ Copy whole lesson","Luyện viết bài đọc trên giấy nháp:":"Practice writing the text on scratch paper:","Bảng màu":"Colors","Màu khác…":"Custom color…","Chọn tất cả":"Select all","Bỏ chọn":"Clear selection","Chọn chữ để luyện":"Choose characters to practice","Tất cả":"All","Chọn chữ":"Characters","Giấy nháp":"Scratch paper","✍️ Giấy nháp luyện viết":"✍️ Practice sheet","← Quay lại":"← Back","Chữ mẫu":"Model characters","✋ Kéo":"✋ Pan","Hai ngón tay: phóng to / thu nhỏ / di chuyển (dùng Apple Pencil thì một ngón tay là kéo giấy) · Chuột: lăn để zoom, giữ chuột phải hoặc phím Space để kéo":"Two fingers: zoom / move (with Apple Pencil, one finger moves the sheet) · Mouse: scroll to zoom, hold right button or Space to drag","Quyển này cần tài khoản":"This book requires an account","Trang quản lý giáo viên":"Teacher dashboard","Học ngay, không cần đăng nhập →":"Study now, no login needed →",
 "Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.":"Student login only lets your teacher follow your progress. No code yet? Ask your teacher.",
 "Đổi mật khẩu":"Change password","Mật khẩu hiện tại":"Current password","Mật khẩu mới (ít nhất 4 ký tự)":"New password (at least 4 characters)","Lưu mật khẩu mới":"Save new password",
 "Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.":"Study time, card flips, listening, quizzes and learned words are sent to your teacher.","Đăng xuất":"Log out",
@@ -1385,7 +1406,7 @@ renderLessons();render();showSec(S.sec);
   if(LANG==="en"){trNode(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode)}}).observe(document.body,{childList:true,subtree:true,characterData:true})}})();
 </script>
 
-<script>(()=>{const V="456d4d93df";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="3ea9818330";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const en=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))==="en"}catch(e){return false}})();
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
