@@ -320,6 +320,16 @@ body.pp-bottom .padgrip{display:flex}
 #whoPw[hidden],#whoNote[hidden],#whoMgr[hidden]{display:none!important}
 .scratch{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
 .scratch[hidden]{display:none!important}
+#prSheet{display:none}
+.prpop{width:min(380px,calc(100vw - 16px))}
+.prpop .prrow{display:flex;flex-direction:column;gap:5px}.prpop .prrow>span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.prpop .seg{flex-wrap:wrap}.prpop .prnote{font-size:12px;color:var(--muted);margin:0;line-height:1.4}
+@media print{@page{size:A4 portrait;margin:0}
+html,body{background:#fff!important;overflow:visible!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important}
+body.printing>*:not(#prSheet){display:none!important}
+body.printing #prSheet{display:block!important}
+#prSheet svg{display:block;width:210mm;height:295mm;page-break-after:always;break-after:page}
+#prSheet svg:last-child{page-break-after:auto;break-after:auto}}
 body.sc-open{overflow:hidden}
 .scbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;background:var(--sheet);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
 .sctitle{display:flex;flex-direction:column;line-height:1.2;margin-right:6px}.sctitle b{font-size:16px}.sctitle .meta{font-size:12px}
@@ -510,6 +520,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <button class="tbtn" id="scErase" aria-pressed="false">Tẩy</button>
     <button class="tbtn" id="scUndo">Hoàn tác</button>
     <button class="tbtn" id="scClear">Xóa hết</button>
+    <button class="btn yes sm" id="scPrint" aria-haspopup="true" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">🖨 In / PDF</button>
   </div>
   <div class="scboard" id="scBoard"><canvas id="scG"></canvas><canvas id="scI"></canvas><canvas id="scL"></canvas>
     <div class="sczoom"><button id="scOut" aria-label="Thu nhỏ">−</button><button id="scPct" title="Về 100%">100%</button><button id="scIn" aria-label="Phóng to">+</button></div>
@@ -824,7 +835,7 @@ function bindSay(root){root.querySelectorAll("[data-say],[data-gi]").forEach(b=>
 function listDraw(){$("#optExtra").innerHTML="";const v=$("#view");
   v.innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><input class="search" id="q" type="search" placeholder="Tìm chữ Hán, pinyin hoặc nghĩa…">
     <div class="selbar" id="selbar"><label class="selall"><input type="checkbox" id="selAll"><span>Chọn tất cả</span></label><span class="selinfo" id="selInfo"></span>
-      <button class="tbtn sm" id="selNone" hidden>Bỏ chọn</button><span style="flex:1"></span><button class="btn yes sm" id="openScr">✍️ Giấy nháp luyện viết</button></div>
+      <button class="tbtn sm" id="selNone" hidden>Bỏ chọn</button><span style="flex:1"></span><button class="btn yes sm" id="openScr">✍️ Giấy nháp luyện viết</button><button class="btn sm" id="printScr" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">🖨 In / PDF</button></div>
     <div id="lst" style="display:flex;flex-direction:column;gap:16px"></div></div>`;
   let shown=[];const selUI=()=>{const k=SELW.size,ch=hanOnly(selChars()).length,vis=shown.filter(w=>SELW.has(w.id)).length,en=LANG==="en";
     const a=$("#selAll");a.checked=shown.length>0&&vis===shown.length;a.indeterminate=vis>0&&vis<shown.length;
@@ -834,6 +845,7 @@ function listDraw(){$("#optExtra").innerHTML="";const v=$("#view");
   $("#selAll").onchange=e=>{shown.forEach(w=>e.target.checked?SELW.add(w.id):SELW.delete(w.id));fill()};
   $("#selNone").onclick=()=>{SELW.clear();fill()};
   $("#openScr").onclick=()=>{const all=pool().map(w=>w.c);scOpen(SELW.size?selChars():all,all)};
+  $("#printScr").onclick=()=>{const all=pool().map(w=>w.c);scOpen(SELW.size?selChars():all,all);setTimeout(()=>prOpen($("#scPrint")),60)};
   const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
   const fill=()=>{const t=strip($("#q").value.trim());const rows=pool().filter(w=>!t||strip(w.c+" "+w.p+" "+w.v+" "+w.e).includes(t));
     shown=rows;const groups=[];rows.forEach(w=>{const k=w.trk;let g=groups[groups.length-1];if(!g||g.k!==k){g={k,w,rows:[]};groups.push(g)}g.rows.push(w)});
@@ -956,7 +968,7 @@ function palOpen(btn){let pop=document.getElementById("palPop");if(!pop){pop=doc
 function popAt(pop,btn){pop.hidden=false;const r=btn.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;
   let left=Math.max(8,Math.min(r.left+r.width/2-w/2,innerWidth-w-8)),top=r.bottom+8;if(top+h>innerHeight-8)top=Math.max(8,r.top-h-8);
   pop.style.left=left+"px";pop.style.top=top+"px";setTimeout(()=>addEventListener("pointerdown",popOut,true),0)}
-function popOut(e){const p=[...document.querySelectorAll(".pop")].find(x=>!x.hidden);if(p&&!p.contains(e.target)&&!e.target.closest(".more,#scPickBtn"))popClose()}
+function popOut(e){const p=[...document.querySelectorAll(".pop")].find(x=>!x.hidden);if(p&&!p.contains(e.target)&&!e.target.closest(".more,#scPickBtn,#scPrint"))popClose()}
 function popClose(){document.querySelectorAll(".pop").forEach(x=>x.hidden=true);removeEventListener("pointerdown",popOut,true)}
 $("#colSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.v==="more"){const p=document.getElementById("palPop");if(p&&!p.hidden)popClose();else palOpen(b);return}setColor(b.dataset.v)};
 $("#gridSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.grid=b.dataset.v;store.set("grid",P.grid);syncTools();drawGuide()};
@@ -1105,6 +1117,67 @@ function scOpenCommon(){SC.erase=false;SC.hand=false;SC.cur=null;SC.touch.clear(
   requestAnimationFrame(scSize);$("#scHint").style.opacity=1;clearTimeout(SC.hintT);SC.hintT=setTimeout(()=>{$("#scHint").style.opacity=0},7000)}
 function scClose(){popClose();SC.open=false;$("#scratch").hidden=true;document.body.classList.remove("sc-open");scSave(true)}
 
+/* ---------- print / PDF practice sheets ---------- */
+const PR=Object.assign({size:"m",faint:"3",rows:"1",py:true,model:"dark",blank:"1",pages:"1"},store.get("pr",{}));
+function prChPy(){const m=new Map();for(const w of W){const c=String(w.c||"").replace(/（.*?）|\(.*?\)/g,"");if(Array.from(c).length===1&&!m.has(c))m.set(c,PY(w.p).replace(/<[^>]*>/g,""))}return m}
+function prRows(n){const R=[];
+  if(SC.mode==="text"){const L=CONTENT[SC.tl-1];SC.parts.forEach(pi=>{const d=L&&L.d[pi];if(!d)return;R.push({label:d.t});
+      d.x.forEach(r=>{const ch=Array.from(String(r[2]||"").replace(/\s+/g,""));const pu=c=>/[，。、！？；：「」『』（）《》〈〉…—,.!?;:()"'“”‘’]/.test(c);let i=0;while(i<ch.length){let e=Math.min(i+n,ch.length);if(e<ch.length&&pu(ch[e])&&e-i>1)e--;R.push({cells:ch.slice(i,e).map(c=>({ch:c,k:PR.model==="dark"?"m":"f"}))});for(let b=0;b<+PR.blank;b++)R.push({cells:[]});i=e}})});return R}
+  const chars=SC.chars.length?SC.chars:[];
+  if(!chars.length){return null}
+  const pym=PR.py?prChPy():null;
+  for(const ch of chars){const nf=PR.faint==="all"?n-1:+PR.faint;const cells=[{ch,k:"m",py:pym&&pym.get(ch)}];for(let i=0;i<nf&&i<n-1;i++)cells.push({ch,k:"f"});R.push({cells});for(let b=1;b<+PR.rows;b++)R.push({cells:[]})}
+  return R}
+function prPages(){const n={l:8,m:10,s:12}[PR.size],cs=186/n,top=28,bot=284,LH=8;const R=prRows(n);const pages=[];
+  if(!R){const per=Math.floor((bot-top)/cs);for(let p=0;p<+PR.pages;p++){const pg=[];for(let j=0;j<per;j++)pg.push({cells:[],y:top+j*cs});pages.push(pg)}return {pages,n,cs}}
+  let pg=[],y=top;for(let i=0;i<R.length;i++){const r=R[i],h=r.label?LH:cs;const need=r.label?LH+cs:cs;
+    if(y+need>bot+.01&&pg.length){pages.push(pg);pg=[];y=top}if(r.label&&!pg.length&&false){}r.y=y;pg.push(r);y+=h}
+  if(pg.length){/* fill rest of last page with blank rows */while(y+cs<=bot+.01){pg.push({cells:[],y});y+=cs}pages.push(pg)}
+  return {pages,n,cs}}
+function prSvg(pg,pi,np,n,cs){const ex=s=>esc(String(s));const red="#d0533f",x0=12;let o=[];
+  const L=SC.mode==="text"?CONTENT[SC.tl-1]:null;
+  const ttl=`BALO Mandarin · 當代中文課程 ${BOOK}`+(L?` · ${T("Bài")} ${SC.tl} ${L.t}`:"");
+  o.push(`<text x="12" y="15" font-size="4.2" font-weight="700" fill="#222" font-family='"Be Vietnam Pro","Noto Sans TC",sans-serif'>${ex(ttl)}</text>`);
+  o.push(`<text x="12" y="21.5" font-size="3.6" fill="#444" font-family='"Be Vietnam Pro","Noto Sans TC",sans-serif'>${ex(T("Họ tên"))}: ________________________     ${ex(T("Lớp"))}: ____________     ${ex(T("Ngày"))}: ____________</text>`);
+  o.push(`<line x1="12" y1="24" x2="198" y2="24" stroke="#999" stroke-width=".25"/>`);
+  for(const r of pg){if(r.label){o.push(`<text x="12" y="${(r.y+5.8).toFixed(2)}" font-size="4.6" font-weight="700" fill="${red}" font-family=${JSON.stringify(MODELFONT).replace(/"/g,"'")}>${ex(r.label)}</text>`);continue}
+    const y=r.y;o.push(`<rect x="${x0}" y="${y.toFixed(2)}" width="${(n*cs).toFixed(2)}" height="${cs.toFixed(2)}" fill="none" stroke="${red}" stroke-width=".35"/>`);
+    let g="";for(let i=1;i<n;i++)g+=`M${(x0+i*cs).toFixed(2)} ${y.toFixed(2)}v${cs.toFixed(2)}`;o.push(`<path d="${g}" stroke="${red}" stroke-width=".25" fill="none"/>`);
+    if(P.grid!=="none"){let d="";for(let i=0;i<n;i++){const X=x0+i*cs;d+=`M${(X+cs/2).toFixed(2)} ${y.toFixed(2)}v${cs.toFixed(2)}M${X.toFixed(2)} ${(y+cs/2).toFixed(2)}h${cs.toFixed(2)}`;
+        if(P.grid==="mi")d+=`M${X.toFixed(2)} ${y.toFixed(2)}l${cs.toFixed(2)} ${cs.toFixed(2)}M${(X+cs).toFixed(2)} ${y.toFixed(2)}l${(-cs).toFixed(2)} ${cs.toFixed(2)}`}
+      o.push(`<path d="${d}" stroke="${red}" stroke-width=".18" stroke-dasharray="1 .8" opacity=".55" fill="none"/>`)}
+    r.cells.forEach((c,i)=>{const cx=x0+i*cs+cs/2,cy=y+cs/2;o.push(`<text x="${cx.toFixed(2)}" y="${(cy+cs*.03).toFixed(2)}" font-size="${(cs*.78).toFixed(2)}" text-anchor="middle" dominant-baseline="central" fill="${c.k==="m"?"#1d1d1d":"#c4c4c4"}" font-family=${JSON.stringify(MODELFONT).replace(/"/g,"'")}>${ex(c.ch)}</text>`);
+      if(c.py)o.push(`<text x="${(x0+i*cs+.9).toFixed(2)}" y="${(y+2.6).toFixed(2)}" font-size="2.3" fill="#777" font-family='"Be Vietnam Pro",sans-serif'>${ex(c.py)}</text>`)})}
+  o.push(`<text x="105" y="291" font-size="2.8" text-anchor="middle" fill="#999" font-family='"Be Vietnam Pro",sans-serif'>${pi+1} / ${np} · balotwvn.github.io/BALOMANDARIN_PROJECT</text>`);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297" width="210mm" height="295mm">${o.join("")}</svg>`}
+function prOpen(btn){let pop=document.getElementById("prPop");if(!pop){pop=document.createElement("div");pop.id="prPop";pop.className="pop prpop";document.body.appendChild(pop)}
+  const tx=SC.mode==="text",blank=!tx&&!SC.chars.length;
+  const seg=(k,opts)=>`<span class="seg" data-k="${k}">${opts.map(([v,l,c])=>`<button data-v="${v}" ${c?`class="${c}"`:""} aria-pressed="${String(k==="grid"?P.grid:PR[k])===v}">${l}</button>`).join("")}</span>`;
+  const draw=()=>{const {pages}=prPages();pop.innerHTML=`<div class="pickhead"><b>In giấy luyện viết / Lưu PDF</b></div>
+    <div class="prrow"><span>Cỡ ô</span>${seg("size",[["l","Lớn"],["m","Vừa"],["s","Nhỏ"]])}</div>
+    <div class="prrow"><span>Kiểu ô</span>${seg("grid",[["tian","田","han"],["mi","米","han"],["none","Trơn"]])}</div>
+    ${tx?`<div class="prrow"><span>Chữ mẫu</span>${seg("model",[["dark","Đậm"],["faint","Mờ để tô"]])}</div>
+    <div class="prrow"><span>Hàng trống để viết</span>${seg("blank",[["0","0"],["1","1"],["2","2"]])}</div>`
+    :blank?`<div class="prrow"><span>Số trang</span>${seg("pages",[["1","1"],["2","2"],["5","5"]])}</div>`
+    :`<div class="prrow"><span>Chữ mờ để tô</span>${seg("faint",[["0","Không"],["3","3 ô"],["all","Cả hàng"]])}</div>
+    <div class="prrow"><span>Số hàng mỗi chữ</span>${seg("rows",[["1","1"],["2","2"],["3","3"]])}</div>
+    <label class="meta" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="prPy" ${PR.py?"checked":""}> <span>Kèm phiên âm</span></label>`}
+    <p class="prnote">${tx?`${T("Bài")} ${SC.tl}`:blank?T("Giấy trắng"):`${SC.chars.length} ${T("chữ")}`} · ${pages.length} ${T("trang")} A4</p>
+    <button class="btn yes wide" id="prGo">🖨 In / Lưu PDF</button>
+    <p class="prnote">Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.</p>`};
+  draw();popAt(pop,btn);
+  pop.onclick=e=>{if(e.target.closest("#prGo")){popClose();prPrint();return}
+    const b=e.target.closest(".seg[data-k] button");if(b){const k=b.parentNode.dataset.k;if(k==="grid"){P.grid=b.dataset.v;store.set("grid",P.grid);scSync();scGrid()}else PR[k]=b.dataset.v;store.set("pr",PR);draw();return}};
+  pop.onchange=e=>{if(e.target.id==="prPy"){PR.py=e.target.checked;store.set("pr",PR)}}}
+function prPrint(){const {pages,n,cs}=prPages();let sh=document.getElementById("prSheet");if(!sh){sh=document.createElement("div");sh.id="prSheet";document.body.appendChild(sh)}
+  sh.innerHTML=pages.map((pg,i)=>prSvg(pg,i,pages.length,n,cs)).join("");
+  const txt=pages.flat().map(r=>r.label||(r.cells||[]).map(c=>c.ch).join("")).join("");
+  const go=()=>{document.body.classList.add("printing");const done=()=>{document.body.classList.remove("printing");removeEventListener("afterprint",done)};addEventListener("afterprint",done);
+    setTimeout(()=>window.print(),50)};
+  const fl=document.fonts&&document.fonts.load?Promise.all([document.fonts.load(`40px "LXGW WenKai TC"`,txt.slice(0,3000)||"字"),document.fonts.load(`12px "Be Vietnam Pro"`)]):Promise.resolve();
+  Promise.race([fl,new Promise(r=>setTimeout(r,3500))]).catch(()=>{}).then(go)}
+$("#scPrint").onclick=e=>{const p=document.getElementById("prPop");if(p&&!p.hidden)popClose();else prOpen(e.currentTarget)};
+
 if(window.ResizeObserver)new ResizeObserver(()=>layout()).observe(board);else window.addEventListener("resize",layout);
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>layout())}catch(_){}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>layout());
@@ -1132,7 +1205,7 @@ function speakRate(t){seqTok++;try{trkListen(t)}catch(e){}if(playClip(t,S.rate>=
 function readDraw(){const L=CONTENT[S.rl-1],el=$("#sec-read");
   el.innerHTML=`<div class="lhead"><div class="label">Bài đọc · 課文</div><h2>第${S.rl}課 ${esc(L.t)}</h2><p>LESSON ${S.rl} · ${esc(L.tv)}</p></div>
    ${lessonChips("rChips",S.rl)}${toggleRow()}
-   <div class="copybar"><span>Luyện viết bài đọc trên giấy nháp:</span>${L.d.map((d,di)=>`<button class="tbtn" data-copy="${di}">✍️ ${esc(d.t)}</button>`).join("")}${L.d.length>1?`<button class="btn yes sm" data-copy="all">✍️ Chép cả bài</button>`:""}</div>
+   <div class="copybar"><span>Luyện viết bài đọc trên giấy nháp:</span>${L.d.map((d,di)=>`<button class="tbtn" data-copy="${di}">✍️ ${esc(d.t)}</button>`).join("")}${L.d.length>1?`<button class="btn yes sm" data-copy="all">✍️ Chép cả bài</button>`:""}<button class="btn sm" data-prt="all" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">🖨 In / PDF</button></div>
    <div class="${S.showPy?"":"hide-py"} ${S.showVi?"":"hide-vi"}" style="display:flex;flex-direction:column;gap:16px">
    ${L.d.map((d,di)=>`<article class="dlg"><div class="dlg-h"><div><h3>${esc(d.t)}</h3><p>${esc(d.v)}</p></div>
      <div class="dlg-btns"><button class="btn sm" data-copy="${di}">✍️ Chép bài này</button><button class="btn sm" data-play="${di}">▶︎ Đọc từng câu</button></div></div>
@@ -1142,6 +1215,7 @@ function readDraw(){const L=CONTENT[S.rl-1],el=$("#sec-read");
    <p class="empty-note">Thanh “Âm thanh gốc” phát bản ghi của sách. Chạm vào một câu, hoặc bấm “Đọc từng câu”, để nghe giọng đọc của máy cho riêng câu đó.</p>`;
   bindToggles(el,readDraw);
   el.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>scOpenText(S.rl,b.dataset.copy==="all"?L.d.map((_,i)=>i):[+b.dataset.copy]));
+  el.querySelectorAll("[data-prt]").forEach(b=>b.onclick=()=>{scOpenText(S.rl,L.d.map((_,i)=>i));setTimeout(()=>prOpen($("#scPrint")),60)});
   el.querySelectorAll(".line").forEach(n=>n.onclick=()=>{const r=L.d[+n.dataset.d].x[+n.dataset.r];el.querySelectorAll(".line.on").forEach(x=>x.classList.remove("on"));n.classList.add("on");speakRate(r[2])});
   el.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>{const di=+b.dataset.play,lines=[...el.querySelectorAll(`.line[data-d="${di}"]`)];
     if(b.dataset.on){stopSpeech();b.dataset.on="";b.textContent="▶︎ Đọc từng câu";lines.forEach(x=>x.classList.remove("on"));return}
@@ -1309,6 +1383,8 @@ if(hasTTS)speechSynthesis.addEventListener&&speechSynthesis.addEventListener("vo
 document.addEventListener("play",e=>{wordAud.pause();document.querySelectorAll("audio").forEach(x=>{if(x!==e.target)x.pause()});if(e.target!==clipAud){clipEnd=null;try{if(ssBusy())speechSynthesis.cancel()}catch(x){}}},true);
 /* ---------- English interface (LANG==="en") ---------- */
 const EN_UI={
+"Lớp":"Class",
+"In giấy luyện viết / Lưu PDF":"Print practice sheet / Save PDF","Cỡ ô":"Cell size","Lớn":"Large","Vừa":"Medium","Nhỏ":"Small","Kiểu ô":"Grid style","Đậm":"Dark","Mờ để tô":"Faint (to trace)","Hàng trống để viết":"Blank rows for writing","Số trang":"Pages","Chữ mờ để tô":"Faint characters to trace","Không":"None","3 ô":"3 cells","Cả hàng":"Whole row","Số hàng mỗi chữ":"Rows per character","Kèm phiên âm":"Show pinyin","🖨 In / PDF":"🖨 Print / PDF","🖨 In / Lưu PDF":"🖨 Print / Save PDF","Họ tên":"Name","Ngày":"Date","trang":"pages","chữ":"characters","Bài":"Lesson","Giấy trắng":"Blank sheet","Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.":"In the print dialog, choose “Save as PDF” to download the file.","In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF":"Print a ready-gridded writing practice sheet, or save it as PDF",
 "Mục học":"Sections","Chọn quyển":"Choose book","Thẻ từ vựng":"Vocabulary cards","Bài đọc":"Reading","Ngữ pháp":"Grammar","Học sinh":"Student","Tùy chỉnh":"Settings",
 "Chọn bài":"Choose lesson","Từ bài":"From lesson","Đến bài":"To lesson","Thẻ lật":"Flashcards","Trắc nghiệm":"Quiz","Luyện nghe":"Listening","Danh sách":"Word list",
 "Bỏ tên riêng":"Skip proper names","Chỉ từ chưa nhớ":"Only words not learned","Luyện viết":"Writing practice","Khu vực luyện viết":"Writing practice area",
@@ -1391,6 +1467,8 @@ function setLang(l){if(l!=="vi"&&l!=="en"&&l!=="id"&&l!=="hi")return;try{localSt
 function langBtns(){return `<button type="button" data-lang="vi" aria-pressed="${LANG==="vi"}" title="Tiếng Việt">${FLAG_VI}<span>Tiếng Việt</span></button><button type="button" data-lang="en" aria-pressed="${LANG==="en"}" title="English">${FLAG_EN}<span>English</span></button><button type="button" data-lang="id" aria-pressed="${LANG==="id"}" title="Bahasa Indonesia">${FLAG_ID}<span>Bahasa Indonesia</span></button><button type="button" data-lang="hi" aria-pressed="${LANG==="hi"}" title="हिन्दी">${FLAG_HI}<span>हिन्दी</span></button>`}
 /* ---------- Hindi interface (LANG==="hi") ---------- */
 const HI_UI={
+"Lớp":"कक्षा",
+"In giấy luyện viết / Lưu PDF":"लेखन अभ्यास पत्र प्रिंट करें / PDF सहेजें","Cỡ ô":"खाने का आकार","Lớn":"बड़ा","Vừa":"मध्यम","Nhỏ":"छोटा","Kiểu ô":"खाने की शैली","Đậm":"गहरा","Mờ để tô":"हल्का (ऊपर से लिखने के लिए)","Hàng trống để viết":"लिखने के लिए खाली पंक्तियाँ","Số trang":"पृष्ठ","Chữ mờ để tô":"ऊपर से लिखने के लिए हल्के अक्षर","Không":"कोई नहीं","3 ô":"3 खाने","Cả hàng":"पूरी पंक्ति","Số hàng mỗi chữ":"हर अक्षर की पंक्तियाँ","Kèm phiên âm":"पिनयिन दिखाएँ","🖨 In / PDF":"🖨 प्रिंट / PDF","🖨 In / Lưu PDF":"🖨 प्रिंट / PDF सहेजें","Họ tên":"नाम","Ngày":"तारीख़","trang":"पृष्ठ","chữ":"अक्षर","Bài":"पाठ","Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.":"प्रिंट विंडो में फ़ाइल डाउनलोड करने के लिए “Save as PDF” चुनें।","In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF":"खानों वाला लेखन अभ्यास पत्र प्रिंट करें, या PDF के रूप में सहेजें",
 "Mục học":"अनुभाग","Chọn quyển":"पुस्तक चुनें","Thẻ từ vựng":"शब्दावली कार्ड","Bài đọc":"पाठ","Ngữ pháp":"व्याकरण","Học sinh":"छात्र","Tùy chỉnh":"सेटिंग्स",
 "Chọn bài":"पाठ चुनें","Từ bài":"पाठ से","Đến bài":"पाठ तक","Thẻ lật":"फ़्लैशकार्ड","Trắc nghiệm":"क्विज़","Luyện nghe":"सुनने का अभ्यास","Danh sách":"शब्द सूची",
 "Bỏ tên riêng":"व्यक्तिवाचक नाम छोड़ें","Chỉ từ chưa nhớ":"केवल न याद किए शब्द","Luyện viết":"लेखन अभ्यास","Khu vực luyện viết":"लेखन अभ्यास क्षेत्र",
@@ -1479,6 +1557,8 @@ const VHELP_HI=`<summary>“डिवाइस की आवाज़” के 
 const FLAG_HI='<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#FF9933"/><rect y="13.33" width="30" height="6.67" fill="#138808"/><circle cx="15" cy="10" r="2.6" fill="none" stroke="#000080" stroke-width=".6"/><circle cx="15" cy="10" r=".5" fill="#000080"/></svg>';
 /* ---------- Indonesian interface (LANG==="id") ---------- */
 const ID_UI={
+"Lớp":"Kelas",
+"In giấy luyện viết / Lưu PDF":"Cetak lembar latihan / Simpan PDF","Cỡ ô":"Ukuran kotak","Lớn":"Besar","Vừa":"Sedang","Nhỏ":"Kecil","Kiểu ô":"Jenis kotak","Đậm":"Tebal","Mờ để tô":"Samar (untuk ditebalkan)","Hàng trống để viết":"Baris kosong untuk menulis","Số trang":"Jumlah halaman","Chữ mờ để tô":"Huruf samar untuk ditebalkan","Không":"Tidak ada","3 ô":"3 kotak","Cả hàng":"Satu baris","Số hàng mỗi chữ":"Baris per huruf","Kèm phiên âm":"Tampilkan pinyin","🖨 In / PDF":"🖨 Cetak / PDF","🖨 In / Lưu PDF":"🖨 Cetak / Simpan PDF","Họ tên":"Nama","Ngày":"Tanggal","trang":"halaman","chữ":"huruf","Bài":"Pelajaran","Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.":"Di dialog cetak, pilih “Save as PDF / Simpan sebagai PDF” untuk mengunduh file.","In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF":"Cetak lembar latihan menulis berkotak, atau simpan sebagai PDF",
 "Mục học":"Bagian","Chọn quyển":"Pilih buku","Thẻ từ vựng":"Kartu kosakata","Bài đọc":"Bacaan","Ngữ pháp":"Tata bahasa","Học sinh":"Siswa","Tùy chỉnh":"Pengaturan",
 "Chọn bài":"Pilih pelajaran","Từ bài":"Dari pelajaran","Đến bài":"Sampai pelajaran","Thẻ lật":"Kartu balik","Trắc nghiệm":"Kuis","Luyện nghe":"Latihan mendengar","Danh sách":"Daftar kata",
 "Bỏ tên riêng":"Lewati nama diri","Chỉ từ chưa nhớ":"Hanya kata yang belum hafal","Luyện viết":"Latihan menulis","Khu vực luyện viết":"Area latihan menulis",
@@ -1583,7 +1663,7 @@ renderLessons();render();showSec(S.sec);
   if(LANG!=="vi"){trNode(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode)}}).observe(document.body,{childList:true,subtree:true,characterData:true})}})();
 </script>
 
-<script>(()=>{const V="84d6920b41";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="59fb9f3065";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const lg=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))}catch(e){return "vi"}})(),en=lg==="en",idn=lg==="id";
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
