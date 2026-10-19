@@ -288,7 +288,7 @@ $("#acct").onclick=()=>modal(`<h2>Tài khoản · ${esc(CRED.u)}</h2><label clas
     const r=await api({a:"tchpw",np:a});if(!r.ok){m.querySelector("#mE").textContent=r.err;return}CRED.p=a;const cr=JSON.stringify(CRED);try{sessionStorage.setItem("tvT:cred",cr);if(localStorage.getItem("tvT:cred"))localStorage.setItem("tvT:cred",cr)}catch(e){}close();toast("Đã đổi mật khẩu")}});
 if(CRED&&TRACK_URL){try{const c=JSON.parse(localStorage.getItem(DKEY)||"null");if(c&&c.ok&&c.classes)show(c)}catch(e){}load()}
 </script>
-<script>(()=>{const V="1e3d03ff54";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="d431af57c4";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const lg=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))}catch(e){return "vi"}})(),en=lg==="en",idn=lg==="id";
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
