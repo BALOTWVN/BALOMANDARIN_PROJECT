@@ -207,7 +207,24 @@ audio{width:100%;max-width:400px;height:40px}
 .dlg-h p{margin:0;font-size:14px;color:var(--muted)}
 .aud{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--paper)}
 .aud .label{margin:0}
-.wbi{border-bottom:1px solid var(--line)}.wbi:last-child{border-bottom:0}.wbc{font-weight:600;font-variant-numeric:tabular-nums;min-width:3.4em;font-size:15px}.wbi audio{flex:1 1 220px;min-width:0;max-width:100%}#wbRate{flex-wrap:wrap;max-width:100%}#sec-wb .toolrow{flex-wrap:wrap}
+.wbi{border-bottom:1px solid var(--line)}.wbi:last-child{border-bottom:0}.wbc{font-weight:600;font-variant-numeric:tabular-nums;min-width:3.4em;font-size:15px}.wbi audio{flex:1 1 220px;min-width:0;max-width:100%}#sec-wb .toolrow{flex-wrap:wrap;align-items:center;gap:14px 18px}
+.wbsp{flex:1 1 300px;min-width:0;max-width:480px;padding:10px 16px 6px;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.wbsp-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px}
+.wbsp-h .meta{margin:0}
+.wbsp-h b{font-variant-numeric:tabular-nums;font-size:14px;color:var(--acc);background:var(--acc-soft);padding:3px 11px;border-radius:999px;min-width:3.6em;text-align:center}
+#wbRate{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;margin:0;cursor:pointer;display:block;touch-action:pan-y}
+#wbRate::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(to right,var(--acc) var(--p),var(--line) var(--p))}
+#wbRate::-moz-range-track{height:6px;border-radius:99px;background:var(--line)}
+#wbRate::-moz-range-progress{height:6px;border-radius:99px;background:var(--acc)}
+#wbRate::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--sheet);border:3px solid var(--acc);box-shadow:0 1px 5px rgba(0,0,0,.2);margin-top:-8px;transition:transform .12s}
+#wbRate::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--sheet);border:3px solid var(--acc);box-shadow:0 1px 5px rgba(0,0,0,.2)}
+#wbRate:active::-webkit-slider-thumb{transform:scale(1.15)}
+#wbRate:focus-visible{outline:none}#wbRate:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 5px var(--acc-soft)}
+.wbsp-t{position:relative;height:26px}
+.wbsp-t button{position:absolute;top:2px;transform:translateX(-50%);border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);padding:3px 4px;cursor:pointer;font-variant-numeric:tabular-nums;border-radius:6px;white-space:nowrap}
+.wbsp-t button::before{content:"";position:absolute;left:50%;top:-3px;width:2px;height:5px;border-radius:2px;background:var(--line);transform:translateX(-50%)}
+.wbsp-t button:hover{color:var(--ink)}
+.wbsp-t button[aria-pressed="true"]{color:var(--acc);font-weight:700}.wbsp-t button[aria-pressed="true"]::before{background:var(--acc)}
 .line{display:grid;grid-template-columns:84px minmax(0,1fr);gap:4px 14px;padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
 .line:last-child{border-bottom:0}
 .line:hover{background:var(--paper)}
@@ -1245,19 +1262,25 @@ function readDraw(){const L=CONTENT[S.rl-1],el=$("#sec-read");
     b.dataset.on="1";b.textContent="■ Dừng";
     speakSeq(L.d[di].x.map(r=>r[2]),i=>{lines.forEach((x,k)=>x.classList.toggle("on",k===i));if(i>=0)lines[i].scrollIntoView({block:"nearest",behavior:"smooth"})},()=>{b.dataset.on="";b.textContent="▶︎ Đọc từng câu"})})}
 const WBA={"1":["00","01-1","01-2","01-3","01-4","01-5","02-1","02-2","02-3","02-4","02-5","03-1","03-2","03-3","03-4","03-5","04-1","04-2","04-3","04-4","04-5","05-1","05-2","05-3","05-4","05-5","06-1","06-2","06-3","06-4","06-5","06-6","07-1","07-2","07-3","07-4","07-5","07-6","08-1","08-2","08-3","08-4","08-5","08-6","09-1","09-2","09-3","09-4","09-5","09-6","10-1","10-2","10-3","10-4","10-5","10-6","11-1","11-2","11-3","11-4","11-5","12-1","12-2","12-3","12-4","12-5","13-1","13-2","13-3","13-4","13-5","14-1","14-2","14-3","14-4","14-5","15-1","15-2","15-3","15-4","15-5"],"2":["00","01-1","01-2","01-3","01-4","02-1","02-2","02-3","02-4","03-1","03-2","03-3","03-4","04-1","04-2","04-3","04-4","05-1","05-2","05-3","05-4","06-1","06-2","06-3","06-4","07-1","07-2","07-3","07-4","08-1","08-2","08-3","08-4","09-1","09-2","09-3","09-4","10-1","10-2","10-3","10-4","11-1","11-2","11-3","11-4","12-1","12-2","12-3","12-4","13-1","13-2","13-3","13-4","14-1","14-2","14-3","14-4","15-1","15-2","15-3","15-4"],"3":["00","01-1","01-2","02-1","02-2","03-1","03-2","04-1","04-2","05-1","05-2","06-1","06-2","07-1","07-2","08-1","08-2","09-1","09-2","10-1","10-2","11-1","11-2","12-1","12-2"],"4":["00","01-1","01-2","02-1","02-2","03-1","03-2","04-1","04-2","05-1","05-2","06-1","06-2","07-1","07-2","08-1","08-2","09-1","09-2","10-1","10-2","11-1","11-2","12-1","12-2"],"5":["00","01","02","03","04","05","06","07","08","09"]},WBR=[0.5,0.6,0.75,0.9,1,1.25];
+function wbP(i){return `calc(11px + ${i/(WBR.length-1)} * (100% - 22px))`}
+function wbSlider(){let i=WBR.indexOf(S.wbRate);if(i<0)i=WBR.indexOf(1);
+  return `<div class="wbsp"><div class="wbsp-h"><span class="meta">Tốc độ nghe</span><b id="wbRateV">${WBR[i]}×</b></div>
+  <input type="range" id="wbRate" min="0" max="${WBR.length-1}" step="1" value="${i}" style="--p:${wbP(i)}" aria-label="Tốc độ nghe">
+  <div class="wbsp-t">${WBR.map((v,k)=>`<button data-i="${k}" aria-pressed="${k===i}" style="left:${wbP(k)}">${v}×</button>`).join("")}</div></div>`}
 function wbList(l){const p=String(l).padStart(2,"0");return (WBA[BOOK]||[]).filter(c=>c===p||c.startsWith(p+"-")||(l===1&&c==="00"))}
 function wbApply(root){root.querySelectorAll("audio").forEach(a=>{a.defaultPlaybackRate=S.wbRate;a.playbackRate=S.wbRate;a.loop=!!S.wbLoop;try{a.preservesPitch=true;a.webkitPreservesPitch=true}catch(e){}})}
 function wbDraw(){const L=CONTENT[S.rl-1],el=$("#sec-wb"),has=(WBA[BOOK]||[]).length>0,list=wbList(S.rl);
   el.innerHTML=`<div class="lhead"><div class="label">Nghe bài tập · 作業本</div><h2>第${S.rl}課 ${esc(L.t)}</h2><p>LESSON ${S.rl} · ${list.length} 🎧</p></div>
    ${lessonChips("wChips",S.rl)}
-   <div class="toolrow"><span class="meta">Tốc độ nghe</span>${segHTML("wbRate",WBR.map(v=>[String(v),v+"×"]),String(S.wbRate))}<button class="tbtn" id="wbLoop" aria-pressed="${!!S.wbLoop}">🔁 Lặp lại</button></div>
+   <div class="toolrow">${wbSlider()}<button class="tbtn" id="wbLoop" aria-pressed="${!!S.wbLoop}">🔁 Lặp lại</button></div>
    ${!has?`<p class="empty-note">Quyển này không có âm thanh bài tập.</p>`:!list.length?`<p class="empty-note">Chưa có âm thanh bài tập cho bài này.</p>`:
    `<article class="dlg">${list.map(c=>`<div class="aud wbi"><span class="wbc">${c}</span><audio controls preload="none" src="wb/b${BOOK}/${c}.mp3"></audio><button class="btn sm" data-back aria-label="−5s">−5s</button></div>`).join("")}</article>`}
    <p class="empty-note">Mã số mỗi bài nghe (ví dụ 01-2) trùng với ký hiệu trong sách bài tập 作業本. Có thể đổi tốc độ nghe bất cứ lúc nào, kể cả khi đang phát.</p>`;
   wbApply(el);
   el.querySelector(".lessons").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;S.rl=+b.dataset.l;store.set("rl",S.rl);wbDraw();el.scrollIntoView({block:"start"})};
-  el.querySelector("#wbRate").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.wbRate=+b.dataset.v;store.set("wbRate",S.wbRate);
-    el.querySelectorAll("#wbRate button").forEach(x=>x.setAttribute("aria-pressed",x===b));wbApply(el)};
+  const rg=el.querySelector("#wbRate"),setI=i=>{i=Math.max(0,Math.min(WBR.length-1,i));S.wbRate=WBR[i];store.set("wbRate",S.wbRate);rg.value=i;rg.style.setProperty("--p",wbP(i));
+    el.querySelector("#wbRateV").textContent=S.wbRate+"×";el.querySelectorAll(".wbsp-t button").forEach((x,k)=>x.setAttribute("aria-pressed",k===i));wbApply(el)};
+  rg.oninput=()=>setI(+rg.value);el.querySelector(".wbsp-t").onclick=e=>{const b=e.target.closest("button");if(b)setI(+b.dataset.i)};
   el.querySelector("#wbLoop").onclick=e=>{S.wbLoop=!S.wbLoop;store.set("wbLoop",S.wbLoop);e.currentTarget.setAttribute("aria-pressed",S.wbLoop);wbApply(el)};
   el.querySelectorAll("[data-back]").forEach(b=>b.onclick=()=>{const a=b.parentNode.querySelector("audio");try{a.currentTime=Math.max(0,a.currentTime-5)}catch(e){}});
   el.querySelectorAll("audio").forEach(a=>a.addEventListener("play",()=>{a.playbackRate=S.wbRate;try{trkAdd(curLesson(),"li")}catch(e){}}));
@@ -1809,7 +1832,7 @@ renderLessons();render();showSec(S.sec);
   if(LANG!=="vi"){trNode(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode)}}).observe(document.body,{childList:true,subtree:true,characterData:true})}})();
 </script>
 
-<script>(()=>{const V="8918444780";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="da1b0f3324";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const lg=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))}catch(e){return "vi"}})(),en=lg==="en",idn=lg==="id";
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
