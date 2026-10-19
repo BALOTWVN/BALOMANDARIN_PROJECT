@@ -320,6 +320,14 @@ body.pp-bottom .padgrip{display:flex}
 #whoPw[hidden],#whoNote[hidden],#whoMgr[hidden]{display:none!important}
 .scratch{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column}
 .scratch[hidden]{display:none!important}
+.ic{width:1.15em;height:1.15em;vertical-align:-.22em;flex:none;margin-right:.38em}
+.tab .ic{width:1.2em;height:1.2em;margin-right:.42em}
+.wrpop{width:min(400px,calc(100vw - 16px))}.wrpop .wrlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto}
+.wrpop label.writ{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--paper)}
+.wrpop label.writ input{margin-top:3px;width:18px;height:18px;accent-color:var(--acc)}
+.wrpop label.writ b{font-family:var(--han);font-size:16px}.wrpop label.writ small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.wrpop .wrbtns{display:flex;gap:8px;flex-wrap:wrap}.wrpop .wrbtns .btn{flex:1;min-height:46px;font-size:14px;padding:0 12px;white-space:nowrap}
+@media (max-width:560px){.tab{padding:0 8px;font-size:13.5px;flex-direction:column;display:flex;align-items:center;justify-content:center;gap:2px;min-height:52px}.tab .ic{margin:0}}
 #prSheet{display:none}
 .prpop{width:min(380px,calc(100vw - 16px))}
 .prpop .prrow{display:flex;flex-direction:column;gap:5px}.prpop .prrow>span{font-size:12.5px;font-weight:600;color:var(--muted)}
@@ -428,7 +436,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
   <span class="lockico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span>
   <h2 id="lockT">Quyển này cần tài khoản</h2>
   <p id="lockP"></p>
-  <div class="lockbtns"><button class="btn yes" id="lockLogin">Đăng nhập</button><button class="btn" id="lockFree">Học Quyển 1</button></div>
+  <div class="lockbtns"><button class="btn yes" id="lockLogin"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Đăng nhập</button><button class="btn" id="lockFree">Học Quyển 1</button></div>
   <p class="meta" id="lockM">Chưa có mã lớp? Hãy liên hệ giáo viên để được cung cấp mã lớp học.</p>
 </div>
 <div class="sec" id="sec-vocab">
@@ -455,10 +463,10 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
   </section>
 
   <nav class="tabs" role="tablist">
-    <button class="tab" role="tab" data-mode="cards" id="tab-cards">Thẻ lật</button>
-    <button class="tab" role="tab" data-mode="quiz" id="tab-quiz">Trắc nghiệm</button>
-    <button class="tab" role="tab" data-mode="listen" id="tab-listen">Luyện nghe</button>
-    <button class="tab" role="tab" data-mode="list" id="tab-list">Danh sách</button>
+    <button class="tab" role="tab" data-mode="cards" id="tab-cards"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>Thẻ lật</button>
+    <button class="tab" role="tab" data-mode="quiz" id="tab-quiz"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/></svg>Trắc nghiệm</button>
+    <button class="tab" role="tab" data-mode="listen" id="tab-listen"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>Luyện nghe</button>
+    <button class="tab" role="tab" data-mode="list" id="tab-list"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Danh sách</button>
   </nav>
 
   <div class="opts">
@@ -482,22 +490,22 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
   <div class="padgrip" id="padGrip" title="Kéo lên / xuống để đổi chiều cao khung viết"><i></i></div>
   <div class="padhead">
     <div class="padtitle"><span class="label" style="margin:0">Luyện viết</span><span class="padword" id="padWord"></span></div>
-    <button class="btn sm" id="padScr" title="Mở tờ giấy nháp nhiều ô, phóng to thu nhỏ được">Giấy nháp</button>
-    <button class="btn sm" id="padHide">Ẩn khung viết</button>
+    <button class="btn sm" id="padScr" title="Mở tờ giấy nháp nhiều ô, phóng to thu nhỏ được"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 12h18" stroke-dasharray="2 2"/></svg>Giấy nháp</button>
+    <button class="btn sm" id="padHide"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>Ẩn khung viết</button>
   </div>
   <div class="tools">
-    <span class="seg" id="tipSeg"><button data-v="pencil">Bút chì</button><button data-v="pen">Bút bi</button><button data-v="brush">Bút lông</button></span>
+    <span class="seg" id="tipSeg"><button data-v="pencil"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Bút chì</button><button data-v="pen"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg>Bút bi</button><button data-v="brush"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>Bút lông</button></span>
     <label class="sizer" title="Cỡ nét"><span class="dotprev" id="dotPrev"></span><input type="range" id="pSize" min="2" max="30" step="1" aria-label="Cỡ nét"><span class="meta" id="pSizeV"></span></label>
     <span class="swatches" id="colSeg"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button><button data-v="more" class="more" aria-label="Bảng màu" title="Bảng màu"><i></i></button></span>
   </div>
   <div class="tools">
     <span class="seg" id="gridSeg"><button data-v="tian" class="han" title="Ô chữ điền">田</button><button data-v="mi" class="han" title="Ô chữ mễ">米</button><button data-v="none">Trơn</button></span>
-    <button class="tbtn" id="pTrace" aria-pressed="false">Tô theo mẫu</button>
-    <button class="tbtn" id="pReveal" aria-pressed="false">Xem chữ</button>
+    <button class="tbtn" id="pTrace" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16"/><path d="M6 17l6-13 6 13M8.5 12h7" stroke-dasharray="2.2 2.2"/></svg>Tô theo mẫu</button>
+    <button class="tbtn" id="pReveal" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Xem chữ</button>
     <span class="spacer"></span>
-    <button class="tbtn" id="pErase" aria-pressed="false">Tẩy</button>
-    <button class="tbtn" id="pUndo">Hoàn tác</button>
-    <button class="tbtn" id="pClear">Xóa hết</button>
+    <button class="tbtn" id="pErase" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21M22 21H7M5 11l9 9"/></svg>Tẩy</button>
+    <button class="tbtn" id="pUndo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Hoàn tác</button>
+    <button class="tbtn" id="pClear"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Xóa hết</button>
   </div>
   <div class="board" id="board"><canvas id="cGuide"></canvas><canvas id="cInk"></canvas><canvas id="cTop"></canvas>
     <div class="bzoom"><button id="bzOut" aria-label="Thu nhỏ">−</button><button id="bzPct" title="Về 100%">100%</button><button id="bzIn" aria-label="Phóng to">+</button></div></div>
@@ -506,21 +514,21 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
 
 <div class="scratch" id="scratch" hidden>
   <div class="scbar">
-    <button class="btn sm" id="scClose">← Quay lại</button>
+    <button class="btn sm" id="scClose"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Quay lại</button>
     <div class="sctitle"><b>Giấy nháp</b><span class="meta" id="scInfo"></span></div>
-    <span class="seg" id="scTip"><button data-v="pencil">Bút chì</button><button data-v="pen">Bút bi</button><button data-v="brush">Bút lông</button></span>
+    <span class="seg" id="scTip"><button data-v="pencil"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Bút chì</button><button data-v="pen"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg>Bút bi</button><button data-v="brush"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>Bút lông</button></span>
     <label class="sizer" title="Cỡ nét"><input type="range" id="scSize" min="2" max="30" step="1" aria-label="Cỡ nét"></label>
     <span class="swatches" id="scCol"><button data-v="ink" aria-label="Mực đen"><i style="background:var(--ink)"></i></button><button data-v="red" aria-label="Mực đỏ"><i style="background:var(--seal)"></i></button><button data-v="blue" aria-label="Mực xanh"><i style="background:var(--jade)"></i></button><button data-v="more" class="more" aria-label="Bảng màu" title="Bảng màu"><i></i></button></span>
     <span class="seg" id="scGridSeg"><button data-v="tian" class="han" title="Ô chữ điền">田</button><button data-v="mi" class="han" title="Ô chữ mễ">米</button><button data-v="none">Trơn</button></span>
     <span class="seg" id="scPart" hidden></span>
-    <button class="tbtn" id="scPickBtn" aria-haspopup="true">Chọn chữ <span id="scPickN"></span> ▾</button>
-    <button class="tbtn" id="scModel" aria-pressed="true">Chữ mẫu</button>
-    <button class="tbtn" id="scTrace" aria-pressed="false">Tô theo mẫu</button>
-    <button class="tbtn" id="scHand" aria-pressed="false" title="Kéo để di chuyển tờ giấy">✋ Kéo</button>
-    <button class="tbtn" id="scErase" aria-pressed="false">Tẩy</button>
-    <button class="tbtn" id="scUndo">Hoàn tác</button>
-    <button class="tbtn" id="scClear">Xóa hết</button>
-    <button class="btn yes sm" id="scPrint" aria-haspopup="true" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">🖨 In / PDF</button>
+    <button class="tbtn" id="scPickBtn" aria-haspopup="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>Chọn chữ <span id="scPickN"></span> ▾</button>
+    <button class="tbtn" id="scModel" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 17l6-13 6 13M8.5 12h7"/></svg>Chữ mẫu</button>
+    <button class="tbtn" id="scTrace" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16"/><path d="M6 17l6-13 6 13M8.5 12h7" stroke-dasharray="2.2 2.2"/></svg>Tô theo mẫu</button>
+    <button class="tbtn" id="scHand" aria-pressed="false" title="Kéo để di chuyển tờ giấy"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>Kéo</button>
+    <button class="tbtn" id="scErase" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21M22 21H7M5 11l9 9"/></svg>Tẩy</button>
+    <button class="tbtn" id="scUndo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Hoàn tác</button>
+    <button class="tbtn" id="scClear"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Xóa hết</button>
+    <button class="btn yes sm" id="scPrint" aria-haspopup="true" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>In / PDF</button>
   </div>
   <div class="scboard" id="scBoard"><canvas id="scG"></canvas><canvas id="scI"></canvas><canvas id="scL"></canvas>
     <div class="sczoom"><button id="scOut" aria-label="Thu nhỏ">−</button><button id="scPct" title="Về 100%">100%</button><button id="scIn" aria-label="Phóng to">+</button></div>
@@ -534,13 +542,13 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <div class="lg-stamp">當代<br>中文</div>
     <h2 id="lgTitle">BALO Mandarin</h2>
     <p class="meta" style="text-align:center;margin:-8px 0 2px"><span class="bkN">當代中文課程 1</span> · Thẻ từ · Bài đọc · Ngữ pháp · Luyện viết</p>
-    <div class="roletabs" id="roleTabs" role="tablist"><button data-r="st" aria-selected="true">Học sinh</button><button data-r="gv" aria-selected="false">Giáo viên</button></div>
+    <div class="roletabs" id="roleTabs" role="tablist"><button data-r="st" aria-selected="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5zM6 12v5c3 3 9 3 12 0v-5"/></svg>Học sinh</button><button data-r="gv" aria-selected="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>Giáo viên</button></div>
     <form id="fSt" class="authform" autocomplete="on" onsubmit="return false">
       <label class="fld"><span>Mã lớp</span><input id="lgC" name="class" autocomplete="organization" autocapitalize="characters" spellcheck="false" placeholder="VD: HOA1A" required></label>
       <label class="fld"><span>Mã học sinh</span><input id="lgS" name="username" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="VD: HS01" required></label>
       <label class="fld"><span>Mật khẩu</span><input id="lgP" name="password" type="password" autocomplete="current-password" placeholder="Lần đầu: nhập lại mã học sinh"></label>
       <p class="note lgErr" id="lgErr"></p>
-      <button class="btn yes wide" id="lgGo" type="submit">Đăng nhập</button>
+      <button class="btn yes wide" id="lgGo" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Đăng nhập</button>
       <button class="tbtn" type="button" id="toReg" style="width:100%">Chưa có tài khoản? <b>Tạo tài khoản bằng mã lớp</b></button>
     </form>
     <form id="fReg" class="authform" autocomplete="on" onsubmit="return false" hidden>
@@ -550,7 +558,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
       <label class="fld"><span>Mật khẩu (ít nhất 4 ký tự)</span><input id="rgP" type="password" autocomplete="new-password" required></label>
       <label class="fld"><span>Nhập lại mật khẩu</span><input id="rgP2" type="password" autocomplete="new-password" required></label>
       <p class="note lgErr" id="rgErr"></p>
-      <button class="btn yes wide" id="rgGo" type="submit">Tạo tài khoản &amp; vào học</button>
+      <button class="btn yes wide" id="rgGo" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Tạo tài khoản &amp; vào học</button>
       <button class="tbtn" type="button" id="toLogin" style="width:100%">Đã có tài khoản? <b>Đăng nhập</b></button>
     </form>
     <form id="fGv" class="authform" autocomplete="on" onsubmit="return false" hidden>
@@ -558,7 +566,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
       <label class="fld"><span>Mật khẩu</span><input id="tgP" name="password" type="password" autocomplete="current-password" required></label>
       <label class="rem"><input type="checkbox" id="tgR"> Ghi nhớ đăng nhập trên máy này</label>
       <p class="note lgErr" id="tgErr"></p>
-      <button class="btn yes wide" id="tgGo" type="submit">Đăng nhập</button>
+      <button class="btn yes wide" id="tgGo" type="submit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Đăng nhập</button>
     </form>
     <button class="tbtn" id="lgSkip" style="width:100%;border:0;background:none;color:var(--muted);font-weight:600">Học ngay, không cần đăng nhập →</button>
     <p class="meta" style="text-align:center;margin:0;font-size:12px">Đăng nhập học sinh chỉ để giáo viên theo dõi tiến độ. Chưa có mã? Hỏi giáo viên.</p>
@@ -569,22 +577,22 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <h2><span id="whoTitle">Học sinh</span><button class="btn sm" id="whoClose">Đóng</button></h2>
     <p class="meta" id="whoInfo" style="margin:-6px 0 0"></p>
     <p class="note" id="pwHint"></p>
-    <button class="btn yes" id="whoMgr" style="width:100%" hidden>Trang quản lý giáo viên</button>
+    <button class="btn yes" id="whoMgr" style="width:100%" hidden><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Trang quản lý giáo viên</button>
     <div class="set" id="whoPw"><div class="label">Đổi mật khẩu</div>
       <label class="fld"><span>Mật khẩu hiện tại</span><input type="password" id="cpOld" autocomplete="current-password"></label>
       <label class="fld"><span>Mật khẩu mới (ít nhất 4 ký tự)</span><input type="password" id="cpNew" autocomplete="new-password"></label>
       <p class="note lgErr" id="cpMsg"></p>
-      <button class="btn" id="cpGo">Lưu mật khẩu mới</button></div>
+      <button class="btn" id="cpGo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></svg>Lưu mật khẩu mới</button></div>
     <p class="note" id="whoNote">Thời gian học, số lần lật thẻ, nghe, trắc nghiệm và số từ đã nhớ được gửi cho giáo viên.</p>
-    <button class="btn" id="whoOut" style="width:100%">Đăng xuất</button>
+    <button class="btn" id="whoOut" style="width:100%"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Đăng xuất</button>
   </div>
 </div>
 <div class="scrim" id="scrim" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setTitle">
-    <h2><span id="setTitle">Tùy chỉnh</span><button class="btn sm" id="closeSet">Xong</button></h2>
+    <h2><span id="setTitle">Tùy chỉnh</span><button class="btn sm" id="closeSet"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Xong</button></h2>
     <div class="set"><div class="label">Giáo trình</div><select id="sBook" class="search vsel" aria-label="Chọn giáo trình"></select></div>
     <div class="set"><div class="label">Ngôn ngữ · Language</div><div class="langseg" id="langSet" role="group" aria-label="Language"></div></div>
-    <div class="set"><div class="label">Chế độ sáng tối</div><span class="seg" id="sMode"><button data-v="auto">Theo máy</button><button data-v="light">Sáng</button><button data-v="dark">Tối</button></span></div>
+    <div class="set"><div class="label">Chế độ sáng tối</div><span class="seg" id="sMode"><button data-v="auto"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Theo máy</button><button data-v="light"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>Sáng</button><button data-v="dark"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>Tối</button></span></div>
     <div class="set"><div class="label">Màu chủ đề</div><div class="skins" id="sSkin">
       <button class="skin" data-v="celadon"><i><b style="background:#EDF1EE"></b><b style="background:#2F7A6D"></b><b style="background:#C2412D"></b></i>Thanh từ</button>
       <button class="skin" data-v="indigo"><i><b style="background:#ECEFF5"></b><b style="background:#2F4C8C"></b><b style="background:#C2412D"></b></i>Lam nhuộm</button>
@@ -597,7 +605,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
       <button data-v="kai"><span style="font-family:'LXGW WenKai TC',serif">學</span>Khải (viết tay)</button>
       <button data-v="sans"><span style="font-family:'Noto Sans TC',sans-serif">學</span>Hắc (không chân)</button>
     </div></div>
-    <div class="set"><div class="label">Giọng đọc</div><span class="seg" id="sVoice"><button data-v="dev">Giọng của máy</button><button data-v="rec">Giọng thu sẵn (AI)</button></span>
+    <div class="set"><div class="label">Giọng đọc</div><span class="seg" id="sVoice"><button data-v="dev"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>Giọng của máy</button><button data-v="rec"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Giọng thu sẵn (AI)</button></span>
       <div id="devVoiceBox" hidden><select id="sDevVoice" class="search vsel"></select></div>
       <p class="note" id="voiceNote"></p>
       <details class="vhelp"><summary>Cách cài giọng tiếng Trung hay hơn cho “Giọng của máy”</summary>
@@ -609,7 +617,7 @@ body.locked .sec,body.locked #pad,body.locked #padShow,body.locked #ttsNote{disp
     <div class="set"><div class="label">Cỡ chữ giao diện</div><div class="slider"><span class="meta">A</span><input type="range" id="sFs" min="14" max="20" step="1"><span style="font-size:22px">A</span></div></div>
     <div class="set"><div class="label">Cỡ chữ Hán</div><div class="slider"><span class="meta">小</span><input type="range" id="sHan" min="0.8" max="1.4" step="0.05"><span style="font-size:22px;font-family:var(--han)">大</span></div></div>
     <label class="toggle"><span><b>Tô màu thanh điệu pinyin</b><br><span class="meta"><span style="color:var(--t1)">mā 1</span> · <span style="color:var(--t2)">má 2</span> · <span style="color:var(--t3)">mǎ 3</span> · <span style="color:var(--t4)">mà 4</span></span></span><input type="checkbox" id="sTone"></label>
-    <div class="set"><div class="label">Vị trí khung luyện viết</div><span class="seg" id="sPadPos"><button data-v="auto">Tự động</button><button data-v="right">Bên phải</button><button data-v="bottom">Bên dưới</button></span></div>
+    <div class="set"><div class="label">Vị trí khung luyện viết</div><span class="seg" id="sPadPos"><button data-v="auto"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Tự động</button><button data-v="right"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg>Bên phải</button><button data-v="bottom"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15h18"/></svg>Bên dưới</button></span></div>
     <div class="set"><div class="label">Kích thước khung luyện viết</div><div class="slider"><span class="meta">Nhỏ</span><input type="range" id="sPadSize" min="32" max="62" step="2"><span class="meta">Lớn</span></div></div>
     <p class="note" id="cfgNote">Các tùy chỉnh được lưu trong trình duyệt của thiết bị này. Đăng nhập tài khoản học sinh để lưu theo tài khoản và dùng lại trên mọi máy.</p>
   </div>
@@ -671,6 +679,8 @@ const store={get(k,d){try{const v=localStorage.getItem("tv1:"+k);return v==null?
 let known=new Set(store.get("known",[]));
 const S={lesson:store.get("lesson",1),mode:store.get("mode","cards"),skipNames:store.get("skipNames",false),onlyNew:false,front:store.get("front","han"),qtype:store.get("qtype","mix")};
 const $=s=>document.querySelector(s);
+const ICO={"check": "<path d=\"M20 6 9 17l-5-5\"/>", "x": "<path d=\"M18 6 6 18M6 6l12 12\"/>", "left": "<path d=\"m15 18-6-6 6-6\"/>", "right": "<path d=\"m9 18 6-6-6-6\"/>", "back": "<path d=\"M19 12H5M12 19l-7-7 7-7\"/>", "again": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>", "undo": "<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 0 11H11\"/>", "trash": "<path d=\"M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/>", "eye": "<path d=\"M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "eyeoff": "<path d=\"M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6C3.9 8.4 2 12 2 12s3.5 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2\"/>", "pencil": "<path d=\"M12 20h9\"/><path d=\"M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z\"/>", "pen": "<path d=\"m12 19 7-7 3 3-7 7-3-3z\"/><path d=\"m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z\"/><path d=\"m2 2 7.6 7.6\"/><circle cx=\"11\" cy=\"11\" r=\"2\"/>", "brush": "<path d=\"M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08\"/><path d=\"M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z\"/>", "eraser": "<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21M22 21H7M5 11l9 9\"/>", "hand": "<path d=\"M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>", "print": "<path d=\"M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2\"/><rect x=\"6\" y=\"14\" width=\"12\" height=\"8\" rx=\"1\"/>", "grid": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M12 3v18M3 12h18\" stroke-dasharray=\"2 2\"/>", "cards": "<rect x=\"3\" y=\"7\" width=\"14\" height=\"14\" rx=\"2\"/><path d=\"M7 3h12a2 2 0 0 1 2 2v12\"/>", "quiz": "<path d=\"m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8\"/>", "listen": "<path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\"/>", "list": "<path d=\"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01\"/>", "type": "<path d=\"M4 7V4h16v3M9 20h6M12 4v16\"/>", "model": "<path d=\"M4 21h16M6 17l6-13 6 13M8.5 12h7\"/>", "trace": "<path d=\"M4 21h16\"/><path d=\"M6 17l6-13 6 13M8.5 12h7\" stroke-dasharray=\"2.2 2.2\"/>", "play": "<path d=\"m7 4 12 8-12 8z\"/>", "book": "<path d=\"M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z\"/>", "login": "<path d=\"M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3\"/>", "logout": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9\"/>", "dash": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4\"/>", "moon": "<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/>", "auto": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M8 21h8M12 17v4\"/>", "phone": "<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "ai": "<path d=\"M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z\"/>", "pright": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M15 3v18\"/>", "pbottom": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M3 15h18\"/>", "playout": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M3 9h18M9 21V9\"/>", "student": "<path d=\"M22 10 12 5 2 10l10 5zM6 12v5c3 3 9 3 12 0v-5\"/>", "teacher": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/>", "tone": "<path d=\"M9 18V5l12-2v13\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"18\" cy=\"16\" r=\"3\"/>", "lang": "<path d=\"m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6\"/>", "repeat": "<path d=\"m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3\"/>", "down": "<path d=\"m6 9 6 6 6-6\"/>", "next": "<path d=\"M5 12h14M12 5l7 7-7 7\"/>", "select": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"m9 12 2 2 4-4\"/>", "user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1\"/>", "key": "<circle cx=\"7.5\" cy=\"15.5\" r=\"4.5\"/><path d=\"m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>"};
+const I=n=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[n]||""}</svg>`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
@@ -752,7 +762,7 @@ function cardsDraw(){const v=$("#view");
   if(!deck.length){v.innerHTML=emptyMsg();return}
   if(pos>=deck.length){setTarget(null);const k=deck.filter(w=>known.has(w.id)).length;
     v.innerHTML=`<div class="q result"><div class="label">Hết bộ thẻ</div><div class="score">${k}/${deck.length}</div><p class="meta">từ trong lượt này bạn đã đánh dấu “Đã nhớ”.</p>
-    <div class="row center"><button class="btn" id="again">Học lại từ đầu</button><button class="btn primary" id="reviewNew">Ôn từ chưa nhớ</button></div></div>`;
+    <div class="row center"><button class="btn" id="again">${I("again")}Học lại từ đầu</button><button class="btn primary" id="reviewNew">${I("repeat")}Ôn từ chưa nhớ</button></div></div>`;
     $("#again").onclick=cardsInit;$("#reviewNew").onclick=()=>{deck=shuffle(deck.filter(w=>!known.has(w.id)));pos=0;cardsDraw()};return}
   const w=deck[pos],lt=`LESSON ${w.l}`,long=[...w.c].length>3;setTarget(w);
   const hanSide=`<span class="big${long?" long":""}">${esc(w.c)}</span>`;
@@ -765,11 +775,11 @@ function cardsDraw(){const v=$("#view");
      <div class="face front"><span class="tag">${lt}</span><span class="pos">${esc(POSVI[w.t]||w.t)}</span>${S.front==="han"?hanSide:viSide}<span class="hint">Chạm để lật thẻ</span>${S.front==="han"?`<button class="say" data-say aria-label="Nghe phát âm">${SPK}</button>`:""}</div>
      <div class="face back"><span class="tag">${lt}</span><span class="pos">${esc(POSVI[w.t]||w.t)}</span>${backFull}<button class="say" data-say aria-label="Nghe phát âm">${SPK}</button></div>
    </div></div>
-   <div class="row center"><button class="btn" id="prev" ${pos===0?"disabled":""}>← Trước</button><button class="btn no" id="no">Chưa nhớ</button><button class="btn yes" id="yes">Đã nhớ ✓</button><button class="btn" id="nextC">Sau →</button></div>
-   ${(EX[w.gi]||[]).length?`<section class="expanel veil" id="expanel"><div class="exhead"><span class="label" style="margin:0">Câu ví dụ</span><button class="tbtn" id="exShow">Hiện pinyin &amp; nghĩa</button></div>
+   <div class="row center"><button class="btn" id="prev" ${pos===0?"disabled":""}>${I("left")}Trước</button><button class="btn no" id="no">${I("x")}Chưa nhớ</button><button class="btn yes" id="yes">${I("check")}Đã nhớ</button><button class="btn" id="nextC">Sau${I("right").replace('class="ic"','class="ic" style="margin:0 0 0 .38em"')}</button></div>
+   ${(EX[w.gi]||[]).length?`<section class="expanel veil" id="expanel"><div class="exhead"><span class="label" style="margin:0">Câu ví dụ</span><button class="tbtn" id="exShow">${I("eye")}Hiện pinyin &amp; nghĩa</button></div>
      ${EX[w.gi].map(e=>`<div class="exl" data-say="${esc(e[0])}"><button class="say" aria-label="Nghe câu">${SPK}</button><div style="min-width:0"><div class="zh">${esc(e[0])}</div><div class="lpy">${PY(e[1])}</div><div class="lvi">${esc(e[2])}</div></div></div>`).join("")}</section>`:""}
    <p class="note" style="text-align:center">Phím tắt: Space lật thẻ · ← → chuyển thẻ · 1 chưa nhớ · 2 đã nhớ</p></div>`;
-  const xp=$("#expanel");if(xp){const setV=v=>{xp.classList.toggle("veil",v);$("#exShow").textContent=v?"Hiện pinyin & nghĩa":"Ẩn pinyin & nghĩa"};
+  const xp=$("#expanel");if(xp){const setV=v=>{xp.classList.toggle("veil",v);$("#exShow").innerHTML=I(v?"eye":"eyeoff")+esc(T(v?"Hiện pinyin & nghĩa":"Ẩn pinyin & nghĩa"))};
     $("#exShow").onclick=()=>setV(!xp.classList.contains("veil"));
     xp.querySelectorAll(".exl").forEach(n=>n.onclick=()=>speakRate(n.dataset.say));xp._setV=setV}
   const card=$("#card");try{trkSeen(w)}catch(e){}card.onclick=e=>{if(e.target.closest("[data-say]")){e.stopPropagation();speak(w.c);return}card.classList.toggle("flip");if(card.classList.contains("flip"))try{trkAdd(w.l,"f")}catch(e){}const xp2=$("#expanel");if(xp2&&xp2._setV)xp2._setV(!card.classList.contains("flip"));if(card.classList.contains("flip")&&S.front==="vi")speak(w.c)};
@@ -806,7 +816,7 @@ function quizDraw(){const v=$("#view");
   if(Q.i>=Q.qs.length){setTarget(null);const pct=Math.round(Q.score/Q.qs.length*100);
     v.innerHTML=`<div class="q result"><div class="label">Kết quả</div><div class="score">${Q.score}/${Q.qs.length}</div><p class="meta">${pct>=90?"Rất tốt!":pct>=70?"Khá tốt, ôn thêm vài từ dưới đây.":"Cần ôn thêm. Thử học thẻ lật các từ sai rồi làm lại."}</p>
     ${Q.miss.length?`<div class="misslist"><div class="label">Từ trả lời sai</div><div class="tablebox"><table><tbody>${Q.miss.map(rowHTML).join("")}</tbody></table></div></div>`:""}
-    <div class="row center"><button class="btn primary" id="again">Làm lượt mới</button></div></div>`;
+    <div class="row center"><button class="btn primary" id="again">${I("again")}Làm lượt mới</button></div></div>`;
     $("#again").onclick=()=>quizInit(Q.listen);bindSay(v);return}
   const q=Q.qs[Q.i],w=q.w;let prompt;setTarget(w);
   if(q.type==="hv"||q.type==="hp")prompt=`<span class="ask">${q.type==="hv"?"Từ này nghĩa là gì?":"Từ này đọc là gì?"}</span><span class="big${[...w.c].length>3?" long":""}">${esc(w.c)}</span>`;
@@ -818,7 +828,7 @@ function quizDraw(){const v=$("#view");
    <div class="qprompt">${prompt}</div>
    <div class="choices">${q.opts.map((o,k)=>`<button class="choice${q.key==="c"?" hanC":""}" data-k="${k}">${optTxt(o)}</button>`).join("")}</div>
    <div class="reveal" id="reveal"></div>
-   <div class="row center"><button class="btn primary" id="next" hidden>Câu tiếp →</button></div></div>`;
+   <div class="row center"><button class="btn primary" id="next" hidden>Câu tiếp${I("next").replace('class="ic"','class="ic" style="margin:0 0 0 .38em"')}</button></div></div>`;
   if(q.type==="lh"){$("#play").onclick=()=>playWord(w);setTimeout(()=>speak(w.c),150)}
   v.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{const o=q.opts[+b.dataset.k];const ok=o===w;
     v.querySelectorAll(".choice").forEach(x=>{x.disabled=true;if(q.opts[+x.dataset.k]===w)x.classList.add("right")});
@@ -835,12 +845,12 @@ function bindSay(root){root.querySelectorAll("[data-say],[data-gi]").forEach(b=>
 function listDraw(){$("#optExtra").innerHTML="";const v=$("#view");
   v.innerHTML=`<div style="display:flex;flex-direction:column;gap:14px"><input class="search" id="q" type="search" placeholder="Tìm chữ Hán, pinyin hoặc nghĩa…">
     <div class="selbar" id="selbar"><label class="selall"><input type="checkbox" id="selAll"><span>Chọn tất cả</span></label><span class="selinfo" id="selInfo"></span>
-      <button class="tbtn sm" id="selNone" hidden>Bỏ chọn</button><span style="flex:1"></span><button class="btn yes sm" id="openScr">✍️ Giấy nháp luyện viết</button><button class="btn sm" id="printScr" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">🖨 In / PDF</button></div>
+      <button class="tbtn sm" id="selNone" hidden>${I("x")}Bỏ chọn</button><span style="flex:1"></span><button class="btn yes sm" id="openScr">${I("pencil")}Giấy nháp luyện viết</button><button class="btn sm" id="printScr" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">${I("print")}In / PDF</button></div>
     <div id="lst" style="display:flex;flex-direction:column;gap:16px"></div></div>`;
   let shown=[];const selUI=()=>{const k=SELW.size,ch=hanOnly(selChars()).length,vis=shown.filter(w=>SELW.has(w.id)).length,en=LANG==="en";
     const a=$("#selAll");a.checked=shown.length>0&&vis===shown.length;a.indeterminate=vis>0&&vis<shown.length;
     $("#selInfo").textContent=k?(en?`${k} words · ${ch} characters selected`:`Đã chọn ${k} từ · ${ch} chữ`):(en?"Tick words to practice them on the scratch sheet":"Tick chọn từ để luyện viết trên giấy nháp");
-    $("#selNone").hidden=!k;$("#openScr").textContent=k?(en?`✍️ Write ${ch} selected characters`:`✍️ Viết ${ch} chữ đã chọn`):(en?"✍️ Practice sheet (all)":"✍️ Giấy nháp (tất cả)");
+    $("#selNone").hidden=!k;$("#openScr").innerHTML=I("pencil")+esc(T(k?(en?`Write ${ch} selected characters`:`Viết ${ch} chữ đã chọn`):(en?"Practice sheet (all)":"Giấy nháp (tất cả)")));
     document.querySelectorAll("#lst .vgroup").forEach(g=>{const bx=[...g.querySelectorAll("[data-ck]")],n=bx.filter(x=>x.checked).length,gc=g.querySelector("[data-gck]");if(gc){gc.checked=n===bx.length&&n>0;gc.indeterminate=n>0&&n<bx.length}})};
   $("#selAll").onchange=e=>{shown.forEach(w=>e.target.checked?SELW.add(w.id):SELW.delete(w.id));fill()};
   $("#selNone").onclick=()=>{SELW.clear();fill()};
@@ -968,7 +978,7 @@ function palOpen(btn){let pop=document.getElementById("palPop");if(!pop){pop=doc
 function popAt(pop,btn){pop.hidden=false;const r=btn.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;
   let left=Math.max(8,Math.min(r.left+r.width/2-w/2,innerWidth-w-8)),top=r.bottom+8;if(top+h>innerHeight-8)top=Math.max(8,r.top-h-8);
   pop.style.left=left+"px";pop.style.top=top+"px";setTimeout(()=>addEventListener("pointerdown",popOut,true),0)}
-function popOut(e){const p=[...document.querySelectorAll(".pop")].find(x=>!x.hidden);if(p&&!p.contains(e.target)&&!e.target.closest(".more,#scPickBtn,#scPrint"))popClose()}
+function popOut(e){const p=[...document.querySelectorAll(".pop")].find(x=>!x.hidden);if(p&&!p.contains(e.target)&&!e.target.closest(".more,#scPickBtn,#scPrint,[data-wr]"))popClose()}
 function popClose(){document.querySelectorAll(".pop").forEach(x=>x.hidden=true);removeEventListener("pointerdown",popOut,true)}
 $("#colSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.v==="more"){const p=document.getElementById("palPop");if(p&&!p.hidden)popClose();else palOpen(b);return}setColor(b.dataset.v)};
 $("#gridSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;P.grid=b.dataset.v;store.set("grid",P.grid);syncTools();drawGuide()};
@@ -1117,6 +1127,17 @@ function scOpenCommon(){SC.erase=false;SC.hand=false;SC.cur=null;SC.touch.clear(
   requestAnimationFrame(scSize);$("#scHint").style.opacity=1;clearTimeout(SC.hintT);SC.hintT=setTimeout(()=>{$("#scHint").style.opacity=0},7000)}
 function scClose(){popClose();SC.open=false;$("#scratch").hidden=true;document.body.classList.remove("sc-open");scSave(true)}
 
+function wrOpen(btn,L,only){let pop=document.getElementById("wrPop");if(!pop){pop=document.createElement("div");pop.id="wrPop";pop.className="pop wrpop";document.body.appendChild(pop)}
+  const sel=new Set(only!=null?[only]:L.d.map((_,i)=>i));
+  const draw=()=>{pop.innerHTML=`<div class="pickhead"><b>Chọn phần muốn luyện viết</b><span class="meta">${sel.size}/${L.d.length}</span><span style="flex:1"></span>${L.d.length>1?`<button class="tbtn sm" data-a="all">Tất cả</button>`:""}</div>
+    <div class="wrlist">${L.d.map((d,i)=>`<label class="writ"><input type="checkbox" data-i="${i}" ${sel.has(i)?"checked":""}><span><b>${esc(d.t)}</b><small>${esc(d.v||"")}</small></span></label>`).join("")}</div>
+    <div class="wrbtns"><button class="btn yes" data-go="write" ${sel.size?"":"disabled"}>${I("pencil")}Viết trên giấy nháp</button><button class="btn" data-go="print" ${sel.size?"":"disabled"}>${I("print")}In / PDF</button></div>`};
+  draw();popAt(pop,btn);
+  pop.onchange=e=>{const c=e.target.closest("[data-i]");if(!c)return;const i=+c.dataset.i;if(c.checked)sel.add(i);else sel.delete(i);draw()};
+  pop.onclick=e=>{if(e.target.closest("[data-a]")){if(sel.size===L.d.length)sel.clear();else L.d.forEach((_,i)=>sel.add(i));draw();return}
+    const g=e.target.closest("[data-go]");if(!g||!sel.size)return;const parts=[...sel].sort((a,b)=>a-b);popClose();scOpenText(S.rl,parts);
+    if(g.dataset.go==="print")setTimeout(()=>prOpen($("#scPrint")),60)}}
+
 /* ---------- print / PDF practice sheets ---------- */
 const PR=Object.assign({size:"m",faint:"3",rows:"1",py:true,model:"dark",blank:"1",pages:"1"},store.get("pr",{}));
 function prChPy(){const m=new Map();for(const w of W){const c=String(w.c||"").replace(/（.*?）|\(.*?\)/g,"");if(Array.from(c).length===1&&!m.has(c))m.set(c,PY(w.p).replace(/<[^>]*>/g,""))}return m}
@@ -1163,7 +1184,7 @@ function prOpen(btn){let pop=document.getElementById("prPop");if(!pop){pop=docum
     <div class="prrow"><span>Số hàng mỗi chữ</span>${seg("rows",[["1","1"],["2","2"],["3","3"]])}</div>
     <label class="meta" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="prPy" ${PR.py?"checked":""}> <span>Kèm phiên âm</span></label>`}
     <p class="prnote">${tx?`${T("Bài")} ${SC.tl}`:blank?T("Giấy trắng"):`${SC.chars.length} ${T("chữ")}`} · ${pages.length} ${T("trang")} A4</p>
-    <button class="btn yes wide" id="prGo">🖨 In / Lưu PDF</button>
+    <button class="btn yes wide" id="prGo">${I("print")}In / Lưu PDF</button>
     <p class="prnote">Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.</p>`};
   draw();popAt(pop,btn);
   pop.onclick=e=>{if(e.target.closest("#prGo")){popClose();prPrint();return}
@@ -1189,7 +1210,7 @@ const CONTENT=_g("CONTENT"+BOOK);
 S.order=store.get("order","book");S.sec=store.get("sec","vocab");S.rl=Math.min(store.get("rl",1),NL);S.showPy=store.get("showPy",true);S.showVi=store.get("showVi",true);S.rate=store.get("rate",0.8);
 const ROMAN=["I","II","III","IV","V","VI","VII","VIII"];
 function lessonChips(id,cur){let h=`<div class="lessons" id="${id}">`;for(let i=1;i<=NL;i++)h+=`<button class="chip" data-l="${i}" aria-pressed="${cur===i}" title="LESSON ${i}">${i}</button>`;return h+"</div>"}
-function toggleRow(){return `<div class="toolrow"><button class="tbtn" id="tPy" aria-pressed="${S.showPy}">Pinyin</button><button class="tbtn" id="tVi" aria-pressed="${S.showVi}">Nghĩa Việt</button>
+function toggleRow(){return `<div class="toolrow"><button class="tbtn" id="tPy" aria-pressed="${S.showPy}">${I("tone")}Pinyin</button><button class="tbtn" id="tVi" aria-pressed="${S.showVi}">${I("lang")}Nghĩa Việt</button>
   <span class="meta">Tốc độ đọc</span>${segHTML("rateSeg",[["0.6","Chậm"],["0.8","Vừa"],["1","Thường"]],String(S.rate))}</div>`}
 function bindToggles(root,redraw){root.querySelector("#tPy").onclick=()=>{S.showPy=!S.showPy;store.set("showPy",S.showPy);redraw()};
   root.querySelector("#tVi").onclick=()=>{S.showVi=!S.showVi;store.set("showVi",S.showVi);redraw()};
@@ -1205,17 +1226,16 @@ function speakRate(t){seqTok++;try{trkListen(t)}catch(e){}if(playClip(t,S.rate>=
 function readDraw(){const L=CONTENT[S.rl-1],el=$("#sec-read");
   el.innerHTML=`<div class="lhead"><div class="label">Bài đọc · 課文</div><h2>第${S.rl}課 ${esc(L.t)}</h2><p>LESSON ${S.rl} · ${esc(L.tv)}</p></div>
    ${lessonChips("rChips",S.rl)}${toggleRow()}
-   <div class="copybar"><span>Luyện viết bài đọc trên giấy nháp:</span>${L.d.map((d,di)=>`<button class="tbtn" data-copy="${di}">✍️ ${esc(d.t)}</button>`).join("")}${L.d.length>1?`<button class="btn yes sm" data-copy="all">✍️ Chép cả bài</button>`:""}<button class="btn sm" data-prt="all" title="In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF">🖨 In / PDF</button></div>
+   <div class="copybar"><span>Luyện viết bài đọc:</span><button class="btn yes sm" data-wr="pick">${I("pencil")}Luyện viết · In / PDF</button></div>
    <div class="${S.showPy?"":"hide-py"} ${S.showVi?"":"hide-vi"}" style="display:flex;flex-direction:column;gap:16px">
    ${L.d.map((d,di)=>`<article class="dlg"><div class="dlg-h"><div><h3>${esc(d.t)}</h3><p>${esc(d.v)}</p></div>
-     <div class="dlg-btns"><button class="btn sm" data-copy="${di}">✍️ Chép bài này</button><button class="btn sm" data-play="${di}">▶︎ Đọc từng câu</button></div></div>
+     <div class="dlg-btns"><button class="btn sm" data-wr="${di}">${I("pencil")}Chép bài này</button><button class="btn sm" data-play="${di}">${I("play")}Đọc từng câu</button></div></div>
      <div class="aud"><span class="label">Âm thanh gốc · ${String(S.rl).padStart(2,"0")}-${d.a||"0"+(di===0?1:3)}</span><audio controls preload="none" src="audio/${AP}${String(S.rl).padStart(2,"0")}-${d.a||"0"+(di===0?1:3)}.mp3"></audio></div>
      ${d.x.map((r,ri)=>`<div class="line" data-d="${di}" data-r="${ri}"><div class="spk">${esc(r[0])}</div><div style="min-width:0"><div class="zh">${esc(r[2])}</div><div class="lpy">${PY(r[3])}</div><div class="lvi">${esc(r[4])}</div></div></div>`).join("")}
    </article>`).join("")}</div>
    <p class="empty-note">Thanh “Âm thanh gốc” phát bản ghi của sách. Chạm vào một câu, hoặc bấm “Đọc từng câu”, để nghe giọng đọc của máy cho riêng câu đó.</p>`;
   bindToggles(el,readDraw);
-  el.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>scOpenText(S.rl,b.dataset.copy==="all"?L.d.map((_,i)=>i):[+b.dataset.copy]));
-  el.querySelectorAll("[data-prt]").forEach(b=>b.onclick=()=>{scOpenText(S.rl,L.d.map((_,i)=>i));setTimeout(()=>prOpen($("#scPrint")),60)});
+  el.querySelectorAll("[data-wr]").forEach(b=>b.onclick=()=>wrOpen(b,L,b.dataset.wr==="pick"?null:+b.dataset.wr));
   el.querySelectorAll(".line").forEach(n=>n.onclick=()=>{const r=L.d[+n.dataset.d].x[+n.dataset.r];el.querySelectorAll(".line.on").forEach(x=>x.classList.remove("on"));n.classList.add("on");speakRate(r[2])});
   el.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>{const di=+b.dataset.play,lines=[...el.querySelectorAll(`.line[data-d="${di}"]`)];
     if(b.dataset.on){stopSpeech();b.dataset.on="";b.textContent="▶︎ Đọc từng câu";lines.forEach(x=>x.classList.remove("on"));return}
@@ -1383,6 +1403,7 @@ if(hasTTS)speechSynthesis.addEventListener&&speechSynthesis.addEventListener("vo
 document.addEventListener("play",e=>{wordAud.pause();document.querySelectorAll("audio").forEach(x=>{if(x!==e.target)x.pause()});if(e.target!==clipAud){clipEnd=null;try{if(ssBusy())speechSynthesis.cancel()}catch(x){}}},true);
 /* ---------- English interface (LANG==="en") ---------- */
 const EN_UI={
+"Trước":"Previous","Đã nhớ":"Got it","Sau":"Next","Câu tiếp":"Next question","Quay lại":"Back","Kéo":"Pan","In / PDF":"Print / PDF","In / Lưu PDF":"Print / Save PDF","Luyện viết bài đọc:":"Writing practice:","Luyện viết · In / PDF":"Practice writing · Print / PDF","Chọn phần muốn luyện viết":"Choose parts to practice","Viết trên giấy nháp":"Write on practice sheet","Chép bài này":"Copy this text","Đọc từng câu":"Read sentence by sentence","Giấy nháp (tất cả)":"Practice sheet (all)","Giấy nháp luyện viết":"Writing practice sheet",
 "Lớp":"Class",
 "In giấy luyện viết / Lưu PDF":"Print practice sheet / Save PDF","Cỡ ô":"Cell size","Lớn":"Large","Vừa":"Medium","Nhỏ":"Small","Kiểu ô":"Grid style","Đậm":"Dark","Mờ để tô":"Faint (to trace)","Hàng trống để viết":"Blank rows for writing","Số trang":"Pages","Chữ mờ để tô":"Faint characters to trace","Không":"None","3 ô":"3 cells","Cả hàng":"Whole row","Số hàng mỗi chữ":"Rows per character","Kèm phiên âm":"Show pinyin","🖨 In / PDF":"🖨 Print / PDF","🖨 In / Lưu PDF":"🖨 Print / Save PDF","Họ tên":"Name","Ngày":"Date","trang":"pages","chữ":"characters","Bài":"Lesson","Giấy trắng":"Blank sheet","Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.":"In the print dialog, choose “Save as PDF” to download the file.","In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF":"Print a ready-gridded writing practice sheet, or save it as PDF",
 "Mục học":"Sections","Chọn quyển":"Choose book","Thẻ từ vựng":"Vocabulary cards","Bài đọc":"Reading","Ngữ pháp":"Grammar","Học sinh":"Student","Tùy chỉnh":"Settings",
@@ -1467,6 +1488,7 @@ function setLang(l){if(l!=="vi"&&l!=="en"&&l!=="id"&&l!=="hi")return;try{localSt
 function langBtns(){return `<button type="button" data-lang="vi" aria-pressed="${LANG==="vi"}" title="Tiếng Việt">${FLAG_VI}<span>Tiếng Việt</span></button><button type="button" data-lang="en" aria-pressed="${LANG==="en"}" title="English">${FLAG_EN}<span>English</span></button><button type="button" data-lang="id" aria-pressed="${LANG==="id"}" title="Bahasa Indonesia">${FLAG_ID}<span>Bahasa Indonesia</span></button><button type="button" data-lang="hi" aria-pressed="${LANG==="hi"}" title="हिन्दी">${FLAG_HI}<span>हिन्दी</span></button>`}
 /* ---------- Hindi interface (LANG==="hi") ---------- */
 const HI_UI={
+"Trước":"पिछला","Đã nhớ":"याद है","Sau":"अगला","Câu tiếp":"अगला प्रश्न","Quay lại":"वापस","Kéo":"खिसकाएँ","In / PDF":"प्रिंट / PDF","In / Lưu PDF":"प्रिंट / PDF सहेजें","Luyện viết bài đọc:":"लेखन अभ्यास:","Luyện viết · In / PDF":"लेखन अभ्यास · प्रिंट / PDF","Chọn phần muốn luyện viết":"अभ्यास के लिए भाग चुनें","Viết trên giấy nháp":"रफ़ कागज़ पर लिखें","Chép bài này":"यह पाठ लिखें","Đọc từng câu":"वाक्य-दर-वाक्य पढ़ें","Giấy nháp (tất cả)":"रफ़ कागज़ (सभी)","Giấy nháp luyện viết":"लेखन अभ्यास का रफ़ कागज़",
 "Lớp":"कक्षा",
 "In giấy luyện viết / Lưu PDF":"लेखन अभ्यास पत्र प्रिंट करें / PDF सहेजें","Cỡ ô":"खाने का आकार","Lớn":"बड़ा","Vừa":"मध्यम","Nhỏ":"छोटा","Kiểu ô":"खाने की शैली","Đậm":"गहरा","Mờ để tô":"हल्का (ऊपर से लिखने के लिए)","Hàng trống để viết":"लिखने के लिए खाली पंक्तियाँ","Số trang":"पृष्ठ","Chữ mờ để tô":"ऊपर से लिखने के लिए हल्के अक्षर","Không":"कोई नहीं","3 ô":"3 खाने","Cả hàng":"पूरी पंक्ति","Số hàng mỗi chữ":"हर अक्षर की पंक्तियाँ","Kèm phiên âm":"पिनयिन दिखाएँ","🖨 In / PDF":"🖨 प्रिंट / PDF","🖨 In / Lưu PDF":"🖨 प्रिंट / PDF सहेजें","Họ tên":"नाम","Ngày":"तारीख़","trang":"पृष्ठ","chữ":"अक्षर","Bài":"पाठ","Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.":"प्रिंट विंडो में फ़ाइल डाउनलोड करने के लिए “Save as PDF” चुनें।","In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF":"खानों वाला लेखन अभ्यास पत्र प्रिंट करें, या PDF के रूप में सहेजें",
 "Mục học":"अनुभाग","Chọn quyển":"पुस्तक चुनें","Thẻ từ vựng":"शब्दावली कार्ड","Bài đọc":"पाठ","Ngữ pháp":"व्याकरण","Học sinh":"छात्र","Tùy chỉnh":"सेटिंग्स",
@@ -1544,7 +1566,7 @@ const HI_RX=[
 [/^Máy bạn chưa có giọng đọc tiếng Trung.*/,"इस डिवाइस में चीनी आवाज़ नहीं है, इसलिए रिकॉर्ड की गई AI आवाज़ उपयोग होती है। आप डिवाइस की भाषा सेटिंग्स में चीनी (ताइवान) आवाज़ इंस्टॉल कर सकते हैं।"],
 [/^Quyển (\d+) cần tài khoản$/,"पुस्तक $1 के लिए खाता चाहिए"],
 [/^Quyển (1(?:–\d+)?) học tự do\. Từ Quyển (\d+) trở đi cần đăng nhập bằng tài khoản lớp học\.$/,"पुस्तक $1 मुफ़्त में सीखें। पुस्तक $2 से, शिक्षक के कक्षा खाते से लॉग इन करें।"],
-[/^Đã chọn (\d+) từ · (\d+) chữ$/,"$1 शब्द चुने · $2 अक्षर"],[/^✍️ Viết (\d+) chữ đã chọn$/,"✍️ चुने गए $1 अक्षर लिखें"],
+[/^Đã chọn (\d+) từ · (\d+) chữ$/,"$1 शब्द चुने · $2 अक्षर"],[/^Viết (\d+) chữ đã chọn$/,"चुने गए $1 अक्षर लिखें"],
 [/^(\d+) chữ đang luyện$/,"$1 अक्षरों का अभ्यास"],[/^Bài (\d+) · chép bài đọc$/,"पाठ $1 · पाठ लिखें"],
 [/^Giáo viên · tên đăng nhập (.+) · tùy chỉnh và từ đã nhớ được lưu theo tài khoản$/,"शिक्षक · उपयोगकर्ता नाम $1 · सेटिंग्स और याद किए शब्द खाते में सहेजे जाते हैं"],
 [/^Chọn (.+)$/,"$1 चुनें"],[/^✍️ (對話.|短文|課文.|摘要.?)$/,"✍️ $1"]
@@ -1557,6 +1579,7 @@ const VHELP_HI=`<summary>“डिवाइस की आवाज़” के 
 const FLAG_HI='<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#FF9933"/><rect y="13.33" width="30" height="6.67" fill="#138808"/><circle cx="15" cy="10" r="2.6" fill="none" stroke="#000080" stroke-width=".6"/><circle cx="15" cy="10" r=".5" fill="#000080"/></svg>';
 /* ---------- Indonesian interface (LANG==="id") ---------- */
 const ID_UI={
+"Trước":"Sebelumnya","Đã nhớ":"Sudah hafal","Sau":"Berikutnya","Câu tiếp":"Soal berikutnya","Quay lại":"Kembali","Kéo":"Geser","In / PDF":"Cetak / PDF","In / Lưu PDF":"Cetak / Simpan PDF","Luyện viết bài đọc:":"Latihan menulis:","Luyện viết · In / PDF":"Latihan menulis · Cetak / PDF","Chọn phần muốn luyện viết":"Pilih bagian untuk latihan","Viết trên giấy nháp":"Tulis di kertas coretan","Chép bài này":"Salin teks ini","Đọc từng câu":"Baca per kalimat","Giấy nháp (tất cả)":"Kertas coretan (semua)","Giấy nháp luyện viết":"Kertas latihan menulis",
 "Lớp":"Kelas",
 "In giấy luyện viết / Lưu PDF":"Cetak lembar latihan / Simpan PDF","Cỡ ô":"Ukuran kotak","Lớn":"Besar","Vừa":"Sedang","Nhỏ":"Kecil","Kiểu ô":"Jenis kotak","Đậm":"Tebal","Mờ để tô":"Samar (untuk ditebalkan)","Hàng trống để viết":"Baris kosong untuk menulis","Số trang":"Jumlah halaman","Chữ mờ để tô":"Huruf samar untuk ditebalkan","Không":"Tidak ada","3 ô":"3 kotak","Cả hàng":"Satu baris","Số hàng mỗi chữ":"Baris per huruf","Kèm phiên âm":"Tampilkan pinyin","🖨 In / PDF":"🖨 Cetak / PDF","🖨 In / Lưu PDF":"🖨 Cetak / Simpan PDF","Họ tên":"Nama","Ngày":"Tanggal","trang":"halaman","chữ":"huruf","Bài":"Pelajaran","Trong hộp thoại in, chọn “Lưu thành PDF” (Save as PDF) để tải file về.":"Di dialog cetak, pilih “Save as PDF / Simpan sebagai PDF” untuk mengunduh file.","In giấy luyện viết có kẻ ô sẵn, hoặc lưu thành PDF":"Cetak lembar latihan menulis berkotak, atau simpan sebagai PDF",
 "Mục học":"Bagian","Chọn quyển":"Pilih buku","Thẻ từ vựng":"Kartu kosakata","Bài đọc":"Bacaan","Ngữ pháp":"Tata bahasa","Học sinh":"Siswa","Tùy chỉnh":"Pengaturan",
@@ -1634,7 +1657,7 @@ const ID_RX=[
 [/^Máy bạn chưa có giọng đọc tiếng Trung.*/,"Perangkat ini tidak punya suara Mandarin, jadi suara rekaman AI dipakai. Kamu bisa memasang suara Mandarin (Taiwan) di pengaturan bahasa perangkat."],
 [/^Quyển (\d+) cần tài khoản$/,"Buku $1 memerlukan akun"],
 [/^Quyển (1(?:–\d+)?) học tự do\. Từ Quyển (\d+) trở đi cần đăng nhập bằng tài khoản lớp học\.$/,"Buku $1 bisa dipelajari bebas. Mulai Buku $2, silakan masuk dengan akun kelas dari guru."],
-[/^Đã chọn (\d+) từ · (\d+) chữ$/,"Dipilih $1 kata · $2 karakter"],[/^✍️ Viết (\d+) chữ đã chọn$/,"✍️ Tulis $1 karakter terpilih"],
+[/^Đã chọn (\d+) từ · (\d+) chữ$/,"Dipilih $1 kata · $2 karakter"],[/^Viết (\d+) chữ đã chọn$/,"Tulis $1 karakter terpilih"],
 [/^(\d+) chữ đang luyện$/,"$1 karakter dilatih"],[/^Bài (\d+) · chép bài đọc$/,"Pelajaran $1 · salin teks"],
 [/^Giáo viên · tên đăng nhập (.+) · tùy chỉnh và từ đã nhớ được lưu theo tài khoản$/,"Guru · nama pengguna $1 · pengaturan dan kata hafal tersimpan di akun"],
 [/^Chọn (.+)$/,"Pilih $1"],[/^✍️ (對話.|短文|課文.|摘要.?)$/,"✍️ $1"]
@@ -1663,7 +1686,7 @@ renderLessons();render();showSec(S.sec);
   if(LANG!=="vi"){trNode(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")trNode(m.target);else m.addedNodes.forEach(trNode)}}).observe(document.body,{childList:true,subtree:true,characterData:true})}})();
 </script>
 
-<script>(()=>{const V="59fb9f3065";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
+<script>(()=>{const V="f9b123bd7d";let busy=0,shown=0;const vi=/[?&]v=/.test(location.search);
 function go(v){const u=new URL(location.href);u.searchParams.set("v",v);location.replace(u.toString())}
 function bar(v){if(shown)return;shown=1;const lg=(()=>{try{return JSON.parse(localStorage.getItem("tv1:lang"))}catch(e){return "vi"}})(),en=lg==="en",idn=lg==="id";
   const d=document.createElement("div");d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 12px);z-index:99;display:flex;gap:10px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;background:var(--sheet,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(0,0,0,.18);font:600 14px system-ui,sans-serif";
