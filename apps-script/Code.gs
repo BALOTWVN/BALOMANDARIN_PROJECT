@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 10 (nhanh hơn nhờ bộ nhớ đệm; quản trị chọn số quyển học tự do, quyển sau cần đăng nhập) — 9: (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 11 (học sinh đăng nhập không cần mã lớp; mã học sinh mới không trùng giữa các lớp) — 10 (nhanh hơn nhờ bộ nhớ đệm; quản trị chọn số quyển học tự do, quyển sau cần đăng nhập) — 9: (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -142,9 +142,17 @@ function findSt_(s, c, st) {
 }
 function stPwOk_(row, pw) { return row[3] ? row[3] === hash_(pw) : norm_(pw) === norm_(row[1]); } // chưa đặt mật khẩu → mật khẩu = mã học sinh
 function stLogin_(s, p) {
-  const f = findSt_(s, p.c, p.s);
+  let f = null;
+  if (norm_(p.c)) f = findSt_(s, p.c, p.s);
+  else { // đăng nhập không cần mã lớp: tìm mã học sinh ở mọi lớp
+    const v = s.hs.getDataRange().getValues(), hits = [];
+    for (let i = 1; i < v.length; i++) if (norm_(v[i][1]) === norm_(p.s) && stPwOk_(v[i], p.p || '')) hits.push({ i: i + 1, r: v[i] });
+    if (hits.length > 1) return { ok: false, needC: true, err: 'Mã học sinh này có ở nhiều lớp. Nhập thêm mã lớp.' };
+    if (!hits.length) return { ok: false, err: 'Sai mã học sinh hoặc mật khẩu' };
+    f = hits[0];
+  }
   if (!f || !stPwOk_(f.r, p.p || '')) return { ok: false, err: 'Sai mã lớp, mã học sinh hoặc mật khẩu' };
-  const lop = rows_(s.lop).find(r => norm_(r[0]) === norm_(p.c));
+  const lop = rows_(s.lop).find(r => norm_(r[0]) === norm_(f.r[0]));
   return { ok: true, c: norm_(f.r[0]), s: norm_(f.r[1]), n: String(f.r[2] || ''), cn: lop ? String(lop[1] || '') : '', tok: tok_(f.r[0], f.r[1]), mustChange: !f.r[3], cfg: getCfg_(s, 'HS:' + norm_(f.r[0]) + ':' + norm_(f.r[1])), kn: getCfg_(s, 'KN:' + norm_(f.r[0]) + ':' + norm_(f.r[1])) };
 }
 function stRegister_(s, p) {
@@ -154,6 +162,7 @@ function stRegister_(s, p) {
   if (!name) return { ok: false, err: 'Nhập họ tên' };
   if (pw.length < 4) return { ok: false, err: 'Mật khẩu cần ít nhất 4 ký tự' };
   if (findSt_(s, c, code)) return { ok: false, err: 'Mã học sinh ' + code + ' đã có trong lớp. Chọn mã khác hoặc đăng nhập.' };
+  if (rows_(s.hs).some(r => norm_(r[1]) === code)) return { ok: false, err: 'Mã học sinh này đã có người dùng. Chọn mã khác.' };
   s.hs.appendRow([c, code, name, hash_(pw), new Date()]);
   return stLogin_(s, { c, s: code, p: pw });
 }
