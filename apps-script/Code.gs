@@ -9,7 +9,7 @@
  *      Thực thi dưới dạng: Tôi · Người có quyền truy cập: Bất kỳ ai
  *    → sao chép "URL ứng dụng web".
  * Khi sửa mã sau này: Triển khai → Quản lý triển khai → ✏️ → Phiên bản: Mới → Triển khai.
- * Phiên bản mã: 11 (học sinh đăng nhập không cần mã lớp; mã học sinh mới không trùng giữa các lớp) — 10 (nhanh hơn nhờ bộ nhớ đệm; quản trị chọn số quyển học tự do, quyển sau cần đăng nhập) — 9: (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
+ * Phiên bản mã: 12 (tin nhắn lớp học: nhóm cả lớp + nhắn riêng giáo viên; giáo viên khóa chat nhóm / cấm học sinh nhắn) — 11 (học sinh đăng nhập không cần mã lớp; mã học sinh mới không trùng giữa các lớp) — 10 (nhanh hơn nhờ bộ nhớ đệm; quản trị chọn số quyển học tự do, quyển sau cần đăng nhập) — 9: (giáo viên đăng nhập ở trang học cũng được lưu tùy chỉnh và từ đã nhớ) — 8: (thêm Quyển 3: bài 201–212 hiện là 'Q3 · Bài n') — 7: (thêm Quyển 2: bài 101–115 hiện là 'Q2 · Bài n') — 6: (lưu danh sách từ 'Đã nhớ' theo tài khoản) — 5: (lưu tùy chỉnh giao diện theo tài khoản) — 4: (nhanh hơn: chỉ mở trang tính cần dùng, trả dữ liệu mới ngay sau mỗi thao tác) — 3: (thêm học sinh tự đăng ký bằng mã lớp) — trước đó 2: (gửi dữ liệu qua tham số j, tránh tên tham số 'c' Google giữ riêng)
  */
 const ADMIN_USER = 'admin';        // ← tên đăng nhập quản trị
 const ADMIN_PASS = 'doimatkhau';   // ← mật khẩu quản trị (chỉ dùng khi chạy caiDat lần đầu)
@@ -22,7 +22,8 @@ const SH = {
     'Câu luyện nghe', 'Luyện nghe đúng', 'Giây học']],
   cfg: ['CaiDat', ['Tài khoản', 'Cài đặt giao diện (JSON)', 'Cập nhật']],
   tk: ['ThongKe', ['Mã lớp', 'Mã học sinh', 'Họ tên', 'Bài', 'Lật thẻ', 'Thẻ đã xem', 'Lần nghe', 'Câu trắc nghiệm',
-    'Trắc nghiệm đúng', 'Câu luyện nghe', 'Luyện nghe đúng', 'Phút học', 'Từ đã nhớ', 'Lần cuối']]
+    'Trắc nghiệm đúng', 'Câu luyện nghe', 'Luyện nghe đúng', 'Phút học', 'Từ đã nhớ', 'Lần cuối']],
+  msg: ['TinNhan', ['ID', 'Thời gian', 'Mã lớp', 'Kênh', 'Vai', 'Người gửi', 'Tên', 'Nội dung', 'Đã xóa']]
 };
 const NTK = SH.tk[1].length;
 
@@ -119,12 +120,15 @@ function handle_(p) {
         if (p.tok && p.tok === tok_(p.c, p.s)) return out_({ ok: true, cfg: getCfg_(s, 'HS:' + norm_(p.c) + ':' + norm_(p.s)), kn: getCfg_(s, 'KN:' + norm_(p.c) + ':' + norm_(p.s)) });
         const tt = teacher_(s, p); return out_(tt ? { ok: true, cfg: getCfg_(s, 'GV:' + tt.u) } : { ok: false });
       }
+      case 'chat': return out_(stChat_(s, p));
+      case 'csend': return out_(stSend_(s, p));
       case 'tlogin': { const t = teacher_(s, p); if (!t) return out_({ ok: false, err: 'Sai tên đăng nhập hoặc mật khẩu' });
         const gc = '#GV'; // tài khoản học của giáo viên: lưu tùy chỉnh + từ đã nhớ như học sinh (không tính vào thống kê lớp)
         return out_({ ok: true, u: t.u, n: t.n, admin: t.admin, free: getFree_(), c: gc, s: t.u, tok: tok_(gc, t.u), cfg: getCfg_(s, 'HS:' + gc + ':' + t.u), kn: getCfg_(s, 'KN:' + gc + ':' + t.u) }); }
     }
     const t = teacher_(s, p);
     if (!t) return out_({ ok: false, err: 'Phiên đăng nhập giáo viên không hợp lệ', auth: true });
+    if (/^(tchat|tsend|tchatcfg|tdel)$/.test(p.a)) return out_(tChat_(s, t, p));
     if (p.a === 'data') return out_(teacherAct_(s, t, p));
     const lock = LockService.getScriptLock(); lock.waitLock(20000);
     let res;
@@ -299,6 +303,98 @@ function teacherAct_(s, t, p) {
     }
   }
   return { ok: false, err: 'Yêu cầu không hợp lệ' };
+}
+
+
+/* ---------- tin nhắn lớp học (v12) ----------
+   Kênh: 'LOP' = nhóm cả lớp · 'HS:<mã HS>' = nhắn riêng giữa học sinh và giáo viên của lớp.
+   Cài đặt chat của lớp lưu ở trang CaiDat, khóa 'CHAT:<mã lớp>' = {lock: khóa chat nhóm, ban: [mã HS bị cấm nhắn]} */
+const CH_MAX = 300;
+function chCache_() { try { return CacheService.getScriptCache(); } catch (e) { return null; } }
+function chRow_(r) { return { id: Number(r[0]), t: r[1] instanceof Date ? r[1].getTime() : Number(new Date(r[1])), ch: String(r[3]), r: String(r[4]), u: String(r[5]), n: String(r[6]), x: String(r[7]), d: r[8] ? 1 : 0 }; }
+function chSave_(c, arr) {
+  const ca = chCache_(); if (!ca) return; arr = arr.slice(-CH_MAX);
+  let j = JSON.stringify(arr); while (j.length > 95000 && arr.length > 20) { arr = arr.slice(Math.ceil(arr.length / 5)); j = JSON.stringify(arr); }
+  try { ca.put('CH:' + c, j, 21600); } catch (e) {}
+}
+function chLoad_(s, c) {
+  const ca = chCache_(); const hit = ca && ca.get('CH:' + c);
+  if (hit) try { return JSON.parse(hit); } catch (e) {}
+  const v = s.msg.getDataRange().getValues(), out = [];
+  for (let i = v.length - 1; i >= 1 && out.length < CH_MAX; i--) if (norm_(v[i][2]) === c) out.push(chRow_(v[i]));
+  out.reverse(); chSave_(c, out); return out;
+}
+function chRev_(c) { const ca = chCache_(); return (ca && ca.get('CHREV:' + c)) || '0'; }
+function chBumpRev_(c) { const ca = chCache_(); if (ca) ca.put('CHREV:' + c, String(Date.now()), 21600); }
+function chCfg_(s, c) {
+  const ca = chCache_(); const hit = ca && ca.get('CHCFG:' + c);
+  if (hit) try { return JSON.parse(hit); } catch (e) {}
+  const o = Object.assign({ lock: false, ban: [] }, getCfg_(s, 'CHAT:' + c) || {});
+  if (ca) ca.put('CHCFG:' + c, JSON.stringify(o), 21600); return o;
+}
+function chSetCfg_(s, c, o) { setCfg_(s, 'CHAT:' + c, o); const ca = chCache_(); if (ca) ca.put('CHCFG:' + c, JSON.stringify(o), 21600); }
+function chPick_(all, since, rev, crev, keep) {
+  const full = !since || String(rev || '') !== crev;
+  return { full, msgs: all.filter(m => keep(m) && (full || m.id > since)).map(m => m.d ? Object.assign({}, m, { x: '' }) : m) };
+}
+function chAdd_(s, c, ch, role, u, n, x) {
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const all = chLoad_(s, c), last = all.length ? all[all.length - 1].id : 0, now = Date.now();
+    const id = Math.max(now, last + 1), m = { id, t: now, ch, r: role, u, n, x, d: 0 };
+    s.msg.appendRow([id, new Date(now), c, ch, role, u, n, x, '']);
+    all.push(m); chSave_(c, all); return m;
+  } finally { lock.releaseLock(); }
+}
+function chText_(x) { return String(x || '').replace(/\r/g, '').replace(/\n{4,}/g, '\n\n\n').trim().slice(0, 1000); }
+function stAuth_(p) { return p.tok && p.tok === tok_(p.c, p.s) && norm_(p.c) !== '#GV'; }
+function stChat_(s, p) {
+  if (!stAuth_(p)) return { ok: false, err: 'Phiên học sinh không hợp lệ' };
+  const c = norm_(p.c), me = norm_(p.s), cfg = chCfg_(s, c), crev = chRev_(c);
+  const r = chPick_(chLoad_(s, c), Number(p.since) || 0, p.rev, crev, m => m.ch === 'LOP' || m.ch === 'HS:' + me);
+  return { ok: true, full: r.full, rev: crev, msgs: r.msgs, lock: !!cfg.lock, ban: (cfg.ban || []).indexOf(me) >= 0 };
+}
+function stSend_(s, p) {
+  if (!stAuth_(p)) return { ok: false, err: 'Phiên học sinh không hợp lệ' };
+  const c = norm_(p.c), me = norm_(p.s), x = chText_(p.x), cfg = chCfg_(s, c);
+  if (!x) return { ok: false, err: 'Tin nhắn trống' };
+  if ((cfg.ban || []).indexOf(me) >= 0) return { ok: false, err: 'Giáo viên đã tạm khóa quyền nhắn tin của bạn.' };
+  const ch = p.ch === 'LOP' ? 'LOP' : 'HS:' + me;
+  if (ch === 'LOP' && cfg.lock) return { ok: false, err: 'Giáo viên đã tắt chat nhóm của lớp.' };
+  const ca = chCache_(), rk = 'RL:' + c + ':' + me;
+  if (ca && ca.get(rk)) return { ok: false, err: 'Bạn gửi nhanh quá, đợi một chút rồi gửi lại.' };
+  if (ca) ca.put(rk, '1', 2);
+  const st = rowsC_(s, 'hs').find(r => norm_(r[0]) === c && norm_(r[1]) === me);
+  if (!st) return { ok: false, err: 'Không tìm thấy học sinh' };
+  return { ok: true, m: chAdd_(s, c, ch, 'hs', me, String(st[2] || me), x) };
+}
+function tChat_(s, t, p) {
+  const c = norm_(p.c);
+  if (!own_(s, t, c)) return { ok: false, err: 'Không có quyền' };
+  if (p.a === 'tsend') {
+    const x = chText_(p.x); if (!x) return { ok: false, err: 'Tin nhắn trống' };
+    const ch = p.ch === 'LOP' ? 'LOP' : 'HS:' + norm_(String(p.ch || '').replace(/^HS:/, ''));
+    return { ok: true, m: chAdd_(s, c, ch, 'gv', t.u, t.n, x) };
+  }
+  if (p.a === 'tchatcfg') {
+    const o = chCfg_(s, c); o.ban = o.ban || [];
+    if (p.lock != null) o.lock = !!p.lock;
+    if (p.ban) { const b = norm_(p.ban); if (o.ban.indexOf(b) < 0) o.ban.push(b); }
+    if (p.unban) o.ban = o.ban.filter(b => b !== norm_(p.unban));
+    chSetCfg_(s, c, o); return { ok: true, lock: !!o.lock, ban: o.ban };
+  }
+  if (p.a === 'tdel') {
+    const id = Number(p.id), lock = LockService.getScriptLock(); lock.waitLock(20000);
+    try {
+      const v = s.msg.getRange(1, 1, s.msg.getLastRow(), 1).getValues();
+      for (let i = v.length - 1; i >= 1; i--) if (Number(v[i][0]) === id) { s.msg.getRange(i + 1, 9).setValue('x'); break; }
+      const all = chLoad_(s, c); all.forEach(m => { if (m.id === id) m.d = 1; }); chSave_(c, all); chBumpRev_(c);
+    } finally { lock.releaseLock(); }
+    return { ok: true };
+  }
+  const cfg = chCfg_(s, c), crev = chRev_(c);
+  const r = chPick_(chLoad_(s, c), Number(p.since) || 0, p.rev, crev, () => true);
+  return { ok: true, full: r.full, rev: crev, msgs: r.msgs, lock: !!cfg.lock, ban: cfg.ban || [] };
 }
 
 /* ---------- usage log: {a:'log', c, s, tok, d:{ "<bai>": {f,seen,li,q,qc,lq,lqc,t,kn} }} ---------- */
